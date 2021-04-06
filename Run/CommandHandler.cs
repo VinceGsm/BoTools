@@ -1,28 +1,27 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using CommandService = BoTools.Service.CommandService;
 
-namespace BoTools
+namespace BoTools.Run
 {
     public class CommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
+        private readonly IServiceProvider _services;
         private readonly char _commandPrefix = '$';
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands)
+        public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
             _commands = commands;
             _client = client;
+            _services = services;            
         }
 
         public async Task InstallCommandsAsync()
         {
-            // Hook the MessageReceived event into our command handler
-            _client.MessageReceived += HandleCommandAsync;
-
             // Here we discover all of the command modules in the entry 
             // assembly and load them. Starting from Discord.NET 2.0, a
             // service provider is required to be passed into the
@@ -30,8 +29,10 @@ namespace BoTools
             // required dependencies.
             //
             // If you do not use Dependency Injection, pass null.            
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-                                            services: null);
+            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
+
+            // Hook the MessageReceived event into our command handler
+            _client.MessageReceived += HandleCommandAsync;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -52,7 +53,7 @@ namespace BoTools
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
-            await _commands.ExecuteAsync(context: context, argPos: argPos, services: null);
+            await _commands.ExecuteAsync(context: context, argPos: argPos, services: _services);
         }
     }
 }

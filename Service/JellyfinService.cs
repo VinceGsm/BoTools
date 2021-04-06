@@ -8,6 +8,5 @@ namespace BoTools.Service
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         //P1 :  [text] (link)
-        //- add reaction to msg when "in process"
     }
 }

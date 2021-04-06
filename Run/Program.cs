@@ -1,25 +1,24 @@
 ﻿using BoTools.Service;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
 using log4net.Config;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace BoTools
+namespace BoTools.Run
 {
 	public class Program
 	{
-		private DiscordSocketClient _client;
+        private CommandHandler _commands;
+        private DiscordSocketClient _client;
 		private string _token = Environment.GetEnvironmentVariable("BoTools_Token");
-        
-        #region Service
-        private AdminService _adminService = new AdminService();
-        private MessageService _messageService = new MessageService();
-        #endregion
 
 
         public static void Main(string[] args) 
@@ -48,31 +47,41 @@ namespace BoTools
         */
 
 
+        public Program(DiscordSocketClient client = null)
+        {
+            // When working with events that have Cacheable<IMessage, ulong> parameters,
+            // you must enable the message cache in your config settings if you plan to
+            // use the cached message entity.
+            _client = client ?? new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });
+            _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
+        }
+
         public async Task MainAsync()
         {
             LoadLogConfig();
 
-            // When working with events that have Cacheable<IMessage, ulong> parameters,
-            // you must enable the message cache in your config settings if you plan to
-            // use the cached message entity.
-            var socketConfig = new DiscordSocketConfig { MessageCacheSize = 100};
+            await _commands.InstallCommandsAsync();
+            Console.WriteLine("InstallCommandsAsync done");
 
-            _client = new DiscordSocketClient(socketConfig);                    
-			
-            _client.Log += _adminService.Log;
-            _client.Ready += _adminService.Ready;
-            _client.LeftGuild += _adminService.LeftGuild;
+            // Hook the execution event
+            //_command.CommandExecuted += OnCommandExecutedAsync;
             
-            _client.MessageDeleted += _messageService.MessageDeleted;
-            _client.MessageUpdated += _messageService.MessageUpdated;
-            _client.MessageReceived += _messageService.MessageReceived;
+            //_client.SetGameAsync
 
             await _client.LoginAsync(TokenType.Bot, _token);
             await _client.StartAsync();
 
             // Block this task until the program is closed.
-            await Task.Delay(-1);
+            await Task.Delay(Timeout.Infinite);
         }
+
+        public IServiceProvider BuildServiceProvider() => new ServiceCollection()
+            .AddSingleton(_client)                        
+            .AddSingleton(new MessageService(_client))            
+            .AddSingleton(new AdminService(_client))
+            .AddSingleton(new JellyfinService())
+            .BuildServiceProvider();
+
 
         private static void LoadLogConfig()
         {            

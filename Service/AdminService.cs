@@ -9,7 +9,18 @@ namespace BoTools.Service
 {
     public class AdminService
     {
+        private DiscordSocketClient _client;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+
+        public AdminService(DiscordSocketClient client)
+        {
+            _client = client;
+
+            _client.Log += Log;
+            _client.Ready += Ready;
+            _client.LeftGuild += LeftGuild;
+        }
 
 
         /// <summary>

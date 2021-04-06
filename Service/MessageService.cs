@@ -9,15 +9,21 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private DiscordSocketClient _client;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public async Task MessageReceived(SocketMessage msg)
+        public MessageService(DiscordSocketClient client)
         {
-            //throw new NotImplementedException();
-            return;
+            _client = client;
+
+            _client.MessageDeleted += MessageDeleted;
+            _client.MessageUpdated += MessageUpdated;
+            //_client.MessageReceived += ;
         }
 
+
+        #region Client
         public Task MessageDeleted(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
         {
             //throw new NotImplementedException();
@@ -35,9 +41,23 @@ namespace BoTools.Service
             }
 
         }
+        #endregion
+
+
+        public async Task AddReactionVu(IUserMessage message)
+        {
+            // --> 👀
+            Emoji vu = new Emoji("\uD83D\uDC40");
+            await message.AddReactionAsync(vu);
+            Console.WriteLine($"VU done");
+        }
+        
+        //
+
 
         private static bool IsStaffMsg(SocketMessage msg)
         {
+            return false; //DEBUG
             return (msg.Author.IsBot || msg.Author.Username.StartsWith("Vince"));
         }
     }
