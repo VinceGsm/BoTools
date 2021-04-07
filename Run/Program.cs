@@ -16,15 +16,6 @@ namespace BoTools.Run
 {
 	public class Program
 	{
-        private CommandHandler _commands;
-        private DiscordSocketClient _client;
-		private string _token = Environment.GetEnvironmentVariable("BoTools_Token");
-
-
-        public static void Main(string[] args) 
-			=> new Program().MainAsync().GetAwaiter().GetResult();
-
-
         /*
                              Tips / Good practice
 
@@ -41,46 +32,64 @@ namespace BoTools.Run
             this will create a deadlock that will be impossible to recover from.
 
             Exceptions in commands will be swallowed by the gateway and logged out through the client's log method.
-
-        3.
-
         */
 
+        private CommandHandler _commands;
+        private DiscordSocketClient _client;
+		private string _token = Environment.GetEnvironmentVariable("BoTools_Token");
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+
+        public static void Main(string[] args) 
+			=> new Program().MainAsync().GetAwaiter().GetResult();
+        
 
         public Program(DiscordSocketClient client = null)
         {
-            // When working with events that have Cacheable<IMessage, ulong> parameters,
-            // you must enable the message cache in your config settings if you plan to
-            // use the cached message entity.
+            // When working with events that have Cacheable<IMessage, ulong> parameters, you must enable
+            // the message cache in your config settings if you plan to use the cached message entity.            
             _client = client ?? new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });
             _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
         }
 
         public async Task MainAsync()
         {
-            LoadLogConfig();
+            try
+            {
+                LoadLogConfig();
 
-            await _commands.InstallCommandsAsync();
-            Console.WriteLine("InstallCommandsAsync done");
+                await _commands.InitializeCommandsAsync();
+                Console.WriteLine("InstallCommandsAsync done");
 
-            // Hook the execution event
-            //_command.CommandExecuted += OnCommandExecutedAsync;
-            
-            //_client.SetGameAsync
+                // Hook the execution event
+                //_command.CommandExecuted += OnCommandExecutedAsync;
 
-            await _client.LoginAsync(TokenType.Bot, _token);
-            await _client.StartAsync();
+                //_client.SetGameAsync
 
-            // Block this task until the program is closed.
-            await Task.Delay(Timeout.Infinite);
+                await _client.LoginAsync(TokenType.Bot, _token);
+                await _client.StartAsync();
+
+                // Block this task until the program is closed.
+                await Task.Delay(Timeout.Infinite);
+            }
+            catch(Exception ex)
+            {
+                log.Error(ex);
+            }
+
         }
 
-        public IServiceProvider BuildServiceProvider() => new ServiceCollection()
-            .AddSingleton(_client)                        
-            .AddSingleton(new MessageService(_client))            
-            .AddSingleton(new AdminService(_client))
-            .AddSingleton(new JellyfinService())
-            .BuildServiceProvider();
+        /// <summary>
+        /// Inject Services
+        /// </summary>
+        /// <returns></returns>
+        public IServiceProvider BuildServiceProvider() 
+            => new ServiceCollection()
+                .AddSingleton(_client)                        
+                .AddSingleton(new MessageService(_client, new JellyfinService()))            
+                .AddSingleton(new AdminService(_client))
+                .AddSingleton(new JellyfinService())
+                .BuildServiceProvider();
 
 
         private static void LoadLogConfig()
