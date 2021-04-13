@@ -23,6 +23,7 @@ namespace BoTools.Run
             _services = services;
 
             _jellyfinService ??= (JellyfinService)_services.GetService(typeof(JellyfinService));
+            _messageService ??= (MessageService)_services.GetService(typeof(MessageService));
         }
 
         public async Task InitializeCommandsAsync()
@@ -45,6 +46,8 @@ namespace BoTools.Run
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
 
+            await AutoCheck(message);
+
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
             if (!(message.HasCharPrefix(_commandPrefix, ref argPos) ||message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||message.Author.IsBot)
                 return;
@@ -52,7 +55,6 @@ namespace BoTools.Run
             // Create a WebSocket-based command context based on the message
             var context = new SocketCommandContext(_client, message);
 
-            await AutoCheck(message);
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
@@ -65,9 +67,7 @@ namespace BoTools.Run
         /// <param name="message"></param>
         /// <returns></returns>
         private async Task AutoCheck(SocketUserMessage message)
-        {         
-            await _jellyfinService.Clean();
-
+        {                     
             if (message.Content.ToLower().Contains("botools"))
                 await _messageService.AddReactionRobot(message);
 

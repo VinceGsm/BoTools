@@ -22,25 +22,31 @@ namespace BoTools.Service
 
         public Task Log(LogMessage msg)
         {
-            switch (msg.Severity)
+            if(msg.Exception == null)
             {
-                case LogSeverity.Critical:
-                case LogSeverity.Error:
-                    log.Error(msg.Message);
-                    break;
+                switch (msg.Severity)
+                {
+                    case LogSeverity.Critical:
+                    case LogSeverity.Error:
+                        log.Error(msg.Message);
+                        break;
 
-                case LogSeverity.Warning:
-                    log.Warn(msg.Message);
-                    break;
+                    case LogSeverity.Warning:
+                        log.Warn(msg.Message);
+                        break;
 
-                case LogSeverity.Verbose:
-                    log.Debug(msg.Message);
-                    break;
+                    case LogSeverity.Verbose:
+                        log.Debug(msg.Message);
+                        break;
 
-                default:
-                    Console.WriteLine($"{DateTime.Now} : {msg.Message}");
-                    break;
+                    default:
+                        Console.WriteLine($"{DateTime.Now} : {msg.Message}");
+                        break;
+                }
             }
+            else
+                log.Error(msg.Exception.Message);
+
             return Task.CompletedTask;
         }
     }
