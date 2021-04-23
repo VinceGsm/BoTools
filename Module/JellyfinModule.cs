@@ -40,10 +40,13 @@ namespace BoTools.Module
 
                     //activation Jellyfin
                     _jellyfinService.Activate();
+                    log.Info($"Jellyfin activated");
 
                     //activation NGrock + récupération du lien http
-                    string ngRockUrl = await _jellyfinService.GetNgrokUrl();
-                    EmbedBuilder builder = MakeBuilder(userMsg, ngRockUrl);
+                    string ngrokUrl = await _jellyfinService.GetNgrokUrl();
+                    log.Info($"ngrokUrl = {ngrokUrl}");
+
+                    EmbedBuilder builder = MakeBuilder(userMsg, ngrokUrl);
 
                     string message = $"{_messageService.GetPepeSmokeEmote()}";
 

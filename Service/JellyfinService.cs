@@ -14,7 +14,7 @@ namespace BoTools.Service
     public class JellyfinService
     {
         private static readonly int _nbHourActive = 4;
-        private static readonly string _ngrokSideApi = "https://localhost:44360";
+        private static readonly string _ngrokSideApi = "http://localhost:5000";
         private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
         private List<IMessage> _jellyfinMsg = new List<IMessage>();
         private List<IMessage> _toDelete = new List<IMessage>();
@@ -53,7 +53,8 @@ namespace BoTools.Service
 
         internal async Task<string> GetNgrokUrl()
         {            
-            return await CallSideApiNgrokAsync(_ngrokSideApi);
+            string res = await CallSideApiNgrokAsync(_ngrokSideApi);
+            return res;                 
         }
 
         private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
