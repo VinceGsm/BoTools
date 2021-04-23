@@ -37,7 +37,8 @@ namespace BoTools.Run
         private CommandHandler _commands;
         private DiscordSocketClient _client;
 		private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");
-		private readonly string _rickRollUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";		
+		private readonly string _rickRollUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        private static readonly string _ngrokPath = @"D:\Apps\Ngrok\ngrok.exe";
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
@@ -50,7 +51,7 @@ namespace BoTools.Run
             // When working with events that have Cacheable<IMessage, ulong> parameters, you must enable
             // the message cache in your config settings if you plan to use the cached message entity.            
             _client = client ?? new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });            
-            _client.SetGameAsync(name: "Porn", streamUrl:_rickRollUrl, type: ActivityType.Streaming); // I like jokes
+            _client.SetGameAsync(name: "Porn", streamUrl:_rickRollUrl, type: ActivityType.Streaming); // I like joke
 
             _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
         }
@@ -73,13 +74,16 @@ namespace BoTools.Run
         /// Inject Services
         /// </summary>
         /// <returns></returns>
-        public IServiceProvider BuildServiceProvider() 
-            => new ServiceCollection()
-                .AddSingleton(_client)                        
-                .AddSingleton(new MessageService(_client, new JellyfinService()))            
+        public IServiceProvider BuildServiceProvider()
+        {
+            IServiceCollection services = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(new MessageService(_client))
                 .AddSingleton(new AdminService(_client))
-                .AddSingleton(new JellyfinService())
-                .BuildServiceProvider();
+                .AddSingleton(new JellyfinService());
+                                         
+            return services.BuildServiceProvider();
+        }    
 
 
         private static void LoadLogConfig()

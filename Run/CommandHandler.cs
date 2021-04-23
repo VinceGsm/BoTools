@@ -20,7 +20,7 @@ namespace BoTools.Run
         {
             _commands = commands;
             _client = client;
-            _services = services;
+            _services = services;            
 
             _jellyfinService ??= (JellyfinService)_services.GetService(typeof(JellyfinService));
             _messageService ??= (MessageService)_services.GetService(typeof(MessageService));
@@ -68,7 +68,7 @@ namespace BoTools.Run
         /// <returns></returns>
         private async Task AutoCheck(SocketUserMessage message)
         {                     
-            if (message.Content.ToLower().Contains("botools"))
+            if (message.Content.ToLower().Contains("botools") || message.Content.ToLower().Contains("<@!825790068090339369>"))
                 await _messageService.AddReactionRobot(message);
 
             return;

@@ -13,6 +13,7 @@ namespace BoTools.Service
     {
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
+        private static readonly string _doneEmote = "<a:check:626017543340949515>";
         private static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
         private static readonly string _alarmEmote = "<a:alert:637645061764415488>";
         private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
@@ -20,41 +21,26 @@ namespace BoTools.Service
         private static readonly string _checkEmote = "<a:verified:773622374926778380>";        
         private static readonly string _catVibeEmote = "<a:catvibe:792184060054732810>";
         private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";
+        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";        
         #endregion
         #region emoji
         private static readonly string _coeurEmoji = "\u2764";
+        private static readonly string _tvEmoji = "\uD83D\uDCFA";
         #endregion
 
-        private DiscordSocketClient _client;
-        private readonly JellyfinService _jellyfinService;
+        private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public MessageService(DiscordSocketClient client, JellyfinService jellyfinService)
+        public MessageService(DiscordSocketClient client)
         {
-            _client = client;
-            _jellyfinService = jellyfinService;
-
+            _client = client;            
             _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;            
-            _client.MessageUpdated += MessageUpdated;               
+            _client.UserLeft += UserLeft;                          
         }
 
 
         #region Client
-        public async Task MessageUpdated(Cacheable<IMessage, ulong> msgBefore, SocketMessage msgAfter, ISocketMessageChannel channel)
-        {
-            if (!IsStaffMsg(msgAfter))
-            {
-                // If the message was not in the cache, downloading it will result in getting a copy of `after`.
-                var msg = await msgBefore.GetOrDownloadAsync();
-
-                if(msg.Content != msgAfter.Content)
-                    Console.WriteLine($"{msgAfter.Author.Username} edit : \"{msg}\" ---> \"{msgAfter}\" from {channel.Name}");
-            }
-        }
-
         /// <summary>
         /// When guild data has finished downloading (+state : Ready)
         /// </summary>
@@ -66,7 +52,6 @@ namespace BoTools.Service
 
             return;
         }
-
 
         /// <summary>
         /// When a User left the Guild
@@ -111,15 +96,13 @@ namespace BoTools.Service
         }
 
         public async Task AddReactionAlarm(SocketUserMessage message)
-        {
-            // --> Alarm (emote)
+        {            
             var alarm = Emote.Parse(_alarmEmote) ;            
             await message.AddReactionAsync(alarm);
         }
 
         public async Task AddReactionBirthDay(IMessage message)
-        {
-            // --> Clap-Clap (emote)
+        {            
             var bravo = Emote.Parse(_bravoEmote);
             // --> 🎂
             Emoji cake = new Emoji("\uD83C\uDF82");
@@ -132,8 +115,7 @@ namespace BoTools.Service
         {
             await message.RemoveAllReactionsAsync();
 
-            // --> :Verified: (emote)
-            var check = Emote.Parse(_checkEmote);
+            var check = Emote.Parse(_doneEmote);
             await message.AddReactionAsync(check);
         }
         #endregion
@@ -145,31 +127,46 @@ namespace BoTools.Service
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "log");
 
             if (channel != null)            
-                //await channel.SendMessageAsync(message, isTTS:true);//////////////////////////////////////////////////////////////////////
+                await channel.SendMessageAsync(message, isTTS:true);
             
             log.Info($"Latency : {_client.Latency} ms");
         }
 
         private async Task CheckBirthday()
         {
-            Dictionary<string, DateTime> birthsDay = Helper.GetBirthsDay();
-            var isSomeoneBD = birthsDay.ContainsValue(DateTime.Today);
+            bool isAlreadyDone = false;
+            string msgStart = $"@everyone {_pikachuEmote} \n" +
+                        $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            if (isSomeoneBD)
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "general");
+            var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
+            
+            foreach (var list in msg)
             {
-                string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
-                string message = $"@everyone {_pikachuEmote} \n" +
-                    $"On me souffle dans l'oreille que c'est l'anniversaire de <@{id}> aujourd'hui !\n" +
-                    $"*ps : j'ai pas vraiment d'oreille*";
-
-                ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "general");
-
-                if (channel != null)
-                {                    
-                    var res = (IMessage) channel.SendMessageAsync(message).Result;
-                    await AddReactionBirthDay(res);
-                }                    
+                IEnumerable<IMessage> messages = list.Where(x => x.Content.StartsWith(msgStart) && x.Timestamp.DayOfYear == DateTimeOffset.Now.DayOfYear);
+         
+                isAlreadyDone = messages.Any();
             }
+
+            if (!isAlreadyDone)
+            {
+                Dictionary<string, DateTime> birthsDay = Helper.GetBirthsDay();
+                bool isSomeoneBD = birthsDay.ContainsValue(DateTime.Today);
+
+                if (isSomeoneBD)
+                {
+                    string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
+                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +
+                        $"*ps : j'ai pas vraiment d'oreille*";                    
+
+                    if (channel != null)
+                    {
+                        var res = (IMessage)channel.SendMessageAsync(message).Result;
+                        await AddReactionBirthDay(res);
+                    }
+                }
+            }
+            
             return;
         }
 
@@ -192,11 +189,14 @@ namespace BoTools.Service
         #region Get Emoji/Emote
         public string GetCoinEmote() { return _coinEmote; }
         public string GetCoeurEmote() { return _coeurEmote; }
+        public string GetCheckEmote() { return _checkEmote; }
         public string GetCatVibeEmote() { return _catVibeEmote; } 
         public string GetArrowEmote() { return _arrowEmote; }
+        public string GetDoneEmote() { return _doneEmote; }
         public string GetPepeSmokeEmote() { return _pepeSmokeEmote; }
 
         public string GetCoeurEmoji() { return _coeurEmoji; }
+        public string GetTvEmoji() { return _tvEmoji; }
         #endregion
 
         private static bool IsStaffMsg(SocketMessage msg)
