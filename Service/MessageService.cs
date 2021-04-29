@@ -11,6 +11,7 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         private static readonly string _doneEmote = "<a:check:626017543340949515>";
@@ -21,24 +22,26 @@ namespace BoTools.Service
         private static readonly string _checkEmote = "<a:verified:773622374926778380>";        
         private static readonly string _catVibeEmote = "<a:catvibe:792184060054732810>";
         private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";        
+        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";               
         #endregion
         #region emoji
         private static readonly string _coeurEmoji = "\u2764";
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
         #endregion
-
-        private DiscordSocketClient _client;        
+        private DiscordSocketClient _client;
+        private ISocketMessageChannel _logChannel;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
         public MessageService(DiscordSocketClient client)
         {
-            _client = client;            
-            _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;                          
-        }
+            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
 
+            _client = client;                        
+            _client.Ready += Ready;            
+            _client.UserLeft += UserLeft;
+            _client.InviteCreated += InviteCreated;            
+        }
 
         #region Client
         /// <summary>
@@ -62,15 +65,34 @@ namespace BoTools.Service
         {
             string user = guildUser.Username + '#' + guildUser.Discriminator;
             string joinedAt = Helper.ConvertToSimpleDate(guildUser.JoinedAt.Value);                                    
-            string message = $"```{user} left Zderland ! This person joined at {joinedAt}```";
+            string message = $"```{user} left Zderland ! This person joined at {joinedAt}```";             
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "log");
-
-            if (channel != null)
-                await channel.SendMessageAsync(message);
+            if (_logChannel != null)
+                await _logChannel.SendMessageAsync(message);
 
             return;
-        }        
+        }
+
+        private Task InviteCreated(SocketInvite invite)
+        {                        
+            var channel = Helper.GetSocketMessageChannel(_client, invite.Channel.Name);
+
+            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge} sec";
+
+            string logMessage = $"Une nouvelle invitation {duration} à Zderland vient d'être créée par " +
+                $"{invite.Inviter.Username} dans {channel?.Name}";
+
+            string message = $"{_alarmEmote} Police ! ```Voici l'invitation à partager por favor : {_eternalInvite}```" +
+                $"Grazie mille {_coeurEmote}";
+
+            if (_logChannel != null)            
+                _logChannel.SendMessageAsync(logMessage);
+                
+            if (channel != null)
+                channel.SendMessageAsync(message);
+
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Reaction
@@ -124,10 +146,9 @@ namespace BoTools.Service
         public async Task SendLatencyAsync()
         {                       
             string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de vous !```";
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "log");
 
-            if (channel != null)            
-                await channel.SendMessageAsync(message, isTTS:true);
+            if (_logChannel != null)            
+                await _logChannel.SendMessageAsync(message, isTTS:true);
             
             log.Info($"Latency : {_client.Latency} ms");
         }

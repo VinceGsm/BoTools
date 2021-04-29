@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace BoTools.Service
 {
-    public class AdminService
+    public class LogService
     {
         private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public AdminService(DiscordSocketClient client)
+        public LogService(DiscordSocketClient client)
         {
             _client = client;            
             _client.Log += Log;

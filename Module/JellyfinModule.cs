@@ -46,11 +46,12 @@ namespace BoTools.Module
                     string ngrokUrl = await _jellyfinService.GetNgrokUrl();
                     log.Info($"ngrokUrl = {ngrokUrl}");
 
-                    EmbedBuilder builder = MakeBuilder(userMsg, ngrokUrl);
+                    var builder = MakeBuilder(userMsg, ngrokUrl);
+                    Embed embed = builder.Build();
 
                     string message = $"{_messageService.GetPepeSmokeEmote()}";
-
-                    await Context.Channel.SendMessageAsync(message, false, builder.Build(), null, null, reference);
+                    
+                    await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
                     await _messageService.JellyfinDone(userMsg);
                 }
                 else
@@ -85,7 +86,7 @@ namespace BoTools.Module
                 ThumbnailUrl = _boToolsGif,
 
                 Title = $"{_messageService.GetCheckEmote()}︱Streaming & Download︱{_messageService.GetCheckEmote()}",
-                Description = $"{_messageService.GetCoinEmote()}  Ce lien ne sera disponible que pour 4h\n" +
+                Description = $"{_messageService.GetCoinEmote()}  Ce lien ne sera disponible que pour aujourd'hui\n" +
                     $"{_messageService.GetCoinEmote()}  Relancer la commande générera un nouveau lien",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },

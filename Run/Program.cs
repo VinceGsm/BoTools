@@ -79,7 +79,7 @@ namespace BoTools.Run
             IServiceCollection services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(new MessageService(_client))
-                .AddSingleton(new AdminService(_client))
+                .AddSingleton(new LogService(_client))
                 .AddSingleton(new JellyfinService());
                                          
             return services.BuildServiceProvider();

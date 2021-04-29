@@ -13,7 +13,7 @@ namespace BoTools.Service
 {
     public class JellyfinService
     {
-        private static readonly int _nbHourActive = 4;
+        private static readonly int _nbHourActive = 14;
         private static readonly string _ngrokSideApi = "http://localhost:5000";
         private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
         private List<IMessage> _jellyfinMsg = new List<IMessage>();
@@ -24,7 +24,7 @@ namespace BoTools.Service
 
         /// <summary>
         /// If there is no Jellyfin link available return true
-        /// CLean aswell the old links
+        /// Clean aswell the old links
         /// </summary>
         /// <returns></returns>
         internal async Task<bool> IsLinkClear(DiscordSocketClient client)
@@ -92,7 +92,7 @@ namespace BoTools.Service
         }
 
         /// <summary>
-        /// Select +2hours message about Jellyfin link and remove them from the list
+        /// Select +xhours message about Jellyfin link and remove them from the list
         /// </summary>
         private void FillDeleteList()
         {
