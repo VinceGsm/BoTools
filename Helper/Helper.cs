@@ -19,9 +19,9 @@ namespace BoTools
             "what's crack-a-lackin'?","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?"
-        };
-        private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
+        };        
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
+        private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, string channelName)
@@ -50,7 +50,8 @@ namespace BoTools
 
         internal static SocketGuild GetZderLand(DiscordSocketClient client)
         {
-            return client.GetGuild(Convert.ToUInt64(_zderLandId));
+            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland
+            //return client.GetGuild(Convert.ToUInt64(_zderLandId)); //in case of using testServer
         }
 
         internal static string GetGreeting()

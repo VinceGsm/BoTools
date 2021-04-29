@@ -35,9 +35,7 @@ namespace BoTools.Service
 
         public MessageService(DiscordSocketClient client)
         {
-            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
-
-            _client = client;                        
+            _client = client;                                   
             _client.Ready += Ready;            
             _client.UserLeft += UserLeft;
             _client.InviteCreated += InviteCreated;            
@@ -50,6 +48,8 @@ namespace BoTools.Service
         /// <returns></returns>
         public async Task Ready()
         {
+            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
+
             await SendLatencyAsync();                        
             await CheckBirthday();
 
@@ -77,19 +77,18 @@ namespace BoTools.Service
         {                        
             var channel = Helper.GetSocketMessageChannel(_client, invite.Channel.Name);
 
-            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge} sec";
+            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
 
-            string logMessage = $"Une nouvelle invitation {duration} à Zderland vient d'être créée par " +
-                $"{invite.Inviter.Username} dans {channel?.Name}";
+            string logMessage = $"Une nouvelle invitation *{duration}* à Zderland vient d'être créée par " +
+                $"**{invite.Inviter.Username}** dans : {channel?.Name}";
 
-            string message = $"{_alarmEmote} Police ! ```Voici l'invitation à partager por favor : {_eternalInvite}```" +
-                $"Grazie mille {_coeurEmote}";
+            string message = $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
 
             if (_logChannel != null)            
                 _logChannel.SendMessageAsync(logMessage);
                 
             if (channel != null)
-                channel.SendMessageAsync(message);
+                channel.SendMessageAsync(message);        
 
             return Task.CompletedTask;
         }
@@ -133,7 +132,7 @@ namespace BoTools.Service
             await message.AddReactionAsync(bravo);
         }
 
-        internal async Task JellyfinDone(SocketUserMessage message)
+        internal async Task AddDoneReaction(SocketUserMessage message)
         {
             await message.RemoveAllReactionsAsync();
 
@@ -145,7 +144,7 @@ namespace BoTools.Service
         #region Message
         public async Task SendLatencyAsync()
         {                       
-            string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de vous !```";
+            string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
 
             if (_logChannel != null)            
                 await _logChannel.SendMessageAsync(message, isTTS:true);
@@ -193,16 +192,16 @@ namespace BoTools.Service
 
         public async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync($"```⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limité au channel 🌐︱jellyfin ⚠️```");
-            await channel.SendMessageAsync($"```Si vous  Vince pour " +
-                $"qu'il vous créé un compte```<#816283362478129182>");            
+            await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
+                $" est limité au channel 🌐︱jellyfin ⚠️");
+            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```<#816283362478129182>");            
             return;
         }
 
         public async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré il y a moins de 2h {_alarmEmote}");
+            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
+                $"En cas de soucis merci de contacter <@!312317884389130241>");
             return;
         }
         #endregion

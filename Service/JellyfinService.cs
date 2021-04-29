@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoTools.Service
@@ -16,18 +17,18 @@ namespace BoTools.Service
         private static readonly int _nbHourActive = 14;
         private static readonly string _ngrokSideApi = "http://localhost:5000";
         private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
+        private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";
         private List<IMessage> _jellyfinMsg = new List<IMessage>();
         private List<IMessage> _toDelete = new List<IMessage>();
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        /// <summary>
-        /// If there is no Jellyfin link available return true
-        /// Clean aswell the old links
+        /// <summary>        
+        /// Clean the old links
         /// </summary>
         /// <returns></returns>
-        internal async Task<bool> IsLinkClear(DiscordSocketClient client)
+        internal async Task ClearChannel(DiscordSocketClient client)
         {
             IAsyncEnumerable<IReadOnlyCollection<IMessage>> messages;
             var channel = Helper.GetSocketMessageChannel(client, "jellyfin");
@@ -43,16 +44,14 @@ namespace BoTools.Service
 
                 if (_toDelete.Count > 0)
                     foreach (var msg in _toDelete) await channel.DeleteMessageAsync(msg);
-
-                if (_jellyfinMsg.Count == 0) // No active link in the channel
-                    return true;
             }
-
-            return false;
         }
 
         internal async Task<string> GetNgrokUrl()
-        {            
+        {
+            if (!Process.GetProcessesByName("ngrok").Any())            
+                StartNgrokSideApi();
+                        
             string res = await CallSideApiNgrokAsync(_ngrokSideApi);
             return res;                 
         }
@@ -70,9 +69,16 @@ namespace BoTools.Service
             return jellyfinUrl;
         }
 
+        /// <summary>
+        /// Check if there is any process already running, then start Jellyfin
+        /// </summary>
         internal void Activate()
         {
-            StartJellyfin(_jellyfinPath);
+            if (!Process.GetProcessesByName("jellyfin").Any())
+            {
+                StartExe(_jellyfinPath);
+                Thread.Sleep(5000); // wait 5sec
+            }
         }
 
 
@@ -109,7 +115,34 @@ namespace BoTools.Service
             }
         }
 
-        private void StartJellyfin(string path)
+        internal Task RestartSideApi()
+        {
+            foreach (var p in Process.GetProcessesByName("chrome")) //for RAM lmao
+            {
+                p.Kill();
+            }
+            foreach (var p in Process.GetProcessesByName("ngrok"))
+            {
+                p.Kill();
+            }
+            foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
+            {
+                p.Kill();
+            }
+
+            StartNgrokSideApi();
+
+            return Task.CompletedTask;
+        }
+
+        private void StartNgrokSideApi()
+        {
+            StartExe(_ngrokSideApiPath);
+
+            Thread.Sleep(10000); // wait 10sec
+        }
+
+        private void StartExe(string path)
         {
             using (var process = new Process())
             {

@@ -11,9 +11,10 @@ namespace BoTools.Module
     // Keep in mind your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
     public class JellyfinModule : ModuleBase<SocketCommandContext>
     {
-		private readonly MessageService _messageService;
+        private bool _isRunning = false;
+        private readonly MessageService _messageService;
 		private readonly JellyfinService _jellyfinService;
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
 		private static readonly string _discordImgUrl = "https://media.discordapp.net/attachments/617462663374438411/835124361249161227/unknown.png";
 		private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
 
@@ -33,8 +34,9 @@ namespace BoTools.Module
 
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
-				if (await _jellyfinService.IsLinkClear(Context.Client))
+				if (!_isRunning)
                 {
+                    await _jellyfinService.ClearChannel(Context.Client);
                     var reference = new MessageReference(userMsg.Id);
                     await _messageService.AddReactionVu(userMsg);
 
@@ -52,7 +54,8 @@ namespace BoTools.Module
                     string message = $"{_messageService.GetPepeSmokeEmote()}";
                     
                     await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
-                    await _messageService.JellyfinDone(userMsg);
+                    await _messageService.AddDoneReaction(userMsg);
+                    _isRunning = true;
                 }
                 else
 				{
@@ -67,6 +70,39 @@ namespace BoTools.Module
 			}				
 			log.Info($"JellyfinAsync done");
 		}
+
+
+        [Command("Bug")]
+        [Summary("Reboot side API service")]
+        public async Task BugAsync()
+        {
+            SocketUserMessage userMsg = Context.Message;
+            log.Info($"BugAsync by {userMsg.Author}");
+
+            if (Helper.IsJellyfinCorrectChannel(Context.Channel))
+            {
+                var reference = new MessageReference(userMsg.Id);
+
+                string message = $" Oh lord... Something went wrong ? Sorry to hear that, there is a lot of complex communications involved in the Jellyfin process." +
+                $" Hold on one sec I'll restart my side API for you, in the meantime please take a hit of weed to relax {_messageService.GetPepeSmokeEmote()} " +
+                $"```Lorsque ton message aura reçu une réaction tu pourra relancer la commande $Jellyfin```";
+
+                await Context.Channel.SendMessageAsync(text:message, messageReference:reference);
+
+                await _jellyfinService.RestartSideApi();                
+
+                await _messageService.AddDoneReaction(userMsg);
+            }
+            else
+            {
+                await _messageService.AddReactionAlarm(userMsg);
+                await _messageService.SendJellyfinNotAuthorize(Context.Channel);
+            }
+
+            log.Info($"BugAsync done");
+        }
+
+
 
         /// <summary>
         /// Message Embed with link
@@ -86,8 +122,8 @@ namespace BoTools.Module
                 ThumbnailUrl = _boToolsGif,
 
                 Title = $"{_messageService.GetCheckEmote()}︱Streaming & Download︱{_messageService.GetCheckEmote()}",
-                Description = $"{_messageService.GetCoinEmote()}  Ce lien ne sera disponible que pour aujourd'hui\n" +
-                    $"{_messageService.GetCoinEmote()}  Relancer la commande générera un nouveau lien",
+                Description = $"{_messageService.GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
+                    $"{_messageService.GetCoinEmote()}  En cas de problème : **$BUG**",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = new EmbedFooterBuilder
