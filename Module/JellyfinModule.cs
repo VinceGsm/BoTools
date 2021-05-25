@@ -15,8 +15,6 @@ namespace BoTools.Module
         private readonly MessageService _messageService;
 		private readonly JellyfinService _jellyfinService;
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
-		private static readonly string _discordImgUrl = "https://media.discordapp.net/attachments/617462663374438411/835124361249161227/unknown.png";
-		private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
 
 
 		public JellyfinModule(MessageService messageService, JellyfinService jellyfinService) 
@@ -47,8 +45,8 @@ namespace BoTools.Module
                     //activation NGrock + récupération du lien http
                     string ngrokUrl = await _jellyfinService.GetNgrokUrl();
                     log.Info($"ngrokUrl = {ngrokUrl}");
-
-                    var builder = MakeBuilder(userMsg, ngrokUrl);
+                    
+                    var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                     Embed embed = builder.Build();
 
                     string message = $"{_messageService.GetPepeSmokeEmote()}";
@@ -101,37 +99,5 @@ namespace BoTools.Module
 
             log.Info($"BugAsync done");
         }
-
-
-
-        /// <summary>
-        /// Message Embed with link
-        /// </summary>
-        /// <param name="userMsg"></param>
-        /// <param name="ngRockUrl"></param>
-        /// <returns></returns>
-        private EmbedBuilder MakeBuilder(SocketUserMessage userMsg, string ngRockUrl)
-        {            
-            string vinceUrl = (Context.Channel as SocketGuildChannel)?.Guild?.Owner.GetAvatarUrl();
-
-            return new EmbedBuilder
-            {
-                Url = ngRockUrl,
-                Color = Color.DarkRed,
-                ImageUrl = _discordImgUrl,
-                ThumbnailUrl = _boToolsGif,
-
-                Title = $"{_messageService.GetCheckEmote()}︱Streaming & Download︱{_messageService.GetCheckEmote()}",
-                Description = $"{_messageService.GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
-                    $"{_messageService.GetCoinEmote()}  En cas de problème : **$BUG**",
-
-                Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
-                Footer = new EmbedFooterBuilder
-                {
-                    IconUrl = vinceUrl, 
-                    Text = $"Powered with {_messageService.GetCoeurEmoji()} by Vince"
-                }
-            };
-        }       
     }
 }

@@ -29,15 +29,19 @@ namespace BoTools.Service
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
         #endregion
         private DiscordSocketClient _client;
-        private ISocketMessageChannel _logChannel;
+        private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly string _discordImgUrl = "https://media.discordapp.net/attachments/617462663374438411/835124361249161227/unknown.png";
+        private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif"; 
+        private static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif"; 
 
 
         public MessageService(DiscordSocketClient client)
         {
             _client = client;                                   
             _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;
+            _client.UserLeft += UserLeft; // not working
+            _client.UserJoined += UserJoined;
             _client.InviteCreated += InviteCreated;            
         }
 
@@ -50,9 +54,29 @@ namespace BoTools.Service
         {
             _logChannel = Helper.GetSocketMessageChannel(_client, "log");
 
-            await SendLatencyAsync();                        
+            //await SendLatencyAsync();                        
             await CheckBirthday();
 
+            return;
+        }
+
+        private async Task UserJoined(SocketGuildUser guildUser)
+        {            
+            if (!guildUser.IsBot)
+            {
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel **\"📌︱rules\"** et à récupérer quelques droits dans **\"🤖︱roles\"**\n" +
+                    $"Ces channels se trouvent tout les deux dans la catégorie **\"🔎 INFORMATIONS\"**\n" +
+                    $"En cas de problème merci de contacter *Vince#0420*\n" +
+                    $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
+
+                var builder = MakeMessageBuilder(guildUser);
+                Embed embed = builder.Build();
+
+                string message = $"{_pikachuEmote}";
+
+                await guildUser.SendMessageAsync(text:message, false, embed:embed, null, null);
+                await guildUser.SendMessageAsync(msg);
+            }
             return;
         }
 
@@ -63,9 +87,9 @@ namespace BoTools.Service
         /// <returns></returns>
         private async Task UserLeft(SocketGuildUser guildUser)
         {
-            string user = guildUser.Username + '#' + guildUser.Discriminator;
+            log.Warn($"{guildUser.Username} left");            
             string joinedAt = Helper.ConvertToSimpleDate(guildUser.JoinedAt.Value);                                    
-            string message = $"```{user} left Zderland ! This person joined at {joinedAt}```";             
+            string message = $"```<@{guildUser.Id}> left Zderland ! This person joined at {joinedAt}```";             
 
             if (_logChannel != null)
                 await _logChannel.SendMessageAsync(message);
@@ -79,10 +103,11 @@ namespace BoTools.Service
 
             string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
 
-            string logMessage = $"Une nouvelle invitation *{duration}* à Zderland vient d'être créée par " +
-                $"**{invite.Inviter.Username}** dans : {channel?.Name}";
+            string logMessage = $"Une nouvelle invitation (*{duration}*) à Zderland vient d'être créée par " +
+                $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
 
-            string message = $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
+            string message = $"<@{invite.Inviter.Id}> \n" +
+                $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
 
             if (_logChannel != null)            
                 _logChannel.SendMessageAsync(logMessage);
@@ -203,6 +228,57 @@ namespace BoTools.Service
             await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
                 $"En cas de soucis merci de contacter <@!312317884389130241>");
             return;
+        }
+        #endregion
+
+        #region Embed
+        /// <summary>
+        /// Message Embed with link
+        /// </summary>
+        /// <param name="userMsg"></param>
+        /// <param name="ngRockUrl"></param>
+        /// <returns></returns>
+        public EmbedBuilder MakeJellyfinMessageBuilder(SocketUserMessage userMsg, string ngRockUrl)
+        {                        
+            return new EmbedBuilder
+            {
+                Url = ngRockUrl,
+                Color = Color.DarkRed,
+                ImageUrl = _discordImgUrl,
+                ThumbnailUrl = _boToolsGif,
+
+                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
+                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
+                    $"{GetCoinEmote()}  En cas de problème : **$BUG**",
+
+                Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
+                Footer = GetFooterBuilder()
+            };
+        }
+
+        private EmbedBuilder MakeMessageBuilder(SocketGuildUser guildUser)
+        {                        
+            EmbedBuilder res = new EmbedBuilder
+            {                
+                Color = Color.DarkRed,                
+                ThumbnailUrl = _boToolsGif,
+
+                Title = $"{GetCheckEmote()}︱WELCOME︱{GetCheckEmote()}",
+                Description = $"Bienvenue sur Zderland {guildUser.Username} !",     
+
+                Author = new EmbedAuthorBuilder { Name = "Mes circuits ont détectés l'arrivée de " + guildUser.Username, IconUrl = guildUser.GetAvatarUrl() },
+                Footer = GetFooterBuilder()
+            };
+            return res;
+        }
+
+        private EmbedFooterBuilder GetFooterBuilder()
+        {
+            return new EmbedFooterBuilder
+            {
+                IconUrl = _urlAvatarVince,
+                Text = $"Powered with {GetCoeurEmoji()} by Vince"
+            };
         }
         #endregion
 
