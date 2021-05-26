@@ -11,6 +11,7 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private static string _readTheRulesRole = "🥉";
         private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -28,6 +29,11 @@ namespace BoTools.Service
         private static readonly string _coeurEmoji = "\u2764";
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
         #endregion
+        #region Role
+        private static readonly ulong _rulesMsgId = 847145384387411989;
+        private static readonly ulong _rulesChannelId = 846694705177165864;
+        #endregion
+        private IRole _IRoleRules = null;
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -42,8 +48,10 @@ namespace BoTools.Service
             _client.Ready += Ready;            
             _client.UserLeft += UserLeft; // not working
             _client.UserJoined += UserJoined;
-            _client.InviteCreated += InviteCreated;            
+            _client.InviteCreated += InviteCreated;
+            _client.GuildMembersDownloaded += GuildMembersDownloaded;
         }
+
 
         #region Client
         /// <summary>
@@ -54,18 +62,21 @@ namespace BoTools.Service
         {
             _logChannel = Helper.GetSocketMessageChannel(_client, "log");
 
-            //await SendLatencyAsync();                        
+            //await SendLatencyAsync();                        ////////////////////////////////////////////////////////////////////////////
             await CheckBirthday();
+            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+        }
 
-            return;
+        private async Task GuildMembersDownloaded(SocketGuild arg)
+        {
+            await CheckRole();
         }
 
         private async Task UserJoined(SocketGuildUser guildUser)
         {            
             if (!guildUser.IsBot)
             {
-                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel **\"📌︱rules\"** et à récupérer quelques droits dans **\"🤖︱roles\"**\n" +
-                    $"Ces channels se trouvent tout les deux dans la catégorie **\"🔎 INFORMATIONS\"**\n" +
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
                     $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
 
@@ -231,6 +242,50 @@ namespace BoTools.Service
         }
         #endregion
 
+        #region Rôle
+        private async Task CheckRole()
+        {
+            if(_IRoleRules == null) _IRoleRules = Helper.GetRole(_client, _readTheRulesRole);
+            await CheckRules();
+            //await CheckAttribution(); ////////////////////////////////////////////////////////////////////////////
+        }
+
+        private Task CheckAttribution() 
+        {
+            // MAX 20reac / message
+            throw new NotImplementedException();
+        }
+
+        private async Task CheckRules()
+        {
+            var channelRules = Helper.GetSocketMessageChannel(_client, "rules");
+
+            IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
+            IMessage msg = iMsg.First();
+
+            List<SocketGuildUser> allUsers = Helper.GetZderLand(_client).Users.ToList();
+            allUsers.RemoveAll(x => x.IsBot);
+
+            foreach(var user in allUsers)
+            {                
+                await user.RemoveRoleAsync(_IRoleRules);//purge
+            }
+
+            List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
+
+            foreach (var userLst in reactListUsers)
+            {                    
+                var okUserslist = userLst.ToList();
+
+                foreach (var okUser in okUserslist)
+                {
+                    var subject = allUsers.First(x => x.Username == okUser.Username);
+                    await subject.AddRoleAsync(_IRoleRules); //add
+                }                                                      
+            }                 
+        }
+        #endregion
+
         #region Embed
         /// <summary>
         /// Message Embed with link
@@ -295,9 +350,13 @@ namespace BoTools.Service
         public string GetTvEmoji() { return _tvEmoji; }
         #endregion
 
-        private static bool IsStaffMsg(SocketMessage msg)
+        private static bool IsStaffOrBot(IUser user)
         {            
-            return (msg.Author.IsBot || msg.Author.Username.StartsWith("Vince"));
+            return (user.IsBot || user.Username.StartsWith("Vince"));
+        }
+        private static bool IsStaffOrBotMsg(SocketMessage msg)
+        {
+            return (msg.Author.IsBot || msg.Author.Username.Trim().StartsWith("Vince"));
         }
     }
 }

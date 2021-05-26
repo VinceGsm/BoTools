@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,11 @@ namespace BoTools
 
         }
 
+        internal static IRole GetRole(DiscordSocketClient client, string name)
+        {
+            return GetZderLand(client).Roles.Where(x => x.Name.StartsWith(name)).FirstOrDefault();
+        }
+
         internal static string ConvertToSimpleDate(DateTimeOffset dateTimeOffset)
         {
             DateTime joinedDate = DateTime.Parse(dateTimeOffset.ToString());
@@ -52,6 +58,10 @@ namespace BoTools
         {
             return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland
             //return client.GetGuild(Convert.ToUInt64(_zderLandId)); //in case of using testServer
+        }
+        internal static IEnumerable<SocketGuild> GetZderLands(DiscordSocketClient client)
+        {
+            return client.Guilds;            
         }
 
         internal static string GetGreeting()
