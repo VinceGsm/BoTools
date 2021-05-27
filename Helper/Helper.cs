@@ -38,6 +38,11 @@ namespace BoTools
 
         }
 
+        private static bool IsStaffOrBot(IUser user)
+        {
+            return (user.IsBot || user.Username.StartsWith("Vince"));
+        }
+
         internal static IRole GetRole(DiscordSocketClient client, string name)
         {
             return GetZderLand(client).Roles.Where(x => x.Name.StartsWith(name)).FirstOrDefault();

@@ -80,6 +80,7 @@ namespace BoTools.Run
                 .AddSingleton(_client)
                 .AddSingleton(new MessageService(_client))
                 .AddSingleton(new LogService(_client))
+                .AddSingleton(new RoleService(_client))
                 .AddSingleton(new JellyfinService());
 
             return services.BuildServiceProvider();
