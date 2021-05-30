@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class MessageService
-    {
+    {        
+        private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         private static readonly string _doneEmote = "<a:check:626017543340949515>";
@@ -21,22 +22,27 @@ namespace BoTools.Service
         private static readonly string _checkEmote = "<a:verified:773622374926778380>";        
         private static readonly string _catVibeEmote = "<a:catvibe:792184060054732810>";
         private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";        
+        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";               
         #endregion
         #region emoji
         private static readonly string _coeurEmoji = "\u2764";
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
-        #endregion
-
-        private DiscordSocketClient _client;        
+        #endregion        
+        private DiscordSocketClient _client;
+        private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly string _discordImgUrl = "https://media.discordapp.net/attachments/617462663374438411/835124361249161227/unknown.png";
+        private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif"; 
+        private static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif"; 
 
 
         public MessageService(DiscordSocketClient client)
         {
-            _client = client;            
+            _client = client;                                   
             _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;                          
+            _client.UserLeft += UserLeft; // not working
+            _client.UserJoined += UserJoined;
+            _client.InviteCreated += InviteCreated;            
         }
 
 
@@ -46,10 +52,29 @@ namespace BoTools.Service
         /// </summary>
         /// <returns></returns>
         public async Task Ready()
-        {
-            await SendLatencyAsync();                        
+        {            
+            await SendLatencyAsync();
             await CheckBirthday();
+            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+        }
 
+
+        private async Task UserJoined(SocketGuildUser guildUser)
+        {            
+            if (!guildUser.IsBot)
+            {
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
+                    $"En cas de problème merci de contacter *Vince#0420*\n" +
+                    $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
+
+                var builder = MakeMessageBuilder(guildUser);
+                Embed embed = builder.Build();
+
+                string message = $"{_pikachuEmote}";
+
+                await guildUser.SendMessageAsync(text:message, false, embed:embed, null, null);
+                await guildUser.SendMessageAsync(msg);
+            }
             return;
         }
 
@@ -60,17 +85,36 @@ namespace BoTools.Service
         /// <returns></returns>
         private async Task UserLeft(SocketGuildUser guildUser)
         {
-            string user = guildUser.Username + '#' + guildUser.Discriminator;
+            log.Warn($"{guildUser.Username} left");            
             string joinedAt = Helper.ConvertToSimpleDate(guildUser.JoinedAt.Value);                                    
-            string message = $"```{user} left Zderland ! This person joined at {joinedAt}```";
+            string message = $"```<@{guildUser.Id}> left Zderland ! This person joined at {joinedAt}```";             
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "log");
-
-            if (channel != null)
-                await channel.SendMessageAsync(message);
+            if (_logChannel != null)
+                await _logChannel.SendMessageAsync(message);
 
             return;
-        }        
+        }
+
+        private Task InviteCreated(SocketInvite invite)
+        {                        
+            var channel = Helper.GetSocketMessageChannel(_client, invite.Channel.Name);
+
+            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
+
+            string logMessage = $"Une nouvelle invitation (*{duration}*) à Zderland vient d'être créée par " +
+                $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
+
+            string message = $"<@{invite.Inviter.Id}> \n" +
+                $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
+
+            if (_logChannel != null)            
+                _logChannel.SendMessageAsync(logMessage);
+                
+            if (channel != null)
+                channel.SendMessageAsync(message);        
+
+            return Task.CompletedTask;
+        }
         #endregion
 
         #region Reaction
@@ -111,7 +155,7 @@ namespace BoTools.Service
             await message.AddReactionAsync(bravo);
         }
 
-        internal async Task JellyfinDone(SocketUserMessage message)
+        internal async Task AddDoneReaction(SocketUserMessage message)
         {
             await message.RemoveAllReactionsAsync();
 
@@ -122,12 +166,12 @@ namespace BoTools.Service
 
         #region Message
         public async Task SendLatencyAsync()
-        {                       
-            string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de vous !```";
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "log");
+        {            
+            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
+            string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
 
-            if (channel != null)            
-                await channel.SendMessageAsync(message, isTTS:true);
+            if (_logChannel != null)            
+                await _logChannel.SendMessageAsync(message, isTTS:true);
             
             log.Info($"Latency : {_client.Latency} ms");
         }
@@ -138,7 +182,7 @@ namespace BoTools.Service
             string msgStart = $"@everyone {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "general");
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannelContains(_client, "general");
             var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
             
             foreach (var list in msg)
@@ -157,32 +201,87 @@ namespace BoTools.Service
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
                     string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"*ps : j'ai pas vraiment d'oreille*";                    
+                        $"*ps : j'ai pas vraiment d'oreille*";
 
                     if (channel != null)
                     {
                         var res = (IMessage)channel.SendMessageAsync(message).Result;
                         await AddReactionBirthDay(res);
                     }
+                    else log.Error("Can't wish HB because general was not found");
                 }
-            }
-            
-            return;
+            }                        
         }
 
-        public async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel)
+        #region Control Message
+        internal async Task CommandNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"```⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limité au channel 🌐︱jellyfin ⚠️```");
-            await channel.SendMessageAsync($"```Si vous  Vince pour " +
-                $"qu'il vous créé un compte```<#816283362478129182>");            
-            return;
+            await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
         }
 
-        public async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
+        internal async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré il y a moins de 2h {_alarmEmote}");
-            return;
+            await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
+                $" est limitée au channel <#816283362478129182>", messageReference: reference);
+            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```");            
+        }
+
+        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
+        {
+            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
+                $"En cas de soucis merci de contacter <@!312317884389130241>");            
+        }
+        #endregion
+        #endregion        
+
+        #region Embed
+        /// <summary>
+        /// Message Embed with link
+        /// </summary>
+        /// <param name="userMsg"></param>
+        /// <param name="ngRockUrl"></param>
+        /// <returns></returns>
+        public EmbedBuilder MakeJellyfinMessageBuilder(SocketUserMessage userMsg, string ngRockUrl)
+        {                        
+            return new EmbedBuilder
+            {
+                Url = ngRockUrl,
+                Color = Color.DarkRed,
+                ImageUrl = _discordImgUrl,
+                ThumbnailUrl = _boToolsGif,
+
+                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
+                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
+                    $"{GetCoinEmote()}  En cas de problème : **$BUG**",
+
+                Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
+                Footer = GetFooterBuilder()
+            };
+        }
+
+        private EmbedBuilder MakeMessageBuilder(SocketGuildUser guildUser)
+        {                        
+            EmbedBuilder res = new EmbedBuilder
+            {                
+                Color = Color.DarkRed,                
+                ThumbnailUrl = _boToolsGif,
+
+                Title = $"{GetCheckEmote()}︱WELCOME︱{GetCheckEmote()}",
+                Description = $"Bienvenue sur Zderland {guildUser.Username} !",     
+
+                Author = new EmbedAuthorBuilder { Name = "Mes circuits ont détectés l'arrivée de " + guildUser.Username, IconUrl = guildUser.GetAvatarUrl() },
+                Footer = GetFooterBuilder()
+            };
+            return res;
+        }
+
+        private EmbedFooterBuilder GetFooterBuilder()
+        {
+            return new EmbedFooterBuilder
+            {
+                IconUrl = _urlAvatarVince,
+                Text = $"Powered with {GetCoeurEmoji()} by Vince"
+            };
         }
         #endregion
 
@@ -199,9 +298,10 @@ namespace BoTools.Service
         public string GetTvEmoji() { return _tvEmoji; }
         #endregion
 
-        private static bool IsStaffMsg(SocketMessage msg)
-        {            
-            return (msg.Author.IsBot || msg.Author.Username.StartsWith("Vince"));
+
+        private static bool IsStaffOrBotMsg(SocketMessage msg)
+        {
+            return (msg.Author.IsBot || msg.Author.Username.Trim().StartsWith("Vince"));
         }
     }
 }
