@@ -1,6 +1,8 @@
 ﻿using BoTools.Service;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using log4net;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,12 +11,17 @@ namespace BoTools.Run
 {
     public class CommandHandler
     {
+        private const ulong _gamesMsgId = 848582017091108904;
+        private const ulong _specialMsgId = 848582133994881054;
+        private const ulong _readRuleMsgId = 848582652718219345;       
+        
         private readonly DiscordSocketClient _client;
-        private readonly JellyfinService _jellyfinService;
+        private readonly RoleService _roleService;
         private readonly MessageService _messageService;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
         private static readonly char _commandPrefix = '$';
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
@@ -22,7 +29,7 @@ namespace BoTools.Run
             _client = client;
             _services = services;            
 
-            _jellyfinService ??= (JellyfinService)_services.GetService(typeof(JellyfinService));
+            _roleService ??= (RoleService)_services.GetService(typeof(RoleService));
             _messageService ??= (MessageService)_services.GetService(typeof(MessageService));
         }
 
@@ -32,10 +39,12 @@ namespace BoTools.Run
             // Starting from Discord.NET 2.0, a service provider is required to be passed into
             // the module registration method to inject the required dependencies
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);           
-
-            // Hook the MessageReceived event into our command handler
+            
+            _client.ReactionAdded += ReactionAdded;
+            _client.ReactionRemoved += ReactionRemoved;
             _client.MessageReceived += HandleCommandAsync;
         }
+
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
@@ -61,17 +70,55 @@ namespace BoTools.Run
             await _commands.ExecuteAsync(context: context, argPos: argPos, services: _services);
         }
 
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        {
+            switch (arg1.Id)
+            {
+                case _gamesMsgId:
+                    _roleService.GamesReactionRemoved(reaction);
+                    break;
+                case _specialMsgId:
+                    _roleService.SpecialReactionRemoved(reaction);
+                    break;
+                case _readRuleMsgId:
+                    _roleService.RulesReactionRemoved(reaction.UserId);
+                    break;
+
+                default: break;
+            }
+            return Task.CompletedTask;
+        }
+
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        {
+            switch (arg1.Id)
+            {
+                case _gamesMsgId:
+                    _roleService.GamesReactionAdded(reaction);
+                    break;
+                case _specialMsgId:
+                    _roleService.SpecialReactionAdded(reaction);
+                    break;
+                case _readRuleMsgId:
+                    _roleService.RulesReactionAdded(reaction.UserId);
+                    break;
+
+                default: break;
+            }
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         /// Process that need a regular or systematic check on them
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        private async Task AutoCheck(SocketUserMessage message)
+        private Task AutoCheck(SocketUserMessage message)
         {                     
-            if (message.Content.ToLower().Contains("botools") || message.Content.ToLower().Contains("<@!825790068090339369>"))
-                await _messageService.AddReactionRobot(message);
+            if (message.Content.ToLower().Contains("<@!825790068090339369>"))
+                _messageService.AddReactionRobot(message);
 
-            return;
+            return Task.CompletedTask;
         }
     }
 }

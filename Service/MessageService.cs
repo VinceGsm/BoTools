@@ -52,10 +52,8 @@ namespace BoTools.Service
         /// </summary>
         /// <returns></returns>
         public async Task Ready()
-        {
-            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
-
-            //await SendLatencyAsync();                        ////////////////////////////////////////////////////////////////////////////
+        {            
+            await SendLatencyAsync();
             await CheckBirthday();
             await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
         }
@@ -168,7 +166,8 @@ namespace BoTools.Service
 
         #region Message
         public async Task SendLatencyAsync()
-        {                       
+        {            
+            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
             string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
 
             if (_logChannel != null)            
@@ -183,7 +182,7 @@ namespace BoTools.Service
             string msgStart = $"@everyone {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, "general");
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannelContains(_client, "general");
             var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
             
             foreach (var list in msg)
@@ -202,33 +201,37 @@ namespace BoTools.Service
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
                     string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"*ps : j'ai pas vraiment d'oreille*";                    
+                        $"*ps : j'ai pas vraiment d'oreille*";
 
                     if (channel != null)
                     {
                         var res = (IMessage)channel.SendMessageAsync(message).Result;
                         await AddReactionBirthDay(res);
                     }
+                    else log.Error("Can't wish HB because general was not found");
                 }
-            }
-            
-            return;
+            }                        
         }
 
-        public async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel)
+        #region Control Message
+        internal async Task CommandNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
+        {
+            await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
+        }
+
+        internal async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limité au channel 🌐︱jellyfin ⚠️");
-            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```<#816283362478129182>");            
-            return;
+                $" est limitée au channel <#816283362478129182>", messageReference: reference);
+            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```");            
         }
 
-        public async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
+        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
         {
             await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
-                $"En cas de soucis merci de contacter <@!312317884389130241>");
-            return;
+                $"En cas de soucis merci de contacter <@!312317884389130241>");            
         }
+        #endregion
         #endregion        
 
         #region Embed

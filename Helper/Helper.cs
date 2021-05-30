@@ -12,40 +12,167 @@ namespace BoTools
     {
         private static readonly List<string> _greetings = new List<string>
         {
-            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti",
+            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
             "konnichi wa","'sup, b?","what's poppin'?","greetings","What's in the bag?","sup","wussup?","how ya goin?",
-            "what's the dizzle?","good morning","what's cracking?","what's the haps?","whazzup?","guten Tag",
-            "how's it hanging?","good afternoon","hola","hello","coucou !","what's the dilly?","très heureux d'être là",
+            "what's the dizzle?","good morning","what's cracking?","quoi de neuf la cité ?","whazzup?","guten Tag",
+            "EDGAAAAAAR","good afternoon","hola","hello","coucou !","what's the dilly?","très heureux d'être là",
             "wassap?","what's the rumpus?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
-            "what's crack-a-lackin'?","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
+            "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
-            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?"
-        };        
+            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation"
+        };
+        public static readonly List<ulong> _rolesAttributionId = new List<ulong>
+        {
+            698852663764451381, //games
+            620700703580618762, //casino
+            613331423000133634, //anime
+            536174000439558185, //music
+            802193968402137148, //videaste
+            613381032569339943, //stoner
+            552134779210825739, //OP
+            773174545258774568, //visio
+            588340175357214729, //pc
+            797968836707352606, //mac
+            572073517462323201, //switch
+            572076063887327242, //playst
+            607260961765589032, //fortnite
+            689157917521346684, //mine
+            843280439698259998, //bf
+            775387514332381185, //among
+            638175689270493205, //cod
+            818518545720803341, //gta
+            615822402781315073, //lol
+            712589813605203979, //wow
+        };
+
+
+
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, string channelName)
         {
-            SocketGuild guild = GetZderLand(client);
+            var channels = GetAllChannels(client);
 
-            ISocketMessageChannel channel = (ISocketMessageChannel)
-                guild.Channels.ToList().Where(x => x.Name.Contains(channelName)).First();
+            ISocketMessageChannel channel = (ISocketMessageChannel) channels.FirstOrDefault(x => x.Name.EndsWith(channelName));
 
-            if (channel == null)
-                log.Error($"GetSocketMessageChannel : no channel {channelName} in {guild.Name}");
+            if (channel == null) log.Error($"GetSocketMessageChannel : no channel {channelName}");
+
             return channel;
-
         }
 
-        private static bool IsStaffOrBot(IUser user)
+        internal static ISocketMessageChannel GetSocketMessageChannelContains(DiscordSocketClient client, string channelName)
         {
-            return (user.IsBot || user.Username.StartsWith("Vince"));
+            var channels = GetAllChannels(client);
+
+            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Name.Contains(channelName));
+
+            if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel {channelName}");
+
+            return channel;
         }
 
-        internal static IRole GetRole(DiscordSocketClient client, string name)
+        internal static IEnumerable<IRole> GetRolesAttribution(DiscordSocketClient client)
         {
-            return GetZderLand(client).Roles.Where(x => x.Name.StartsWith(name)).FirstOrDefault();
+            List<IRole> res = new List<IRole>();
+
+            foreach (ulong id in _rolesAttributionId)
+            {
+                res.Add(GetZderLand(client).GetRole(id));
+            }
+
+            return res;
+        }
+
+        internal static Dictionary<IRole, string> RoleToEmoteSpecial(List<IRole> rolesAttribution)
+        {            
+            Dictionary<IRole, string> res = new Dictionary<IRole, string>();
+
+            foreach (var role in rolesAttribution)
+            {
+                switch (role.Name)
+                {
+                    case "👺 Anime 💘":
+                        res.Add(role, "👺");
+                        break;
+                    case "🎶 DJ":
+                        res.Add(role, "🎵");
+                        break;
+                    case "🎥 Vidéaste":
+                        res.Add(role, "🌐");
+                        break;
+                    case "👽":
+                        res.Add(role, "👽");
+                        break;
+                    case "👒 One Piece 💘":
+                        res.Add(role, "👒");
+                        break;
+                    case "📹":
+                        res.Add(role, "📹");
+                        break;
+                    case "🎰 Casino":
+                        res.Add(role, "🎰");
+                        break;
+                    case "👾 Games":
+                        res.Add(role, "👾");
+                        break;                   
+                }                
+            }
+            return res;
+        }
+        internal static Dictionary<IRole, string> RoleToEmoteGames(List<IRole> rolesAttribution)
+        {
+            Dictionary<IRole, string> res = new Dictionary<IRole, string>();
+
+            foreach (var role in rolesAttribution)
+            {
+                switch (role.Name)
+                {                                            
+                    case "🔌 PC":
+                        res.Add(role, "⌨️");
+                        break;
+                    case "🔌 Mac":
+                        res.Add(role, "🍎");
+                        break;
+                    case "🔌 Switch":
+                        res.Add(role, "🎌");
+                        break;
+                    case "🔌 PlayStation":
+                        res.Add(role, "🎮");
+                        break;
+                    case "💾 Fortnite":
+                        res.Add(role, "🦙");
+                        break;
+                    case "💾 Minecraft":
+                        res.Add(role, "🧱");
+                        break;
+                    case "💾 Battlefield":
+                        res.Add(role, "💥");
+                        break;
+                    case "💾 Among Us":
+                        res.Add(role, "🧠");
+                        break;
+                    case "💾 Call of Duty":
+                        res.Add(role, "🔫");
+                        break;
+                    case "💾 Grand Theft Auto":
+                        res.Add(role, "💰");
+                        break;
+                    case "💾 League of Legends":
+                        res.Add(role, "🤬");
+                        break;
+                    case "💾 World of Warcraft":
+                        res.Add(role, "🐼");
+                        break;
+                }
+            }
+            return res;
+        }
+
+        internal static IRole GetRoleById(DiscordSocketClient client, ulong id)
+        {
+            return GetZderLand(client).Roles.First(x => x.Id == id);
         }
 
         internal static string ConvertToSimpleDate(DateTimeOffset dateTimeOffset)
@@ -67,6 +194,15 @@ namespace BoTools
         internal static IEnumerable<SocketGuild> GetZderLands(DiscordSocketClient client)
         {
             return client.Guilds;            
+        }
+
+        internal static IEnumerable<SocketGuildChannel> GetAllChannels(DiscordSocketClient client)
+        {
+            SocketGuild guild = GetZderLand(client);
+            var channels = guild.Channels.ToList();
+            channels.Remove(channels.ElementAt(0)); // conference
+
+            return channels;
         }
 
         internal static string GetGreeting()
@@ -105,6 +241,11 @@ namespace BoTools
             _birthsDay.Add("!355731040913850398", DateTime.Parse("23/12")); //Majid
             //_birthsDay.Add("!560259660578291715", DateTime.Parse("/")); //Babiss
             return _birthsDay;
+        }
+
+        internal static bool IsLogChannel(ISocketMessageChannel channel)
+        {
+            return channel.Name.EndsWith("log");
         }
     }
 }
