@@ -55,7 +55,7 @@ namespace BoTools.Service
                 _allUsers.RemoveAll(x => x.IsBot);
             }
 
-            //await CheckRules();();////////////////////////////////////////////////////////////////////////////
+            await CheckRules();
 
             if (_IRolesAttribution.Count == 0) 
             {
@@ -63,7 +63,7 @@ namespace BoTools.Service
                 _roleToEmoteGames = Helper.RoleToEmoteGames(_IRolesAttribution);
                 _roleToEmoteSpecial = Helper.RoleToEmoteSpecial(_IRolesAttribution);
             }
-            //CheckAttribution();////////////////////////////////////////////////////////////////////////////
+            CheckAttribution();
         }
 
         private Task CheckAttribution()
