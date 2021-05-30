@@ -36,13 +36,13 @@ namespace BoTools.Service
 
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
-            log.Info("| GuildMembersDownloaded in|");
+            log.Info("| GuildMembersDownloaded in");
             if (_connexion) 
             {
                 await CheckRoles();
                 _connexion = false;
             }
-            log.Info("| GuildMembersDownloaded out|");
+            log.Info("| GuildMembersDownloaded out");
         }        
 
         public async Task CheckRoles()
