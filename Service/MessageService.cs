@@ -40,8 +40,7 @@ namespace BoTools.Service
         {
             _client = client;                                   
             _client.Ready += Ready;            
-            _client.UserLeft += UserLeft; // not working
-            _client.UserJoined += UserJoined;
+            _client.UserLeft += UserLeft;          
             _client.InviteCreated += InviteCreated;            
         }
 
@@ -59,11 +58,12 @@ namespace BoTools.Service
         }
 
 
-        private async Task UserJoined(SocketGuildUser guildUser)
+        public async Task UserJoined(SocketGuildUser guildUser)
         {            
             if (!guildUser.IsBot)
-            {
+            {                
                 var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
+                    $"Tu peux aussi passer le bonjour dans <#491730828271943707>\n" +
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
                     $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
 
@@ -85,9 +85,8 @@ namespace BoTools.Service
         /// <returns></returns>
         private async Task UserLeft(SocketGuildUser guildUser)
         {
-            log.Warn($"{guildUser.Username} left");            
-            string joinedAt = Helper.ConvertToSimpleDate(guildUser.JoinedAt.Value);                                    
-            string message = $"```<@{guildUser.Id}> left Zderland ! This person joined at {joinedAt}```";             
+            log.Warn($"{guildUser.Username} left");                                                     
+            string message = $"<@{guildUser.Id}> left Zderland !";             
 
             if (_logChannel != null)
                 await _logChannel.SendMessageAsync(message);

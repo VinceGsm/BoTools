@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using log4net;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -36,7 +35,7 @@ namespace BoTools.Service
 
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
-            log.Info("| GuildMembersDownloaded in");
+            log.Info($"| GuildMembersDownloaded first={_connexion}");
             if (_connexion) 
             {
                 await CheckRoles();
@@ -164,6 +163,14 @@ namespace BoTools.Service
 
             chrono.Stop();
             log.Info($"CheckRules done in {chrono.ElapsedMilliseconds}ms");
+        }
+
+        public async Task UpdateListUser()
+        {
+            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+
+            _allUsers = Helper.GetZderLand(_client).Users.ToList();
+            _allUsers.RemoveAll(x => x.IsBot);
         }
 
         #region Update Live
