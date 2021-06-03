@@ -12,15 +12,17 @@ namespace BoTools.Module
     public class MainModule : ModuleBase<SocketCommandContext>
     {
         private bool _isRunning = false;
-        private readonly MessageService _messageService;        
+        private readonly MessageService _messageService;
+        private readonly RoleService _roleService;
         private readonly JellyfinService _jellyfinService;
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
 
 
-		public MainModule(MessageService messageService, JellyfinService jellyfinService) 
+		public MainModule(MessageService messageService, JellyfinService jellyfinService, RoleService roleService) 
 		{
 			_jellyfinService = jellyfinService;
-			_messageService = messageService;            
+			_messageService = messageService;
+            _roleService = roleService;
         }
 
 
@@ -101,5 +103,26 @@ namespace BoTools.Module
             log.Info($"BugAsync done");
         }
         #endregion
+
+        [Command("PurgeRoles")]
+        [Summary("Purge roles that can be assigned by the bot")]
+        public async Task PurgeRolesAsync()
+        {
+            SocketUserMessage userMsg = Context.Message;
+            log.Info($"PurgeRolesAsync by {userMsg.Author}");
+
+            var reference = new MessageReference(userMsg.Id);
+            if (Helper.IsLogChannel(Context.Channel))
+            {
+                _roleService.PurgeRoles();                
+            }
+            else
+            {
+                await _messageService.AddReactionAlarm(userMsg);
+                await _messageService.CommandNotAuthorize(Context.Channel, reference);
+            }
+
+            log.Info($"PurgeRolesAsync done");
+        }
     }
 }

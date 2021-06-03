@@ -97,7 +97,8 @@ namespace BoTools.Service
                         if (okUser.Id != 493020872303443969)
                         {
                             SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                                                       
-                            subject.AddRoleAsync(roleToAssign);                                                      
+                            subject.AddRoleAsync(roleToAssign);
+                            log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
                         }
                     }
                 }
@@ -119,6 +120,7 @@ namespace BoTools.Service
                         {
                             SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
                             subject.AddRoleAsync(roleToAssign);
+                            log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
                         }
                     }
                 }
@@ -135,15 +137,8 @@ namespace BoTools.Service
             chrono.Start();
             
             var channelRules = Helper.GetSocketMessageChannel(_client, "rules");
-
             IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
             IMessage msg = iMsg.First();
-
-            foreach (var user in _allUsers)
-            {
-                if(!user.Username.Trim().Contains("Vince"))
-                    await user.RemoveRoleAsync(_IRoleRules); //purge                                 
-            }
 
             List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
 
@@ -157,6 +152,7 @@ namespace BoTools.Service
                     {
                         var subject = _allUsers.First(x => x.Id == okUser.Id);
                         subject.AddRoleAsync(_IRoleRules);
+                        log.Info($"CheckRules done for {subject.Username}");
                     }
                 }
             }                     
@@ -171,6 +167,19 @@ namespace BoTools.Service
 
             _allUsers = Helper.GetZderLand(_client).Users.ToList();
             _allUsers.RemoveAll(x => x.IsBot);
+        }
+
+        public Task PurgeRoles()
+        {
+            foreach (var user in _allUsers)
+            {
+                if (!user.Username.Trim().Contains("Vince"))
+                {
+                    user.RemoveRoleAsync(_IRoleRules);
+                    user.RemoveRolesAsync(_IRolesAttribution);
+                }
+            }
+            return Task.CompletedTask;
         }
 
         #region Update Live
