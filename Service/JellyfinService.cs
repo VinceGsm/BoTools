@@ -93,7 +93,9 @@ namespace BoTools.Service
             foreach (var list in msgAsync)
             {
                 IEnumerable<IMessage> msg = list.Where(x => x.Content.StartsWith("<a:pepeSmoke:830799658354737178>"));
+                IEnumerable<IMessage> msg2 = list.Where(x => x.Content.StartsWith("<a:luffy:863101041498259457>"));
                 _jellyfinMsg.AddRange(msg);
+                _jellyfinMsg.AddRange(msg2);
             }
         }
 

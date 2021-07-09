@@ -3,6 +3,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -31,6 +32,7 @@ namespace BoTools.Module
         [Summary("Active et partage un lien secret d'accès au Jellyfin privé de Vince")]
         public async Task JellyfinAsync()
         {
+            string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
             log.Info($"JellyfinAsync by {userMsg.Author}");
 
@@ -53,7 +55,10 @@ namespace BoTools.Module
                     var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                     Embed embed = builder.Build();
 
-                    string message = $"{_messageService.GetPepeSmokeEmote()}";
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday) //
+                        message = $"{_messageService.GetLuffyEmote()}";
+                    else
+                        message = $"{_messageService.GetPepeSmokeEmote()}";
 
                     await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
                     await _messageService.AddDoneReaction(userMsg);
