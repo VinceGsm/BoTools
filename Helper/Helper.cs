@@ -54,20 +54,20 @@ namespace BoTools
         {
             var channels = GetAllChannels(client);
 
-            ISocketMessageChannel channel = (ISocketMessageChannel) channels.FirstOrDefault(x => x.Name.EndsWith(channelName));
+            ISocketMessageChannel channel = (ISocketMessageChannel) channels.FirstOrDefault(x => x.Name == channelName);
 
             if (channel == null) log.Error($"GetSocketMessageChannel : no channel {channelName}");
 
             return channel;
         }
 
-        internal static ISocketMessageChannel GetSocketMessageChannelContains(DiscordSocketClient client, string channelName)
+        internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
             var channels = GetAllChannels(client);
 
-            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Name.Contains(channelName));
+            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Id == channelId);
 
-            if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel {channelName}");
+            if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel {channelId}");
 
             return channel;
         }

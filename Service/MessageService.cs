@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class MessageService
-    {        
+    {
+        private static ulong _idChannelGeneral = 312966999414145034;
         private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -167,7 +168,7 @@ namespace BoTools.Service
         #region Message
         public async Task SendLatencyAsync()
         {            
-            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
+            _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790); 
 
             var lastMsg = _logChannel.GetMessagesAsync(1).FirstAsync().Result.First();
             bool newLog = lastMsg.Timestamp.Day != DateTimeOffset.Now.Day;
@@ -189,7 +190,7 @@ namespace BoTools.Service
             string msgStart = $"@everyone {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannelContains(_client, "general");
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
             var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
             
             foreach (var list in msg)

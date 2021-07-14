@@ -31,7 +31,7 @@ namespace BoTools.Service
         internal async Task ClearChannel(DiscordSocketClient client)
         {
             IAsyncEnumerable<IReadOnlyCollection<IMessage>> messages;
-            var channel = Helper.GetSocketMessageChannel(client, "jellyfin");
+            var channel = Helper.GetSocketMessageChannel(client, 816283362478129182); //Jellyfin
 
             if (channel != null)
             {

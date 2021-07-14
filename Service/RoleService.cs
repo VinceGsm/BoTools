@@ -70,7 +70,7 @@ namespace BoTools.Service
             var chrono = new Stopwatch();
             chrono.Start();            
 
-            var channelRules = Helper.GetSocketMessageChannel(_client, "rôles");
+            var channelRules = Helper.GetSocketMessageChannel(_client, 846714456788172800); //rôles 
             var iMsgs = channelRules.GetMessagesAsync(2).ToListAsync().Result;
 
             IMessage msgGames = null;
@@ -136,7 +136,7 @@ namespace BoTools.Service
             var chrono = new Stopwatch();
             chrono.Start();
             
-            var channelRules = Helper.GetSocketMessageChannel(_client, "rules");
+            var channelRules = Helper.GetSocketMessageChannel(_client, 846694705177165864); //rôles
             IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
             IMessage msg = iMsg.First();
 
