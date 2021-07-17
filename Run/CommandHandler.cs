@@ -38,13 +38,19 @@ namespace BoTools.Run
             // Here we discover all of the command modules in the entry assembly and load them.
             // Starting from Discord.NET 2.0, a service provider is required to be passed into
             // the module registration method to inject the required dependencies
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);           
-            
+            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
+
+            _client.UserJoined += UserJoined;
             _client.ReactionAdded += ReactionAdded;
             _client.ReactionRemoved += ReactionRemoved;
             _client.MessageReceived += HandleCommandAsync;
         }
 
+        private async Task UserJoined(SocketGuildUser guildUser)
+        {            
+            _messageService.UserJoined(guildUser);
+            await _roleService.UpdateListUser(); //si passe pas enlever ici
+        }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {

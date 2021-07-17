@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using log4net;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -36,7 +35,7 @@ namespace BoTools.Service
 
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
-            log.Info("| GuildMembersDownloaded in");
+            log.Info($"| GuildMembersDownloaded first={_connexion}");
             if (_connexion) 
             {
                 await CheckRoles();
@@ -71,7 +70,7 @@ namespace BoTools.Service
             var chrono = new Stopwatch();
             chrono.Start();            
 
-            var channelRules = Helper.GetSocketMessageChannel(_client, "rôles");
+            var channelRules = Helper.GetSocketMessageChannel(_client, 846714456788172800); //rôles 
             var iMsgs = channelRules.GetMessagesAsync(2).ToListAsync().Result;
 
             IMessage msgGames = null;
@@ -98,7 +97,8 @@ namespace BoTools.Service
                         if (okUser.Id != 493020872303443969)
                         {
                             SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                                                       
-                            subject.AddRoleAsync(roleToAssign);                                                      
+                            subject.AddRoleAsync(roleToAssign);
+                            log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
                         }
                     }
                 }
@@ -120,6 +120,7 @@ namespace BoTools.Service
                         {
                             SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
                             subject.AddRoleAsync(roleToAssign);
+                            log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
                         }
                     }
                 }
@@ -135,16 +136,9 @@ namespace BoTools.Service
             var chrono = new Stopwatch();
             chrono.Start();
             
-            var channelRules = Helper.GetSocketMessageChannel(_client, "rules");
-
+            var channelRules = Helper.GetSocketMessageChannel(_client, 846694705177165864); //rôles
             IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
             IMessage msg = iMsg.First();
-
-            foreach (var user in _allUsers)
-            {
-                if(!user.Username.Trim().Contains("Vince"))
-                    await user.RemoveRoleAsync(_IRoleRules); //purge                                 
-            }
 
             List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
 
@@ -158,12 +152,34 @@ namespace BoTools.Service
                     {
                         var subject = _allUsers.First(x => x.Id == okUser.Id);
                         subject.AddRoleAsync(_IRoleRules);
+                        log.Info($"CheckRules done for {subject.Username}");
                     }
                 }
             }                     
 
             chrono.Stop();
             log.Info($"CheckRules done in {chrono.ElapsedMilliseconds}ms");
+        }
+
+        public async Task UpdateListUser()
+        {
+            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+
+            _allUsers = Helper.GetZderLand(_client).Users.ToList();
+            _allUsers.RemoveAll(x => x.IsBot);
+        }
+
+        public Task PurgeRoles()
+        {
+            foreach (var user in _allUsers)
+            {
+                if (!user.Username.Trim().Contains("Vince"))
+                {
+                    user.RemoveRoleAsync(_IRoleRules);
+                    user.RemoveRolesAsync(_IRolesAttribution);
+                }
+            }
+            return Task.CompletedTask;
         }
 
         #region Update Live

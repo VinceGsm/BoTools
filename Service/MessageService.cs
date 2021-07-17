@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class MessageService
-    {        
+    {
+        private static ulong _idChannelGeneral = 312966999414145034;
         private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -19,10 +20,11 @@ namespace BoTools.Service
         private static readonly string _alarmEmote = "<a:alert:637645061764415488>";
         private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
         private static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
+        private static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
         private static readonly string _checkEmote = "<a:verified:773622374926778380>";        
         private static readonly string _catVibeEmote = "<a:catvibe:792184060054732810>";
         private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";               
+        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
         #endregion
         #region emoji
         private static readonly string _coeurEmoji = "\u2764";
@@ -31,7 +33,7 @@ namespace BoTools.Service
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly string _discordImgUrl = "https://media.discordapp.net/attachments/617462663374438411/835124361249161227/unknown.png";
+        private static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
         private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif"; 
         private static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif"; 
 
@@ -40,8 +42,7 @@ namespace BoTools.Service
         {
             _client = client;                                   
             _client.Ready += Ready;            
-            _client.UserLeft += UserLeft; // not working
-            _client.UserJoined += UserJoined;
+            _client.UserLeft += UserLeft;          
             _client.InviteCreated += InviteCreated;            
         }
 
@@ -59,11 +60,12 @@ namespace BoTools.Service
         }
 
 
-        private async Task UserJoined(SocketGuildUser guildUser)
+        public async Task UserJoined(SocketGuildUser guildUser)
         {            
             if (!guildUser.IsBot)
-            {
+            {                
                 var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
+                    $"Tu peux aussi passer le bonjour dans <#491730828271943707>\n" +
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
                     $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
 
@@ -85,9 +87,8 @@ namespace BoTools.Service
         /// <returns></returns>
         private async Task UserLeft(SocketGuildUser guildUser)
         {
-            log.Warn($"{guildUser.Username} left");            
-            string joinedAt = Helper.ConvertToSimpleDate(guildUser.JoinedAt.Value);                                    
-            string message = $"```<@{guildUser.Id}> left Zderland ! This person joined at {joinedAt}```";             
+            log.Warn($"{guildUser.Username} left");                                                     
+            string message = $"<@{guildUser.Id}> left Zderland !";             
 
             if (_logChannel != null)
                 await _logChannel.SendMessageAsync(message);
@@ -167,11 +168,18 @@ namespace BoTools.Service
         #region Message
         public async Task SendLatencyAsync()
         {            
-            _logChannel = Helper.GetSocketMessageChannel(_client, "log");
-            string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
+            _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790); 
 
-            if (_logChannel != null)            
-                await _logChannel.SendMessageAsync(message, isTTS:true);
+            var lastMsg = _logChannel.GetMessagesAsync(1).FirstAsync().Result.First();
+            bool newLog = lastMsg.Timestamp.Day != DateTimeOffset.Now.Day;
+
+            if (newLog)
+            {
+                string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
+
+                if (_logChannel != null)
+                    await _logChannel.SendMessageAsync(message, isTTS: true);
+            }
             
             log.Info($"Latency : {_client.Latency} ms");
         }
@@ -182,7 +190,7 @@ namespace BoTools.Service
             string msgStart = $"@everyone {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannelContains(_client, "general");
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
             var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
             
             foreach (var list in msg)
@@ -201,7 +209,7 @@ namespace BoTools.Service
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
                     string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"*ps : j'ai pas vraiment d'oreille*";
+                        $"*PS : J'ai pas vraiment d'oreille*";
 
                     if (channel != null)
                     {
@@ -293,15 +301,9 @@ namespace BoTools.Service
         public string GetArrowEmote() { return _arrowEmote; }
         public string GetDoneEmote() { return _doneEmote; }
         public string GetPepeSmokeEmote() { return _pepeSmokeEmote; }
-
+        public string GetLuffyEmote() { return _luffyEmote; }
         public string GetCoeurEmoji() { return _coeurEmoji; }
         public string GetTvEmoji() { return _tvEmoji; }
         #endregion
-
-
-        private static bool IsStaffOrBotMsg(SocketMessage msg)
-        {
-            return (msg.Author.IsBot || msg.Author.Username.Trim().StartsWith("Vince"));
-        }
     }
 }

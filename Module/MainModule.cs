@@ -3,6 +3,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -12,15 +13,17 @@ namespace BoTools.Module
     public class MainModule : ModuleBase<SocketCommandContext>
     {
         private bool _isRunning = false;
-        private readonly MessageService _messageService;        
+        private readonly MessageService _messageService;
+        private readonly RoleService _roleService;
         private readonly JellyfinService _jellyfinService;
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
 
 
-		public MainModule(MessageService messageService, JellyfinService jellyfinService) 
+		public MainModule(MessageService messageService, JellyfinService jellyfinService, RoleService roleService) 
 		{
 			_jellyfinService = jellyfinService;
-			_messageService = messageService;            
+			_messageService = messageService;
+            _roleService = roleService;
         }
 
 
@@ -29,6 +32,7 @@ namespace BoTools.Module
         [Summary("Active et partage un lien secret d'accès au Jellyfin privé de Vince")]
         public async Task JellyfinAsync()
         {
+            string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
             log.Info($"JellyfinAsync by {userMsg.Author}");
 
@@ -51,7 +55,10 @@ namespace BoTools.Module
                     var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                     Embed embed = builder.Build();
 
-                    string message = $"{_messageService.GetPepeSmokeEmote()}";
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday) //
+                        message = $"{_messageService.GetLuffyEmote()}";
+                    else
+                        message = $"{_messageService.GetPepeSmokeEmote()}";
 
                     await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
                     await _messageService.AddDoneReaction(userMsg);
@@ -101,5 +108,26 @@ namespace BoTools.Module
             log.Info($"BugAsync done");
         }
         #endregion
+
+        [Command("PurgeRoles")]
+        [Summary("Purge roles that can be assigned by the bot")]
+        public async Task PurgeRolesAsync()
+        {
+            SocketUserMessage userMsg = Context.Message;
+            log.Info($"PurgeRolesAsync by {userMsg.Author}");
+
+            var reference = new MessageReference(userMsg.Id);
+            if (Helper.IsLogChannel(Context.Channel))
+            {
+                _roleService.PurgeRoles();                
+            }
+            else
+            {
+                await _messageService.AddReactionAlarm(userMsg);
+                await _messageService.CommandNotAuthorize(Context.Channel, reference);
+            }
+
+            log.Info($"PurgeRolesAsync done");
+        }
     }
 }

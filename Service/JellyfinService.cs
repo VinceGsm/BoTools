@@ -13,12 +13,10 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class JellyfinService
-    {
-        private static readonly int _nbHourActive = 14;
+    {        
         private static readonly string _ngrokSideApi = "http://localhost:5000";
         private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
-        private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";
-        private List<IMessage> _jellyfinMsg = new List<IMessage>();
+        private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";        
         private List<IMessage> _toDelete = new List<IMessage>();
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -31,16 +29,14 @@ namespace BoTools.Service
         internal async Task ClearChannel(DiscordSocketClient client)
         {
             IAsyncEnumerable<IReadOnlyCollection<IMessage>> messages;
-            var channel = Helper.GetSocketMessageChannel(client, "jellyfin");
+            var channel = Helper.GetSocketMessageChannel(client, 816283362478129182); //Jellyfin
 
             if (channel != null)
-            {
-                _jellyfinMsg.Clear();
+            {                
                 _toDelete.Clear();
 
-                messages = channel.GetMessagesAsync(50); //recover the last 50 msg
-                FillMsgList(messages);
-                FillDeleteList();
+                messages = channel.GetMessagesAsync(50); //recover the last 50 msg                
+                FillMsgList(messages);                
 
                 if (_toDelete.Count > 0)
                     foreach (var msg in _toDelete) await channel.DeleteMessageAsync(msg);
@@ -49,8 +45,11 @@ namespace BoTools.Service
 
         internal async Task<string> GetNgrokUrl()
         {
-            if (!Process.GetProcessesByName("ngrok").Any())            
+            if (!Process.GetProcessesByName("ngrok").Any())
+            {
                 StartNgrokSideApi();
+                Thread.Sleep(10000); // wait 10sec
+            }                         
                         
             string res = await CallSideApiNgrokAsync(_ngrokSideApi);
             return res;                 
@@ -58,7 +57,7 @@ namespace BoTools.Service
 
         private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
         {
-            string jellyfinUrl = "https://www.youtube.com/watch?v=thZ1NiSXh3U";
+            string jellyfinUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(_ngrokSideApi);
@@ -93,25 +92,9 @@ namespace BoTools.Service
             foreach (var list in msgAsync)
             {
                 IEnumerable<IMessage> msg = list.Where(x => x.Content.StartsWith("<a:pepeSmoke:830799658354737178>"));
-                _jellyfinMsg.AddRange(msg);
-            }
-        }
-
-        /// <summary>
-        /// Select +xhours message about Jellyfin link and remove them from the list
-        /// </summary>
-        private void FillDeleteList()
-        {
-            try
-            {
-                var expiredLinks = _jellyfinMsg.Where(x => _nbHourActive <= (DateTime.Now - x.CreatedAt).TotalHours);
-                _toDelete.AddRange(expiredLinks);
-
-                _jellyfinMsg.RemoveAll(x => _nbHourActive <= (DateTime.Now - x.CreatedAt).TotalHours);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
+                IEnumerable<IMessage> msg2 = list.Where(x => x.Content.StartsWith("<a:luffy:863101041498259457>"));
+                _toDelete.AddRange(msg);
+                _toDelete.AddRange(msg2);
             }
         }
 
@@ -138,8 +121,6 @@ namespace BoTools.Service
         private void StartNgrokSideApi()
         {
             StartExe(_ngrokSideApiPath);
-
-            Thread.Sleep(10000); // wait 10sec
         }
 
         private void StartExe(string path)

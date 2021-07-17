@@ -2,7 +2,7 @@
 
 My personnal Discord BOT.
 
-- Send messages
+- Send messages (birthdays & alerts)
 - Using Jellyfin (+ngrok)
 - Add / remove roles
 
