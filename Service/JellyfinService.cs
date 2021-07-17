@@ -49,8 +49,11 @@ namespace BoTools.Service
 
         internal async Task<string> GetNgrokUrl()
         {
-            if (!Process.GetProcessesByName("ngrok").Any())            
+            if (!Process.GetProcessesByName("ngrok").Any())
+            {
                 StartNgrokSideApi();
+                Thread.Sleep(10000); // wait 10sec
+            }                         
                         
             string res = await CallSideApiNgrokAsync(_ngrokSideApi);
             return res;                 
@@ -58,7 +61,7 @@ namespace BoTools.Service
 
         private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
         {
-            string jellyfinUrl = "https://www.youtube.com/watch?v=thZ1NiSXh3U";
+            string jellyfinUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(_ngrokSideApi);
@@ -140,8 +143,6 @@ namespace BoTools.Service
         private void StartNgrokSideApi()
         {
             StartExe(_ngrokSideApiPath);
-
-            Thread.Sleep(10000); // wait 10sec
         }
 
         private void StartExe(string path)
