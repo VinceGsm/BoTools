@@ -167,11 +167,14 @@ namespace BoTools.Service
 
         #region Message
         public async Task SendLatencyAsync()
-        {            
-            _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790); 
+        {   
+            //TO FIX
 
-            var lastMsg = _logChannel.GetMessagesAsync(1).FirstAsync().Result.First();
-            bool newLog = lastMsg.Timestamp.Day != DateTimeOffset.Now.Day;
+            _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790);
+
+            IAsyncEnumerable<IReadOnlyCollection<IMessage>> lastMsgAsync = _logChannel.GetMessagesAsync(1); 
+            var lastMsg = lastMsgAsync.FirstAsync().Result;
+            bool newLog = lastMsg.ElementAt(0).Timestamp.Day != DateTimeOffset.Now.Day;
 
             if (newLog)
             {
@@ -191,13 +194,18 @@ namespace BoTools.Service
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
-            var msg = channel.GetMessagesAsync(50).ToListAsync().Result;
-            
-            foreach (var list in msg)
+            IAsyncEnumerable<IReadOnlyCollection<IMessage>> msg = channel.GetMessagesAsync(99);
+            var msgAsync = msg.ToListAsync().Result;
+
+            foreach (var list in msgAsync)
             {
-                IEnumerable<IMessage> messages = list.Where(x => x.Content.StartsWith(msgStart) && x.Timestamp.DayOfYear == DateTimeOffset.Now.DayOfYear);
-         
-                isAlreadyDone = messages.Any();
+                IMessage message = list.First(x => x.Content.StartsWith(msgStart));                
+
+                if (message.Author.IsBot)
+                {
+                    isAlreadyDone = true;
+                    break;
+                }                    
             }
 
             if (!isAlreadyDone)

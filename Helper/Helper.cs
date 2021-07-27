@@ -27,7 +27,7 @@ namespace BoTools
             620700703580618762, //casino
             613331423000133634, //anime
             536174000439558185, //music
-            802193968402137148, //videaste
+            802193968402137148, //contentCreator
             613381032569339943, //stoner
             552134779210825739, //OP
             773174545258774568, //visio
@@ -37,8 +37,7 @@ namespace BoTools
             572076063887327242, //playst
             607260961765589032, //fortnite
             689157917521346684, //mine
-            843280439698259998, //bf
-            //775387514332381185, //among
+            843280439698259998, //bf            
             638175689270493205, //cod
             818518545720803341, //gta
             615822402781315073, //lol
@@ -81,91 +80,6 @@ namespace BoTools
                 res.Add(GetZderLand(client).GetRole(id));
             }
 
-            return res;
-        }
-
-        internal static Dictionary<IRole, string> RoleToEmoteSpecial(List<IRole> rolesAttribution)
-        {            
-            Dictionary<IRole, string> res = new Dictionary<IRole, string>();
-
-            foreach (var role in rolesAttribution)
-            {
-                switch (role.Name)
-                {
-                    case "👺 Anime 💘":
-                        res.Add(role, "👺");
-                        break;
-                    case "🎶 DJ":
-                        res.Add(role, "🎵");
-                        break;
-                    case "🎥 Vidéaste":
-                        res.Add(role, "🌐");
-                        break;
-                    case "👽":
-                        res.Add(role, "👽");
-                        break;
-                    case "👒 One Piece 💘":
-                        res.Add(role, "👒");
-                        break;
-                    case "📹":
-                        res.Add(role, "📹");
-                        break;
-                    case "🎰 Casino":
-                        res.Add(role, "🎰");
-                        break;
-                    case "👾 Games":
-                        res.Add(role, "👾");
-                        break;                   
-                }                
-            }
-            return res;
-        }
-        internal static Dictionary<IRole, string> RoleToEmoteGames(List<IRole> rolesAttribution)
-        {
-            Dictionary<IRole, string> res = new Dictionary<IRole, string>();
-
-            foreach (var role in rolesAttribution)
-            {
-                switch (role.Name)
-                {                                            
-                    case "🔌 PC":
-                        res.Add(role, "⌨️");
-                        break;
-                    case "🔌 Mac":
-                        res.Add(role, "🍎");
-                        break;
-                    case "🔌 Switch":
-                        res.Add(role, "🎌");
-                        break;
-                    case "🔌 PlayStation":
-                        res.Add(role, "🎮");
-                        break;
-                    case "💾 Fortnite":
-                        res.Add(role, "🦙");
-                        break;
-                    case "💾 Minecraft":
-                        res.Add(role, "🧱");
-                        break;
-                    case "💾 Battlefield":
-                        res.Add(role, "💥");
-                        break;
-                    //case "💾 Among Us":
-                    //    res.Add(role, "🧠");
-                        break;
-                    case "💾 Call of Duty":
-                        res.Add(role, "🔫");
-                        break;
-                    case "💾 Grand Theft Auto":
-                        res.Add(role, "💰");
-                        break;
-                    case "💾 League of Legends":
-                        res.Add(role, "🤬");
-                        break;
-                    case "💾 World of Warcraft":
-                        res.Add(role, "🐼");
-                        break;
-                }
-            }
             return res;
         }
 
