@@ -143,6 +143,7 @@ namespace BoTools
             _birthsDay.Add("!421026192523526155", DateTime.Parse("28/07")); //Kiki
             _birthsDay.Add("!293029908761018368", DateTime.Parse("13/08")); //Mathis
             _birthsDay.Add("!270295016797241344", DateTime.Parse("14/09")); //Orel
+            _birthsDay.Add("!869869706344034314", DateTime.Parse("27/09")); //Niros
             _birthsDay.Add("!318827498630545418", DateTime.Parse("30/09")); //Louis
             _birthsDay.Add("!696314945725530185", DateTime.Parse("05/10")); //Lena
             _birthsDay.Add("!558802761018376219", DateTime.Parse("24/10")); //Adrizou
