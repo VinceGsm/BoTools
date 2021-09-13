@@ -20,8 +20,7 @@ namespace BoTools.Run
         private readonly MessageService _messageService;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
-        private static readonly char _commandPrefix = '$';
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly char _commandPrefix = '$';        
 
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
@@ -49,7 +48,7 @@ namespace BoTools.Run
         private async Task UserJoined(SocketGuildUser guildUser)
         {            
             _messageService.UserJoined(guildUser);
-            await _roleService.UpdateListUser(); //si passe pas enlever ici
+            await _roleService.UpdateListUser();
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)

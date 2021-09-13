@@ -168,8 +168,6 @@ namespace BoTools.Service
         #region Message
         public async Task SendLatencyAsync()
         {   
-            //TO FIX
-
             _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790);
 
             IAsyncEnumerable<IReadOnlyCollection<IMessage>> lastMsgAsync = _logChannel.GetMessagesAsync(1); 

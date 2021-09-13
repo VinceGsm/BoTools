@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoTools.Module
 {
-    // Keep in mind your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
+    // Your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
     public class MainModule : ModuleBase<SocketCommandContext>
     {
         private bool _isRunning = false;
@@ -44,7 +44,7 @@ namespace BoTools.Module
                     await _jellyfinService.ClearChannel(Context.Client);                    
                     await _messageService.AddReactionVu(userMsg);
 
-                    //activation Jellyfin
+                    // Jellyfin
                     _jellyfinService.Activate();
                     log.Info($"Jellyfin activated");
 
@@ -55,7 +55,7 @@ namespace BoTools.Module
                     var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                     Embed embed = builder.Build();
 
-                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday) //
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday) // Dimanche = One Piece
                         message = $"{_messageService.GetLuffyEmote()}";
                     else
                         message = $"{_messageService.GetPepeSmokeEmote()}";
@@ -90,7 +90,7 @@ namespace BoTools.Module
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {                
                 string message = $" Oh lord... Something went wrong ? Sorry to hear that, there is a lot of complex communications involved in the Jellyfin process." +
-                $" Hold on one sec I'll restart my side API for you, in the meantime please take a hit of weed to relax {_messageService.GetPepeSmokeEmote()} " +
+                $" Hold on one sec I'll restart my side API for you, in the meantime please take a hit to relax {_messageService.GetPepeSmokeEmote()} " +
                 $"```Lorsque ton message aura reçu une réaction tu pourra relancer la commande $Jellyfin```";
 
                 await Context.Channel.SendMessageAsync(text: message, messageReference: reference);
