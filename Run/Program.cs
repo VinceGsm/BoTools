@@ -37,8 +37,7 @@ namespace BoTools.Run
         private CommandHandler _commands;
         private DiscordSocketClient _client;
         private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");
-        private readonly string _link = "https://www.twitch.tv/vince_zder";
-        //private readonly string _rickRollUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // I like joke
+        private readonly string _link = "https://www.twitch.tv/vince_zder";        
         private static readonly string _ngrokPath = @"D:\Apps\Ngrok\ngrok.exe";
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

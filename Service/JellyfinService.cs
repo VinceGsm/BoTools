@@ -57,7 +57,7 @@ namespace BoTools.Service
 
         private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
         {
-            string jellyfinUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            string jellyfinUrl = "https://www.twitch.tv/vince_zder"; //if fail at least we can see my twitch lol
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(_ngrokSideApi);
@@ -100,7 +100,7 @@ namespace BoTools.Service
 
         internal Task RestartSideApi()
         {
-            foreach (var p in Process.GetProcessesByName("chrome")) //for RAM lmao
+            foreach (var p in Process.GetProcessesByName("chrome")) //for RAM
             {
                 p.Kill();
             }
