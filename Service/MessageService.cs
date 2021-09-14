@@ -198,9 +198,8 @@ namespace BoTools.Service
             foreach (var list in msgAsync)
             {
                 IMessage message = list.First(x => x.Content.StartsWith(msgStart));                
-
-                //if (message.Author.IsBot)
-                if (message.Author.IsBot && message.CreatedAt == DateTime.Today)
+                
+                if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day))
                 {
                     isAlreadyDone = true;
                     break;
