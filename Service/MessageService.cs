@@ -199,7 +199,8 @@ namespace BoTools.Service
             {
                 IMessage message = list.First(x => x.Content.StartsWith(msgStart));                
 
-                if (message.Author.IsBot)
+                //if (message.Author.IsBot)
+                if (message.Author.IsBot && message.CreatedAt == DateTime.Today)
                 {
                     isAlreadyDone = true;
                     break;

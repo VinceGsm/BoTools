@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using log4net;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
