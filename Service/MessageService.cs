@@ -12,6 +12,7 @@ namespace BoTools.Service
     public class MessageService
     {
         private static ulong _idChannelGeneral = 312966999414145034;
+        private static ulong _idJellyfinChannel = 816283362478129182;
         private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -27,8 +28,9 @@ namespace BoTools.Service
         private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
         #endregion
         #region emoji
-        private static readonly string _coeurEmoji = "\u2764";
+        private static readonly string _coeurEmoji = "\u2764";        
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
+        private static readonly string _dl = "<:DL:894171464167747604>";
         #endregion        
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
@@ -64,8 +66,7 @@ namespace BoTools.Service
         {            
             if (!guildUser.IsBot)
             {                
-                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
-                    $"Tu peux aussi passer le bonjour dans <#491730828271943707>\n" +
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
                     $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
 
@@ -106,7 +107,7 @@ namespace BoTools.Service
                 $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
 
             string message = $"<@{invite.Inviter.Id}> \n" +
-                $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
+                $"{_alarmEmote} Voici l'invitation officielle à partager : {_eternalInvite} {_coeurEmote}";
 
             if (_logChannel != null)            
                 _logChannel.SendMessageAsync(logMessage);
@@ -225,6 +226,26 @@ namespace BoTools.Service
                     else log.Error("Can't wish HB because general was not found");
                 }
             }                        
+        }
+
+        internal void OnePieceDispo()
+        {
+            var r = new Random();
+            int i = r.Next(2);
+
+            string startMsg = $" {_dl} <@&552134779210825739> \n";
+            string messageKanji = startMsg +
+                "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
+                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {_coeurEmote}";
+            string messageJap = startMsg +
+                "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
+                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {_coeurEmote}";
+
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);
+
+            var message = (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
+
+            channel.SendMessageAsync(message);
         }
 
         #region Control Message
