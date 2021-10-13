@@ -47,7 +47,7 @@ namespace BoTools.Service
             if (!Process.GetProcessesByName("ngrok").Any())
             {
                 StartNgrokSideApi();
-                Thread.Sleep(10000); // wait 10sec
+                Thread.Sleep(15000); // wait 15sec
             }                         
                         
             string res = await CallSideApiNgrokAsync(_ngrokSideApi);
@@ -97,7 +97,7 @@ namespace BoTools.Service
             }
         }
 
-        internal Task RestartSideApi()
+        internal Task KillSideApi()
         {
             foreach (var p in Process.GetProcessesByName("chrome")) //for RAM
             {
@@ -112,7 +112,7 @@ namespace BoTools.Service
                 p.Kill();
             }
 
-            StartNgrokSideApi();
+            //StartNgrokSideApi();
 
             return Task.CompletedTask;
         }

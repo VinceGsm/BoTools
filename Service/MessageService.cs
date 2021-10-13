@@ -293,6 +293,23 @@ namespace BoTools.Service
                 Footer = GetFooterBuilder()
             };
         }
+        public EmbedBuilder MakeInternalJellyfinMessageBuilder(string ngRockUrl)
+        {
+            return new EmbedBuilder
+            {
+                Url = ngRockUrl,
+                Color = Color.DarkRed,
+                ImageUrl = _discordImgUrl,
+                ThumbnailUrl = _boToolsGif,
+
+                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
+                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
+                    $"{GetCoinEmote()}  Contacter Vince en cas de problème, je ne suis que de simple lignes de code : je peux pas tout faire !",
+
+                Author = new EmbedAuthorBuilder { Name = "Ngrok c'est quand il veut !", IconUrl = _urlAvatarVince },
+                Footer = GetFooterBuilder()
+            };
+        }
 
         private EmbedBuilder MakeMessageBuilder(SocketGuildUser guildUser)
         {                        

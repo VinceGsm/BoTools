@@ -35,7 +35,7 @@ namespace BoTools.Module
             string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
             log.Info($"JellyfinAsync by {userMsg.Author}");
-
+            
             var reference = new MessageReference(userMsg.Id);
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
@@ -78,9 +78,37 @@ namespace BoTools.Module
             log.Info($"JellyfinAsync done");
         }
 
+        public async Task InternalJellyfinAsync()
+        {
+            string message = string.Empty;
+            log.Info($"InternalJellyfinAsync");
+
+            await _jellyfinService.ClearChannel(Context.Client);                
+
+            // Jellyfin
+            _jellyfinService.Activate();
+            log.Info($"Jellyfin activated");
+
+            //activation NGrock + récupération du lien http
+            string ngrokUrl = await _jellyfinService.GetNgrokUrl();
+            log.Info($"ngrokUrl = {ngrokUrl}");
+
+            var builder = _messageService.MakeInternalJellyfinMessageBuilder(ngrokUrl);
+            Embed embed = builder.Build();
+
+            if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday) // Dimanche = One Piece
+                message = $"{_messageService.GetLuffyEmote()}";
+            else
+                message = $"{_messageService.GetPepeSmokeEmote()}";
+
+            await Context.Channel.SendMessageAsync(message, false, embed, null, null);                
+            _isRunning = true;
+        
+            log.Info($"InternalJellyfinAsync done");
+        }
 
         [Command("Bug")]
-        [Summary("Reboot side API service")]
+        [Summary("Kill process side API Ngrok")]
         public async Task BugAsync()
         {
             SocketUserMessage userMsg = Context.Message;
@@ -91,11 +119,13 @@ namespace BoTools.Module
             {                
                 string message = $" Oh lord... Something went wrong ? Sorry to hear that, there is a lot of complex communications involved in the Jellyfin process." +
                 $" Hold on one sec I'll restart my side API for you, in the meantime please take a hit to relax {_messageService.GetPepeSmokeEmote()} " +
-                $"```Lorsque ton message aura reçu une réaction tu pourra relancer la commande $Jellyfin```";
+                $"```Merci de patienter 30 secondes : je vais taper sur 2 ou 3 circuits ça devrait refonctionner !```";
 
                 await Context.Channel.SendMessageAsync(text: message, messageReference: reference);
 
-                await _jellyfinService.RestartSideApi();
+                await _jellyfinService.KillSideApi();
+
+                await InternalJellyfinAsync();
 
                 await _messageService.AddDoneReaction(userMsg);
             }
