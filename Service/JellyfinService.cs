@@ -110,9 +110,7 @@ namespace BoTools.Service
             foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
             {
                 p.Kill();
-            }
-
-            //StartNgrokSideApi();
+            }            
 
             return Task.CompletedTask;
         }

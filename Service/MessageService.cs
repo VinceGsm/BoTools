@@ -30,7 +30,7 @@ namespace BoTools.Service
         #region emoji
         private static readonly string _coeurEmoji = "\u2764";        
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
-        private static readonly string _dl = "<:DL:894171464167747604>";
+        private static readonly string _dlEmoji = "<:DL:894171464167747604>";
         #endregion        
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
@@ -230,22 +230,9 @@ namespace BoTools.Service
 
         internal void OnePieceDispo()
         {
-            var r = new Random();
-            int i = r.Next(2);
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);                        
 
-            string startMsg = $" {_dl} <@&552134779210825739> \n";
-            string messageKanji = startMsg +
-                "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
-                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {_coeurEmote}";
-            string messageJap = startMsg +
-                "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
-                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {_coeurEmote}";
-
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);
-
-            var message = (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
-
-            channel.SendMessageAsync(message);
+            channel.SendMessageAsync(Helper.GetOnePieceMessage(_dlEmoji, _coeurEmote));
         }
 
         #region Control Message

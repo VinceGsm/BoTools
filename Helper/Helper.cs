@@ -127,6 +127,22 @@ namespace BoTools
             return res.First().ToString().ToUpper() + res.Substring(1); 
         }
 
+        internal static string GetOnePieceMessage(string dlEmoji, string coeurEmote)
+        {
+            var r = new Random();
+            int i = r.Next(2);
+
+            string startMsg = $" {dlEmoji} <@&552134779210825739> \n";
+            string messageKanji = startMsg +
+                "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
+                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {coeurEmote}";
+            string messageJap = startMsg +
+                "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
+                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {coeurEmote}";
+
+            return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
+        }
+
         internal static Dictionary<string,DateTime> GetBirthsDay()
         {
             _birthsDay.Add("!427918309594234881", DateTime.Parse("03/01")); //Coco
