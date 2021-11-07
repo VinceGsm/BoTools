@@ -106,14 +106,8 @@ namespace BoTools.Service
             string logMessage = $"Une nouvelle invitation (*{duration}*) à Zderland vient d'être créée par " +
                 $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
 
-            string message = $"<@{invite.Inviter.Id}> \n" +
-                $"{_alarmEmote} Voici l'invitation officielle à partager : {_eternalInvite} {_coeurEmote}";
-
             if (_logChannel != null)            
-                _logChannel.SendMessageAsync(logMessage);
-                
-            if (channel != null)
-                channel.SendMessageAsync(message);        
+                _logChannel.SendMessageAsync(logMessage);       
 
             return Task.CompletedTask;
         }
