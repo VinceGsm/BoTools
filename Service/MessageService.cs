@@ -266,7 +266,7 @@ namespace BoTools.Service
                 ImageUrl = _discordImgUrl,
                 ThumbnailUrl = _boToolsGif,
 
-                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
+                Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",
                 Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
                     $"{GetCoinEmote()}  En cas de problème : **$BUG**",
 
