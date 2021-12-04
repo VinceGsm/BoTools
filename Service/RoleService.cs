@@ -86,13 +86,16 @@ namespace BoTools.Service
                         case "📹":
                             _roleToEmoteSpecial.Add(role, "📹");
                             break;
+                        case "🎵":                            
+                            _roleToEmoteSpecial.Add(role, "🎵");
+                            break;
                     }
                 }
                 else
                 {
                     switch (role.Name)
                     {
-                        //CONTAINS
+                        // CONTAINS
                         case string name when name.Contains("Anime"):
                         //case "👺 Anime 💘":                        
                             _roleToEmoteSpecial.Add(role, "👺");
@@ -102,13 +105,9 @@ namespace BoTools.Service
                             _roleToEmoteSpecial.Add(role, "👒");
                             break;
 
-                        //ENDS
-                        case string name when name.EndsWith("DJ"):
-                            //case "DJ":
-                            _roleToEmoteSpecial.Add(role, "🎵");
-                            break;
-                        //case "🎥 Content Creator":
+                        // ENDS                       
                         case string name when name.EndsWith("Creator"):
+                            //case "🎥 Content Creator":
                             _roleToEmoteSpecial.Add(role, "🌐");
                             break;
                         case string name when name.EndsWith("Casino"):
