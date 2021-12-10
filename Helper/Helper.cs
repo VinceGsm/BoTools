@@ -49,16 +49,16 @@ namespace BoTools
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, string channelName)
-        {
-            var channels = GetAllChannels(client);
+        //internal static SocketGuildChannel GetSocketChannel(DiscordSocketClient client, string channelName)
+        //{
+        //    var channels = GetAllChannels(client);
 
-            ISocketMessageChannel channel = (ISocketMessageChannel) channels.FirstOrDefault(x => x.Name == channelName);
+        //    SocketGuildChannel channel = channels.FirstOrDefault(x => x.Name == channelName);
 
-            if (channel == null) log.Error($"GetSocketMessageChannel : no channel {channelName}");
+        //    if (channel == null) log.Error($"GetSocketChannel : no channel {channelName}");
 
-            return channel;
-        }
+        //    return channel;
+        //}
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {

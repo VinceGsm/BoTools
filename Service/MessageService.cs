@@ -45,7 +45,8 @@ namespace BoTools.Service
             _client = client;                                   
             _client.Ready += Ready;            
             _client.UserLeft += UserLeft;          
-            _client.InviteCreated += InviteCreated;            
+            _client.InviteCreated += InviteCreated;
+            _client.MessageReceived += MessageReceived;
         }
 
 
@@ -98,17 +99,33 @@ namespace BoTools.Service
         }
 
         private Task InviteCreated(SocketInvite invite)
-        {                        
-            var channel = Helper.GetSocketMessageChannel(_client, invite.Channel.Name);
+        {            
+            var inviter = _client.GetUser(invite.Inviter.Id);            
+            //IChannel channel = Helper.GetSocketChannel(_client, invite.Channel.Name);            
 
             string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
 
-            string logMessage = $"Une nouvelle invitation (*{duration}*) à Zderland vient d'être créée par " +
-                $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
+            string logMessage = $"Une nouvelle invitation (*{duration}*) vient d'être créée par " +
+                $"<@{inviter.Id}> dans : {invite.Channel.Name} / {invite.ChannelId}";
 
-            if (_logChannel != null)            
-                _logChannel.SendMessageAsync(logMessage);       
+            string message = $"{_alarmEmote} Voici l'invitation officielle de ZderLand à partager : {_eternalInvite}\n" +
+                $"Merci à toi, la bise {_coeurEmote}";
 
+            SendToLeader(logMessage);
+            inviter.SendMessageAsync(message);
+
+            return Task.CompletedTask;           
+        }
+
+        private Task MessageReceived(SocketMessage arg)
+        {
+            //DM from User
+            if (arg.Source == MessageSource.User && arg.Channel.Name.StartsWith('@'))
+            {
+                string message = $"<@{arg.Author.Id}> *says* : " + arg.Content ;
+                SendToLeader(message);
+            }
+                
             return Task.CompletedTask;
         }
         #endregion
@@ -227,6 +244,12 @@ namespace BoTools.Service
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);                        
 
             channel.SendMessageAsync(Helper.GetOnePieceMessage(_dlEmoji, _coeurEmote));
+        }
+
+        internal void SendToLeader(string message)
+        {
+            var leader = _client.GetUser(312317884389130241);
+            leader.SendMessageAsync(message);            
         }
 
         #region Control Message
