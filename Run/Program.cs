@@ -36,8 +36,7 @@ namespace BoTools.Run
 
         private CommandHandler _commands;
         private DiscordSocketClient _client;
-        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");
-        private readonly string _link = "https://www.twitch.tv/vince_zder";        
+        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");               
         private static readonly string _ngrokPath = @"D:\Apps\Ngrok\ngrok.exe";
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -51,10 +50,10 @@ namespace BoTools.Run
             // When working with events that have Cacheable<IMessage, ulong> parameters, you must enable
             // the message cache in your config settings if you plan to use the cached message entity.            
             _client = client ?? new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });
-            _client.SetGameAsync(name: ": $Jellyfin", streamUrl: _link, type: ActivityType.CustomStatus); 
+            _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);            
 
             _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
-        }
+        }        
 
         public async Task MainAsync()
         {

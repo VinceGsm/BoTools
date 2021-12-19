@@ -112,8 +112,9 @@ namespace BoTools.Run
                     _roleService.RulesReactionAdded(reaction.UserId);
                     break;
 
+                //Si réaction by me dans log = OP dispo
                 default:                   
-                    if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId)
+                    if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId) 
                     {
                         _messageService.OnePieceDispo();
                     }

@@ -10,6 +10,7 @@ namespace BoTools
 {
     public static class Helper
     {
+        public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
         private static readonly List<string> _greetings = new List<string>
         {
             "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
@@ -20,7 +21,7 @@ namespace BoTools
             "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation"
-        };
+        };        
         public static readonly List<ulong> _rolesAttributionId = new List<ulong>
         {
             698852663764451381, //games

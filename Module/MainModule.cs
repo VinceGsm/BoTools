@@ -47,10 +47,12 @@ namespace BoTools.Module
                     // Jellyfin
                     _jellyfinService.Activate();
                     log.Info($"Jellyfin activated");
+                    _messageService.SetStatus("Jellyfin OK");
 
                     //activation NGrock + récupération du lien http
                     string ngrokUrl = await _jellyfinService.GetNgrokUrl();
                     log.Info($"ngrokUrl = {ngrokUrl}");
+                    _messageService.SetStatus("ngrok OK");
 
                     var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                     Embed embed = builder.Build();
@@ -63,6 +65,7 @@ namespace BoTools.Module
                     await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
                     await _messageService.AddDoneReaction(userMsg);
                     _isRunning = true;
+                    _messageService.SetStatus("ENJOY !");
                 }
                 else
                 {
@@ -76,6 +79,7 @@ namespace BoTools.Module
                 await _messageService.SendJellyfinNotAuthorize(Context.Channel, reference);
             }
             log.Info($"JellyfinAsync done");
+            _messageService.SetStatus(); //reset status
         }
 
         public async Task InternalJellyfinAsync()

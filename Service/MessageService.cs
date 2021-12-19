@@ -106,7 +106,7 @@ namespace BoTools.Service
             string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
 
             string logMessage = $"Une nouvelle invitation (*{duration}*) vient d'être créée par " +
-                $"<@{inviter.Id}> dans : {invite.Channel.Name} / {invite.ChannelId}";
+                $"<@{inviter.Id}> dans : {invite.Channel.Name} | #{invite.ChannelId}";
 
             string message = $"{_alarmEmote} Voici l'invitation officielle de ZderLand à partager : {_eternalInvite}\n" +
                 $"Merci à toi, la bise {_coeurEmote}";
@@ -127,6 +127,12 @@ namespace BoTools.Service
             }
                 
             return Task.CompletedTask;
+        }
+
+        public void SetStatus(string text = null)
+        {
+            //message de base
+            _client.SetGameAsync(name: text ?? ": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);
         }
         #endregion
 
@@ -200,7 +206,7 @@ namespace BoTools.Service
         private async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
-            string msgStart = $"@everyone {_pikachuEmote} \n" +
+            string msgStart = $"@here {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
@@ -209,7 +215,7 @@ namespace BoTools.Service
 
             foreach (var list in msgAsync)
             {
-                IMessage message = list.First(x => x.Content.StartsWith(msgStart));                
+                IMessage message = list.First(x => x.Content.StartsWith(msgStart));
                 
                 if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day))
                 {
