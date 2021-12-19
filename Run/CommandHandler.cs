@@ -42,10 +42,12 @@ namespace BoTools.Run
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
 
             _client.UserJoined += UserJoined;
-            _client.ReactionAdded += ReactionAdded;
+            _client.ReactionAdded += ReactionAdded;            
             _client.ReactionRemoved += ReactionRemoved;
             _client.MessageReceived += HandleCommandAsync;
         }
+
+
 
         private async Task UserJoined(SocketGuildUser guildUser)
         {            
@@ -77,7 +79,7 @@ namespace BoTools.Run
             await _commands.ExecuteAsync(context: context, argPos: argPos, services: _services);
         }
 
-        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
             switch (arg1.Id)
             {
@@ -98,7 +100,7 @@ namespace BoTools.Run
 
         //     The source channel of the reaction addition will be passed into the Discord.WebSocket.ISocketMessageChannel parameter.
         //     The reaction that was added will be passed into the Discord.WebSocket.SocketReaction parameter.
-        private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
             switch (arg1.Id)
             {

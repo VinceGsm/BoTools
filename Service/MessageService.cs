@@ -43,8 +43,8 @@ namespace BoTools.Service
         public MessageService(DiscordSocketClient client)
         {
             _client = client;                                   
-            _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;          
+            _client.Ready += Ready;
+            _client.UserLeft += UserLeft;                      
             _client.InviteCreated += InviteCreated;
             _client.MessageReceived += MessageReceived;
         }
@@ -87,7 +87,8 @@ namespace BoTools.Service
         /// </summary>
         /// <param name="guildUser"></param>
         /// <returns></returns>
-        private async Task UserLeft(SocketGuildUser guildUser)
+        //private async Task UserLeft(SocketGuildUser guildUser) 
+        private async Task UserLeft(SocketGuild arg1, SocketUser guildUser)
         {
             log.Warn($"{guildUser.Username} left");                                                     
             string message = $"<@{guildUser.Id}> left Zderland !";             
