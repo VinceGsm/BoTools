@@ -58,10 +58,9 @@ namespace BoTools.Service
         public async Task Ready()
         {            
             await SendLatencyAsync();
-            await CheckBirthday();
-            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+            await CheckBirthday();            
+            await _client.DownloadUsersAsync(_client.Guilds); // DL all user
         }
-
 
         public async Task UserJoined(SocketGuildUser guildUser)
         {            
@@ -207,7 +206,7 @@ namespace BoTools.Service
         private async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
-            string msgStart = $"@here {_pikachuEmote} \n" +
+            string msgStart = $"@everyone {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
@@ -233,8 +232,11 @@ namespace BoTools.Service
                 if (isSomeoneBD)
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
-                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"*PS : J'ai pas vraiment d'oreille*";
+                    //string message = msgStart + $" <@{id}> aujourd'hui !\n" +
+                    string msgTmp = $"@here {_pikachuEmote} \n" +
+                        $"On me souffle dans l'oreille que c'est l'anniversaire de"; // TO REMOVE NEXT BD
+                    string message = msgTmp + $" <@{id}> aujourd'hui !\n" +
+                    $"*PS : J'ai pas vraiment d'oreille*"; // TODO : METTRE coeur à la place
 
                     if (channel != null)
                     {

@@ -269,7 +269,7 @@ namespace BoTools.Service
 
         public async Task UpdateListUser()
         {
-            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+            await _client.DownloadUsersAsync(_client.Guilds); // DL all user
 
             _allUsers = Helper.GetZderLand(_client).Users.ToList();
             _allUsers.RemoveAll(x => x.IsBot);

@@ -49,7 +49,9 @@ namespace BoTools.Run
         {
             // When working with events that have Cacheable<IMessage, ulong> parameters, you must enable
             // the message cache in your config settings if you plan to use the cached message entity.            
-            _client = client ?? new DiscordSocketClient(new DiscordSocketConfig { MessageCacheSize = 100 });
+            _client = client ?? new DiscordSocketClient(
+                new DiscordSocketConfig { MessageCacheSize = 100, AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.All }
+             );
             _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);            
 
             _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());

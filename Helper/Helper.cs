@@ -45,21 +45,10 @@ namespace BoTools
             712589813605203979, //wow
         };
 
-
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        //internal static SocketGuildChannel GetSocketChannel(DiscordSocketClient client, string channelName)
-        //{
-        //    var channels = GetAllChannels(client);
-
-        //    SocketGuildChannel channel = channels.FirstOrDefault(x => x.Name == channelName);
-
-        //    if (channel == null) log.Error($"GetSocketChannel : no channel {channelName}");
-
-        //    return channel;
-        //}
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
