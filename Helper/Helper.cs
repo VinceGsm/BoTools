@@ -135,7 +135,7 @@ namespace BoTools
 
         internal static Dictionary<string,DateTime> GetBirthsDay()
         {
-            _birthsDay.Add("!427918309594234881", DateTime.Parse("03/01")); //Coco
+            _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
             _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
             _birthsDay.Add("!560259660578291715", DateTime.Parse("14/02")); //Babiss
             _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem

@@ -206,7 +206,7 @@ namespace BoTools.Service
         private async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
-            string msgStart = $"@everyone {_pikachuEmote} \n" +
+            string msgStart = $"@here {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
@@ -232,11 +232,9 @@ namespace BoTools.Service
                 if (isSomeoneBD)
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
-                    //string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                    string msgTmp = $"@here {_pikachuEmote} \n" +
-                        $"On me souffle dans l'oreille que c'est l'anniversaire de"; // TO REMOVE NEXT BD
-                    string message = msgTmp + $" <@{id}> aujourd'hui !\n" +
-                    $"*PS : J'ai pas vraiment d'oreille*"; // TODO : METTRE coeur à la place
+
+                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +                    
+                    $"{_coeurEmote}";
 
                     if (channel != null)
                     {
