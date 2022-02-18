@@ -68,7 +68,7 @@ namespace BoTools.Service
             {                
                 var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
-                    $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
+                    $"A très vite pour de nouvelles aventures sur ZderLand {_coeurEmote}" ;
 
                 var builder = MakeMessageBuilder(guildUser);
                 Embed embed = builder.Build();
@@ -260,12 +260,12 @@ namespace BoTools.Service
         }
 
         #region Control Message
-        internal async Task CommandNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
+        internal async Task CommandNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
         }
 
-        internal async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
+        internal async Task SendJellyfinNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
                 $" est limitée au channel <#816283362478129182>", messageReference: reference);
@@ -296,28 +296,11 @@ namespace BoTools.Service
                 ImageUrl = _discordImgUrl,
                 ThumbnailUrl = _boToolsGif,
 
-                Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",
-                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
-                    $"{GetCoinEmote()}  En cas de problème : **$BUG**",
+                Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",                
+                Description = $"{GetCoinEmote()}  À utiliser avec **Google Chrome** \n" +
+                    $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
-                Footer = GetFooterBuilder()
-            };
-        }
-        public EmbedBuilder MakeInternalJellyfinMessageBuilder(string ngRockUrl)
-        {
-            return new EmbedBuilder
-            {
-                Url = ngRockUrl,
-                Color = Color.DarkRed,
-                ImageUrl = _discordImgUrl,
-                ThumbnailUrl = _boToolsGif,
-
-                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
-                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
-                    $"{GetCoinEmote()}  Contacter Vince en cas de problème, je ne suis que de simple lignes de code : je peux pas tout faire !",
-
-                Author = new EmbedAuthorBuilder { Name = "Ngrok c'est quand il veut !", IconUrl = _urlAvatarVince },
                 Footer = GetFooterBuilder()
             };
         }

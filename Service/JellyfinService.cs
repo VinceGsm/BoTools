@@ -1,11 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using log4net;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,9 +14,7 @@ namespace BoTools.Service
         private static readonly string _ngrokSideApi = "http://localhost:5000";
         private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
         private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";        
-        private List<IMessage> _toDelete = new List<IMessage>();
-
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private List<IMessage> _toDelete = new List<IMessage>();        
 
 
         /// <summary>        
@@ -95,24 +91,6 @@ namespace BoTools.Service
                 _toDelete.AddRange(msg);
                 _toDelete.AddRange(msg2);
             }
-        }
-
-        internal Task KillSideApi()
-        {
-            foreach (var p in Process.GetProcessesByName("chrome")) //for RAM
-            {
-                p.Kill();
-            }
-            foreach (var p in Process.GetProcessesByName("ngrok"))
-            {
-                p.Kill();
-            }
-            foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
-            {
-                p.Kill();
-            }            
-
-            return Task.CompletedTask;
         }
 
         private void StartNgrokSideApi()

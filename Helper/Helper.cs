@@ -3,8 +3,10 @@ using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BoTools
 {
@@ -49,6 +51,29 @@ namespace BoTools
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+
+        internal static Task KillNgrok()
+        {
+            foreach (var p in Process.GetProcessesByName("ngrok"))
+            {
+                p.Kill();
+            }
+            foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
+            {
+                p.Kill();
+            }
+
+            return Task.CompletedTask;
+        }
+        internal static Task KillBoTools()
+        {
+            foreach (var p in Process.GetProcessesByName("BoTools"))
+            {
+                p.Kill();
+            }
+
+            return Task.CompletedTask;
+        }
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
