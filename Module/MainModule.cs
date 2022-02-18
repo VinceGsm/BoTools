@@ -120,7 +120,7 @@ namespace BoTools.Module
             else
             {
                 await _messageService.AddReactionAlarm(userMsg);
-                await _messageService.CommandNotAuthorizeHere(Context.Channel, reference);
+                await _messageService.CommandForbidden(Context.Channel, reference);
             }
 
             log.Info($"Dodo done");

@@ -265,6 +265,11 @@ namespace BoTools.Service
             await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
         }
 
+        internal async Task CommandForbidden(ISocketMessageChannel channel, MessageReference reference)
+        {
+            await channel.SendMessageAsync($"L'utilisation de cette commande est interdite !", messageReference: reference);
+        }
+
         internal async Task SendJellyfinNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
