@@ -147,7 +147,7 @@ namespace BoTools
             var r = new Random();
             int i = r.Next(2);
 
-            string startMsg = $" {dlEmoji} <@&552134779210825739> \n";
+            string startMsg = $" {dlEmoji} \n";
             string messageKanji = startMsg +
                 "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
                 $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {coeurEmote}";

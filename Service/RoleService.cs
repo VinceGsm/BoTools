@@ -202,9 +202,12 @@ namespace BoTools.Service
                     {
                         if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                         {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
-                            subject.AddRoleAsync(roleToAssign);
-                            log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
+                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
+                            if (!subject.Roles.Contains(roleToAssign))
+                            {
+                                subject.AddRoleAsync(roleToAssign);
+                                log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
+                            }
                         }
                     }
                 }
@@ -224,9 +227,12 @@ namespace BoTools.Service
                     {
                         if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                         {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
-                            subject.AddRoleAsync(roleToAssign);
-                            log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
+                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
+                            if (!subject.Roles.Contains(roleToAssign))
+                            {
+                                subject.AddRoleAsync(roleToAssign);
+                                log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
+                            }                            
                         }
                     }
                 }
@@ -256,8 +262,11 @@ namespace BoTools.Service
                 {
                     if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                     {
-                        var subject = _allUsers.First(x => x.Id == okUser.Id);
-                        subject.AddRoleAsync(_IRoleRules);
+                        var subject = _allUsers.First(x => x.Id == okUser.Id);                        
+                        
+                        if (!subject.Roles.Contains(_IRoleRules))
+                            await subject.AddRoleAsync(_IRoleRules);
+                        
                         log.Info($"CheckRules done for {subject.Username}");
                     }
                 }
