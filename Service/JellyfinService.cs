@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using NgrokApi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,10 +12,9 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class JellyfinService
-    {        
-        private static readonly string _ngrokSideApi = "http://localhost:5000";
-        private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
-        private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";        
+    {                                
+        private static readonly string _ngrokBatPath = @"C:\Program Files\Ngrok\ngrok.bat";
+        private static readonly string _jellyfinPath = @"C:\Program Files\Jellyfin\jellyfin_10.7.7\jellyfin.exe";
         private List<IMessage> _toDelete = new List<IMessage>();        
 
 
@@ -40,27 +41,19 @@ namespace BoTools.Service
 
         internal async Task<string> GetNgrokUrl()
         {
-            if (!Process.GetProcessesByName("ngrok").Any())
-            {
-                StartNgrokSideApi();
-                Thread.Sleep(15000); // wait 15sec
-            }                         
+            if (!Process.GetProcessesByName("ngrok.exe").Any())
+                Helper.StartProcess(_ngrokBatPath);                                      
                         
-            string res = await CallSideApiNgrokAsync(_ngrokSideApi);
+            string res = await GetJellyfinUrl();
             return res;                 
         }
 
-        private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
-        {
-            string jellyfinUrl = "https://www.twitch.tv/vince_zder"; //if fail at least we can see my twitch lol
+        private async Task<string> GetJellyfinUrl()
+        {            
+            var ngrok = new Ngrok(Environment.GetEnvironmentVariable("NGROK_API_KEY"));
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(_ngrokSideApi);
-
-            if (response.IsSuccessStatusCode)
-                jellyfinUrl = await response.Content.ReadAsStringAsync();
-
-            return jellyfinUrl;
+            Tunnel jellyfinTunnel = await ngrok.Tunnels.List().FirstAsync();
+            return jellyfinTunnel.PublicUrl;
         }
 
         /// <summary>
@@ -70,7 +63,7 @@ namespace BoTools.Service
         {
             if (!Process.GetProcessesByName("jellyfin").Any())
             {
-                StartExe(_jellyfinPath);
+                Helper.StartProcess(_jellyfinPath);
                 Thread.Sleep(5000); // wait 5sec
             }
         }
@@ -90,27 +83,6 @@ namespace BoTools.Service
                 IEnumerable<IMessage> msg2 = list.Where(x => x.Content.StartsWith("<a:luffy:863101041498259457>"));
                 _toDelete.AddRange(msg);
                 _toDelete.AddRange(msg2);
-            }
-        }
-
-        private void StartNgrokSideApi()
-        {
-            StartExe(_ngrokSideApiPath);
-        }
-
-        private void StartExe(string path)
-        {
-            using (var process = new Process())
-            {
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = path,
-                    CreateNoWindow = false,
-                    WindowStyle = ProcessWindowStyle.Normal,
-                    UseShellExecute = true
-                };
-
-                process.Start();
             }
         }
     }

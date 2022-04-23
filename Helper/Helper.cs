@@ -52,28 +52,32 @@ namespace BoTools
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        internal static Task KillNgrok()
+        #region Process
+        internal static void StartProcess(string path)
         {
-            foreach (var p in Process.GetProcessesByName("ngrok"))
+            using (var process = new Process())
             {
-                p.Kill();
+                process.StartInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    UseShellExecute = true                    
+                };
+
+                process.Start();                
             }
-            foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
+        }
+
+        internal static Task KillProcess(string name)
+        {
+            foreach (var p in Process.GetProcessesByName(name))
             {
                 p.Kill();
             }
 
             return Task.CompletedTask;
         }
-        internal static Task KillBoTools()
-        {
-            foreach (var p in Process.GetProcessesByName("BoTools"))
-            {
-                p.Kill();
-            }
-
-            return Task.CompletedTask;
-        }
+        #endregion
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
