@@ -4,6 +4,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -11,8 +14,7 @@ namespace BoTools.Module
 {
     // Your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
     public class MainModule : ModuleBase<SocketCommandContext>
-    {
-        private bool _isRunning = false;
+    {        
         private const ulong _vinceId = 312317884389130241;
         private const ulong _AsileId = 493020872303443969;
         private readonly MessageService _messageService;
@@ -39,7 +41,7 @@ namespace BoTools.Module
             var reference = new MessageReference(userMsg.Id);
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
-                if (!_isRunning)
+                if (!Process.GetProcessesByName("ngrok").Any()) // isRunning ?
                 {
                     await _jellyfinService.ClearChannel(Context.Client);                    
                     await _messageService.AddReactionVu(userMsg);
@@ -62,8 +64,7 @@ namespace BoTools.Module
                         message = $"{_messageService.GetPepeSmokeEmote()}";
 
                     await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
-                    await _messageService.AddDoneReaction(userMsg);
-                    _isRunning = true;                    
+                    await _messageService.AddDoneReaction(userMsg);                               
                 }
                 else
                 {

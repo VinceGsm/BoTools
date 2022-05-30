@@ -45,7 +45,7 @@ namespace BoTools.Service
             _client = client;                                   
             _client.Ready += Ready;
             _client.UserLeft += UserLeft;                      
-            _client.InviteCreated += InviteCreated;
+            //_client.InviteCreated += InviteCreated;
             _client.MessageReceived += MessageReceived;
         }
 
@@ -98,24 +98,24 @@ namespace BoTools.Service
             return;
         }
 
-        private Task InviteCreated(SocketInvite invite)
-        {            
-            var inviter = _client.GetUser(invite.Inviter.Id);            
-            //IChannel channel = Helper.GetSocketChannel(_client, invite.Channel.Name);            
+        //private Task InviteCreated(SocketInvite invite)
+        //{            
+        //    var inviter = _client.GetUser(invite.Inviter.Id);            
+        //    //IChannel channel = Helper.GetSocketChannel(_client, invite.Channel.Name);            
 
-            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
+        //    string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
 
-            string logMessage = $"Une nouvelle invitation (*{duration}*) vient d'être créée par " +
-                $"<@{inviter.Id}> dans : {invite.Channel.Name} | #{invite.ChannelId}";
+        //    string logMessage = $"Une nouvelle invitation (*{duration}*) vient d'être créée par " +
+        //        $"<@{inviter.Id}> dans : {invite.Channel.Name} | #{invite.ChannelId}";
 
-            string message = $"{_alarmEmote} Voici l'invitation officielle de ZderLand à partager : {_eternalInvite}\n" +
-                $"Merci à toi, la bise {_coeurEmote}";
+        //    string message = $"{_alarmEmote} Voici l'invitation officielle de ZderLand à partager : {_eternalInvite}\n" +
+        //        $"Merci à toi, la bise {_coeurEmote}";
 
-            SendToLeader(logMessage);
-            inviter.SendMessageAsync(message);
+        //    SendToLeader(logMessage);
+        //    inviter.SendMessageAsync(message);
 
-            return Task.CompletedTask;           
-        }
+        //    return Task.CompletedTask;           
+        //}
 
         private Task MessageReceived(SocketMessage arg)
         {

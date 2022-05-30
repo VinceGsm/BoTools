@@ -41,7 +41,7 @@ namespace BoTools.Service
 
         internal async Task<string> GetNgrokUrl()
         {
-            if (!Process.GetProcessesByName("ngrok.exe").Any())
+            if (!Process.GetProcessesByName("ngrok").Any())
                 Helper.StartProcess(_ngrokBatPath);                                      
                         
             string res = await GetJellyfinUrl();
@@ -64,7 +64,7 @@ namespace BoTools.Service
             if (!Process.GetProcessesByName("jellyfin").Any())
             {
                 Helper.StartProcess(_jellyfinPath);
-                Thread.Sleep(5000); // wait 5sec
+                Thread.Sleep(4000); // wait 4sec
             }
         }
 
