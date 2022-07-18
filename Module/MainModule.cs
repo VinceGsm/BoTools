@@ -67,9 +67,9 @@ namespace BoTools.Module
                 }
                 else
                 {
-                    //Confirmation de bug par user ?
-                    // pas de message de BoTools --> Regen message
-                    // Services indispo/bug --> relance service
+                    //Confirmation de bug par user :
+                    // 1."si lien fonctionne plus" --> emojiCheck
+                    // 2."si Jellyfin fonctionne plus" --> emojiX ($"Oh ?! J'espère qu'il va pas falloir me reboot ! Une action physique va être nécessaire @V")
                     await _messageService.AddReactionRefused(userMsg);
                     await _messageService.SendJellyfinAlreadyInUse(Context.Channel);
                 }

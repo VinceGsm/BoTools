@@ -167,8 +167,7 @@ namespace BoTools
             _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
             _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
             _birthsDay.Add("!560259660578291715", DateTime.Parse("14/02")); //Babiss
-            _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem
-            _birthsDay.Add("!342944682579460096", DateTime.Parse("16/04")); //Matthieu
+            _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem            
             _birthsDay.Add("!126259389962125312", DateTime.Parse("02/06")); //Flo
             _birthsDay.Add("!706958493374218300", DateTime.Parse("03/06")); //Julio
             _birthsDay.Add("!511225222545014817", DateTime.Parse("30/06")); //Isma
