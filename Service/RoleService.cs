@@ -327,19 +327,5 @@ namespace BoTools.Service
             subject.AddRoleAsync(roleToAssign);
         }
         #endregion
-
-
-        public Task PurgeRoles()
-        {
-            foreach (var user in _allUsers)
-            {
-                if (!user.Username.Trim().Contains("Vince"))
-                {
-                    user.RemoveRoleAsync(_IRoleRules);
-                    user.RemoveRolesAsync(_IRolesAttribution);
-                }
-            }
-            return Task.CompletedTask;
-        }
     }
 }

@@ -4,7 +4,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -31,7 +30,7 @@ namespace BoTools.Module
 
         
         [Command("Jellyfin")]
-        [Summary("Active et partage un lien secret d'accès au Jellyfin privé de Vince")]
+        [Summary("Active et partage un lien d'accès au server Jellyfin")]
         public async Task JellyfinAsync()
         {
             string message = string.Empty;
@@ -84,27 +83,6 @@ namespace BoTools.Module
             _messageService.SetStatus(); //reset status
         }
 
-       
-        [Command("PurgeRoles")]
-        [Summary("Purge roles that can be assigned by the bot")]
-        public async Task PurgeRolesAsync()
-        {
-            SocketUserMessage userMsg = Context.Message;
-            log.Info($"PurgeRolesAsync by {userMsg.Author}");
-
-            var reference = new MessageReference(userMsg.Id);
-            if (Helper.IsLogChannel(Context.Channel))
-            {
-                _roleService.PurgeRoles();                
-            }
-            else
-            {
-                await _messageService.AddReactionAlarm(userMsg);
-                await _messageService.CommandNotAuthorizeHere(Context.Channel, reference);
-            }
-
-            log.Info($"PurgeRolesAsync done");
-        }
 
         [Command("Dodo")]
         [Summary("Fait dodo")]
@@ -117,6 +95,7 @@ namespace BoTools.Module
             if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
             {
                 await Helper.KillProcess("cmd.exe"); //ngrok dans cmd
+                await _messageService.AddReactionRobot(userMsg);
                 await Helper.KillProcess("BoTools");                          
             }
             else
