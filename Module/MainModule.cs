@@ -16,7 +16,7 @@ namespace BoTools.Module
     public class MainModule : ModuleBase<SocketCommandContext>
     {        
         private const ulong _vinceId = 312317884389130241;
-        private const ulong _AsileId = 493020872303443969;
+        private const ulong _PortableId = 493020872303443969;
         private readonly MessageService _messageService;
         private readonly RoleService _roleService;
         private readonly JellyfinService _jellyfinService;
@@ -41,7 +41,7 @@ namespace BoTools.Module
             var reference = new MessageReference(userMsg.Id);
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
-                if (!Process.GetProcessesByName("ngrok").Any()) // isRunning ?
+                if (!Process.GetProcessesByName("ngrok").Any()) // isRunning ? 
                 {
                     await _jellyfinService.ClearChannel(Context.Client);                    
                     await _messageService.AddReactionVu(userMsg);
@@ -68,6 +68,9 @@ namespace BoTools.Module
                 }
                 else
                 {
+                    //Confirmation de bug par user ?
+                    // pas de message de BoTools --> Regen message
+                    // Services indispo/bug --> relance service
                     await _messageService.AddReactionRefused(userMsg);
                     await _messageService.SendJellyfinAlreadyInUse(Context.Channel);
                 }
@@ -111,9 +114,9 @@ namespace BoTools.Module
             log.Info($"Dodo by {userMsg.Author}");
 
             var reference = new MessageReference(userMsg.Id);
-            if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _AsileId)
+            if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
             {
-                await Helper.KillProcess("ngrok.exe");
+                await Helper.KillProcess("cmd.exe"); //ngrok dans cmd
                 await Helper.KillProcess("BoTools");                          
             }
             else
