@@ -97,25 +97,6 @@ namespace BoTools.Service
             return;
         }
 
-        //private Task InviteCreated(SocketInvite invite)
-        //{            
-        //    var inviter = _client.GetUser(invite.Inviter.Id);            
-        //    //IChannel channel = Helper.GetSocketChannel(_client, invite.Channel.Name);            
-
-        //    string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
-
-        //    string logMessage = $"Une nouvelle invitation (*{duration}*) vient d'être créée par " +
-        //        $"<@{inviter.Id}> dans : {invite.Channel.Name} | #{invite.ChannelId}";
-
-        //    string message = $"{_alarmEmote} Voici l'invitation officielle de ZderLand à partager : {_eternalInvite}\n" +
-        //        $"Merci à toi, la bise {_coeurEmote}";
-
-        //    SendToLeader(logMessage);
-        //    inviter.SendMessageAsync(message);
-
-        //    return Task.CompletedTask;           
-        //}
-
         private Task MessageReceived(SocketMessage arg)
         {
             //DM from User
@@ -126,12 +107,6 @@ namespace BoTools.Service
             }
                 
             return Task.CompletedTask;
-        }
-
-        public void SetStatus(string text = null)
-        {
-            //message de base
-            _client.SetGameAsync(name: text ?? ": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);
         }
         #endregion
 
@@ -272,14 +247,13 @@ namespace BoTools.Service
         internal async Task SendJellyfinNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limitée au channel <#816283362478129182>", messageReference: reference);
-            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```");            
+                $" est limitée au channel <#816283362478129182>", messageReference: reference);            
         }
 
-        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
+        internal async Task SendNgrokReset(ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
-                $"En cas de soucis merci de contacter <@!312317884389130241>");            
+            await channel.SendMessageAsync($"{_alarmEmote} Un nouveau lien va être généré ! {_alarmEmote}\n" +
+                $"En cas de soucis direct avec Jellyfin merci de contacter Vince");            
         }
         #endregion
         #endregion        
@@ -301,7 +275,7 @@ namespace BoTools.Service
                 ThumbnailUrl = _boToolsGif,
 
                 Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",                
-                Description = $"{GetCoinEmote()}  À utiliser avec **Google Chrome** \n" +
+                Description = $"{GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
                     $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },

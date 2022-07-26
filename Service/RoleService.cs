@@ -30,7 +30,7 @@ namespace BoTools.Service
         public RoleService(DiscordSocketClient client)
         {
             _client = client;
-            _client.GuildMembersDownloaded += GuildMembersDownloaded;
+            _client.GuildMembersDownloaded += GuildMembersDownloaded;            
         }
 
 

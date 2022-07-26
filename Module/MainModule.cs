@@ -40,47 +40,39 @@ namespace BoTools.Module
             var reference = new MessageReference(userMsg.Id);
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
-                if (!Process.GetProcessesByName("ngrok").Any()) // isRunning ? 
+                if (Process.GetProcessesByName("ngrok").Any())
                 {
-                    await _jellyfinService.ClearChannel(Context.Client);                    
-                    await _messageService.AddReactionVu(userMsg);
-
-                    // Jellyfin
-                    _jellyfinService.Activate();
-                    log.Info($"Jellyfin activated");                    
-
-                    //activation NGrok + récupération du lien http
-                    string ngrokUrl = await _jellyfinService.GetNgrokUrl();
-                    log.Info($"ngrokUrl = {ngrokUrl}");
-                    _messageService.SetStatus("Jellyfin is Open !");
-
-                    var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
-                    Embed embed = builder.Build();
-
-                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
-                        message = $"{_messageService.GetLuffyEmote()}";
-                    else
-                        message = $"{_messageService.GetPepeSmokeEmote()}";
-
-                    await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
-                    await _messageService.AddDoneReaction(userMsg);                               
+                    await _messageService.SendNgrokReset(Context.Channel); 
+                    await Helper.KillProcess("ngrok");
                 }
+                    
+                await _jellyfinService.ClearChannel(Context.Client);             
+                await _messageService.AddReactionVu(userMsg);
+
+                // Jellyfin
+                _jellyfinService.Activate();                                      
+
+                //activation NGrok + récupération du lien http
+                string ngrokUrl = await _jellyfinService.GetNgrokUrl();
+                log.Info($"ngrokUrl = {ngrokUrl}");                    
+
+                var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
+                Embed embed = builder.Build();
+
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                    message = $"{_messageService.GetLuffyEmote()}";
                 else
-                {
-                    //Confirmation de bug par user :
-                    // 1."si lien fonctionne plus" --> emojiCheck
-                    // 2."si Jellyfin fonctionne plus" --> emojiX ($"Oh ?! J'espère qu'il va pas falloir me reboot ! Une action physique va être nécessaire @V")
-                    await _messageService.AddReactionRefused(userMsg);
-                    await _messageService.SendJellyfinAlreadyInUse(Context.Channel);
-                }
+                    message = $"{_messageService.GetPepeSmokeEmote()}";
+
+                await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
+                await _messageService.AddDoneReaction(userMsg);                               
             }
             else
             {
                 await _messageService.AddReactionAlarm(userMsg);
                 await _messageService.SendJellyfinNotAuthorizeHere(Context.Channel, reference);
             }
-            log.Info($"JellyfinAsync done");
-            _messageService.SetStatus(); //reset status
+            log.Info($"JellyfinAsync done");            
         }
 
 
