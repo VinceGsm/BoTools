@@ -12,6 +12,7 @@ namespace BoTools.Service
     public class MessageService
     {
         private static ulong _idChannelGeneral = 312966999414145034;
+        private static ulong _idJellyfinChannel = 816283362478129182;
         private static string _eternalInvite = "https://discord.gg/g43kWat";
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -27,8 +28,9 @@ namespace BoTools.Service
         private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
         #endregion
         #region emoji
-        private static readonly string _coeurEmoji = "\u2764";
+        private static readonly string _coeurEmoji = "\u2764";        
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
+        private static readonly string _dlEmoji = "<:DL:894171464167747604>";
         #endregion        
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
@@ -41,9 +43,9 @@ namespace BoTools.Service
         public MessageService(DiscordSocketClient client)
         {
             _client = client;                                   
-            _client.Ready += Ready;            
-            _client.UserLeft += UserLeft;          
-            _client.InviteCreated += InviteCreated;            
+            _client.Ready += Ready;
+            _client.UserLeft += UserLeft;                                  
+            _client.MessageReceived += MessageReceived;
         }
 
 
@@ -55,19 +57,17 @@ namespace BoTools.Service
         public async Task Ready()
         {            
             await SendLatencyAsync();
-            await CheckBirthday();
-            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+            await CheckBirthday();            
+            await _client.DownloadUsersAsync(_client.Guilds); // DL all user
         }
-
 
         public async Task UserJoined(SocketGuildUser guildUser)
         {            
             if (!guildUser.IsBot)
             {                
-                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +
-                    $"Tu peux aussi passer le bonjour dans <#491730828271943707>\n" +
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
-                    $"A très vite pour de nouvelles aventures {_coeurEmote}" ;
+                    $"A très vite pour de nouvelles aventures sur ZderLand {_coeurEmote}" ;
 
                 var builder = MakeMessageBuilder(guildUser);
                 Embed embed = builder.Build();
@@ -85,7 +85,8 @@ namespace BoTools.Service
         /// </summary>
         /// <param name="guildUser"></param>
         /// <returns></returns>
-        private async Task UserLeft(SocketGuildUser guildUser)
+        //private async Task UserLeft(SocketGuildUser guildUser) 
+        private async Task UserLeft(SocketGuild arg1, SocketUser guildUser)
         {
             log.Warn($"{guildUser.Username} left");                                                     
             string message = $"<@{guildUser.Id}> left Zderland !";             
@@ -96,24 +97,15 @@ namespace BoTools.Service
             return;
         }
 
-        private Task InviteCreated(SocketInvite invite)
-        {                        
-            var channel = Helper.GetSocketMessageChannel(_client, invite.Channel.Name);
-
-            string duration = (invite.IsTemporary) ? "éternelle" : $"valable {invite.MaxAge/3600}h";
-
-            string logMessage = $"Une nouvelle invitation (*{duration}*) à Zderland vient d'être créée par " +
-                $"<@{invite.Inviter.Id}> dans : {channel?.Name}";
-
-            string message = $"<@{invite.Inviter.Id}> \n" +
-                $"{_alarmEmote} Voici l'invitation officielle à partager por favor : {_eternalInvite} {_coeurEmote}";
-
-            if (_logChannel != null)            
-                _logChannel.SendMessageAsync(logMessage);
+        private Task MessageReceived(SocketMessage arg)
+        {
+            //DM from User
+            if (arg.Source == MessageSource.User && arg.Channel.Name.StartsWith('@'))
+            {
+                string message = $"<@{arg.Author.Id}> *says* : " + arg.Content ;
+                SendToLeader(message);
+            }
                 
-            if (channel != null)
-                channel.SendMessageAsync(message);        
-
             return Task.CompletedTask;
         }
         #endregion
@@ -188,7 +180,7 @@ namespace BoTools.Service
         private async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
-            string msgStart = $"@everyone {_pikachuEmote} \n" +
+            string msgStart = $"@here {_pikachuEmote} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
@@ -197,9 +189,9 @@ namespace BoTools.Service
 
             foreach (var list in msgAsync)
             {
-                IMessage message = list.First(x => x.Content.StartsWith(msgStart));                
-
-                if (message.Author.IsBot)
+                IMessage message = list.First(x => x.Content.StartsWith(msgStart));
+                
+                if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day))
                 {
                     isAlreadyDone = true;
                     break;
@@ -214,8 +206,9 @@ namespace BoTools.Service
                 if (isSomeoneBD)
                 {
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
-                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"*PS : J'ai pas vraiment d'oreille*";
+
+                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +                    
+                    $"{_coeurEmote}";
 
                     if (channel != null)
                     {
@@ -227,23 +220,40 @@ namespace BoTools.Service
             }                        
         }
 
+        internal void OnePieceDispo()
+        {
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);                        
+
+            channel.SendMessageAsync(Helper.GetOnePieceMessage(_dlEmoji, _coeurEmote));
+        }
+
+        internal void SendToLeader(string message)
+        {
+            var leader = _client.GetUser(312317884389130241);
+            leader.SendMessageAsync(message);            
+        }
+
         #region Control Message
-        internal async Task CommandNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
+        internal async Task CommandNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
             await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
         }
 
-        internal async Task SendJellyfinNotAuthorize(ISocketMessageChannel channel, MessageReference reference)
+        internal async Task CommandForbidden(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limitée au channel <#816283362478129182>", messageReference: reference);
-            await channel.SendMessageAsync($"```Contacte Vince pour qu'il te créé un compte```");            
+            await channel.SendMessageAsync($"L'utilisation de cette commande est interdite !", messageReference: reference);
         }
 
-        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel)
+        internal async Task SendJellyfinNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"{_alarmEmote} Un lien a déjà été généré {_alarmEmote}\n" +
-                $"En cas de soucis merci de contacter <@!312317884389130241>");            
+            await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
+                $" est limitée au channel <#816283362478129182>", messageReference: reference);            
+        }
+
+        internal async Task SendNgrokReset(ISocketMessageChannel channel)
+        {
+            await channel.SendMessageAsync($"{_alarmEmote} Un nouveau lien va être généré ! {_alarmEmote}\n" +
+                $"En cas de soucis direct avec Jellyfin merci de contacter Vince");            
         }
         #endregion
         #endregion        
@@ -264,9 +274,9 @@ namespace BoTools.Service
                 ImageUrl = _discordImgUrl,
                 ThumbnailUrl = _boToolsGif,
 
-                Title = $"{GetCheckEmote()}︱Streaming & Download︱{GetCheckEmote()}",
-                Description = $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus\n" +
-                    $"{GetCoinEmote()}  En cas de problème : **$BUG**",
+                Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",                
+                Description = $"{GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
+                    $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = GetFooterBuilder()

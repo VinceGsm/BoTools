@@ -3,13 +3,16 @@ using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BoTools
 {
     public static class Helper
     {
+        public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
         private static readonly List<string> _greetings = new List<string>
         {
             "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
@@ -20,7 +23,7 @@ namespace BoTools
             "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation"
-        };
+        };        
         public static readonly List<ulong> _rolesAttributionId = new List<ulong>
         {
             698852663764451381, //games
@@ -44,21 +47,37 @@ namespace BoTools
             712589813605203979, //wow
         };
 
-
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, string channelName)
+
+        #region Process
+        internal static void StartProcess(string path)
         {
-            var channels = GetAllChannels(client);
+            using (var process = new Process())
+            {
+                process.StartInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    UseShellExecute = true                    
+                };
 
-            ISocketMessageChannel channel = (ISocketMessageChannel) channels.FirstOrDefault(x => x.Name == channelName);
-
-            if (channel == null) log.Error($"GetSocketMessageChannel : no channel {channelName}");
-
-            return channel;
+                process.Start();                
+            }
         }
+
+        internal static Task KillProcess(string name)
+        {
+            foreach (var p in Process.GetProcessesByName(name))
+            {
+                p.Kill();
+            }
+
+            return Task.CompletedTask;
+        }
+        #endregion
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
@@ -101,8 +120,7 @@ namespace BoTools
 
         internal static SocketGuild GetZderLand(DiscordSocketClient client)
         {
-            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland
-            //return client.GetGuild(Convert.ToUInt64(_zderLandId)); //in case of using testServer
+            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland            
         }
         internal static IEnumerable<SocketGuild> GetZderLands(DiscordSocketClient client)
         {
@@ -127,13 +145,28 @@ namespace BoTools
             return res.First().ToString().ToUpper() + res.Substring(1); 
         }
 
+        internal static string GetOnePieceMessage(string dlEmoji, string coeurEmote)
+        {
+            var r = new Random();
+            int i = r.Next(2);
+
+            string startMsg = $" {dlEmoji} \n";
+            string messageKanji = startMsg +
+                "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
+                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {coeurEmote}";
+            string messageJap = startMsg +
+                "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
+                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {coeurEmote}";
+
+            return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
+        }
+
         internal static Dictionary<string,DateTime> GetBirthsDay()
         {
-            _birthsDay.Add("!427918309594234881", DateTime.Parse("03/01")); //Coco
+            _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
             _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
             _birthsDay.Add("!560259660578291715", DateTime.Parse("14/02")); //Babiss
-            _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem
-            _birthsDay.Add("!342944682579460096", DateTime.Parse("16/04")); //Matthieu
+            _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem            
             _birthsDay.Add("!126259389962125312", DateTime.Parse("02/06")); //Flo
             _birthsDay.Add("!706958493374218300", DateTime.Parse("03/06")); //Julio
             _birthsDay.Add("!511225222545014817", DateTime.Parse("30/06")); //Isma

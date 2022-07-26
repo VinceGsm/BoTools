@@ -1,25 +1,21 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using log4net;
+using NgrokApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoTools.Service
 {
     public class JellyfinService
-    {        
-        private static readonly string _ngrokSideApi = "http://localhost:5000";
-        private static readonly string _jellyfinPath = @"D:\Apps\JellyFinServer\jellyfin.exe";                
-        private static readonly string _ngrokSideApiPath = @"C:\Users\vgusm\Desktop\v1\ApiNgrok\Ngrok.AspNetCore.Sample.exe";        
-        private List<IMessage> _toDelete = new List<IMessage>();
-
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    {                                
+        private static readonly string _ngrokBatPath = @"C:\Program Files\Ngrok\ngrok.bat";
+        private static readonly string _jellyfinPath = @"C:\Program Files\Jellyfin\jellyfin_10.7.7\jellyfin.exe";
+        private List<IMessage> _toDelete = new List<IMessage>();        
 
 
         /// <summary>        
@@ -47,25 +43,20 @@ namespace BoTools.Service
         {
             if (!Process.GetProcessesByName("ngrok").Any())
             {
-                StartNgrokSideApi();
-                Thread.Sleep(10000); // wait 10sec
-            }                         
-                        
-            string res = await CallSideApiNgrokAsync(_ngrokSideApi);
+                Helper.StartProcess(_ngrokBatPath);
+                Thread.Sleep(1000); // wait 1sec
+            }
+
+            string res = await GetJellyfinUrl();
             return res;                 
         }
 
-        private async Task<string> CallSideApiNgrokAsync(string ngrokPath)
-        {
-            string jellyfinUrl = "https://www.twitch.tv/vince_zder"; //if fail at least we can see my twitch lol
+        private async Task<string> GetJellyfinUrl()
+        {            
+            var ngrok = new Ngrok(Environment.GetEnvironmentVariable("NGROK_API_KEY"));
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(_ngrokSideApi);
-
-            if (response.IsSuccessStatusCode)
-                jellyfinUrl = await response.Content.ReadAsStringAsync();
-
-            return jellyfinUrl;
+            Tunnel jellyfinTunnel = await ngrok.Tunnels.List().FirstAsync();
+            return jellyfinTunnel.PublicUrl;
         }
 
         /// <summary>
@@ -75,8 +66,8 @@ namespace BoTools.Service
         {
             if (!Process.GetProcessesByName("jellyfin").Any())
             {
-                StartExe(_jellyfinPath);
-                Thread.Sleep(5000); // wait 5sec
+                Helper.StartProcess(_jellyfinPath);
+                Thread.Sleep(4000); // wait 4sec
             }
         }
 
@@ -95,47 +86,6 @@ namespace BoTools.Service
                 IEnumerable<IMessage> msg2 = list.Where(x => x.Content.StartsWith("<a:luffy:863101041498259457>"));
                 _toDelete.AddRange(msg);
                 _toDelete.AddRange(msg2);
-            }
-        }
-
-        internal Task RestartSideApi()
-        {
-            foreach (var p in Process.GetProcessesByName("chrome")) //for RAM
-            {
-                p.Kill();
-            }
-            foreach (var p in Process.GetProcessesByName("ngrok"))
-            {
-                p.Kill();
-            }
-            foreach (var p in Process.GetProcessesByName("Ngrok.AspNetCore.Sample"))
-            {
-                p.Kill();
-            }
-
-            StartNgrokSideApi();
-
-            return Task.CompletedTask;
-        }
-
-        private void StartNgrokSideApi()
-        {
-            StartExe(_ngrokSideApiPath);
-        }
-
-        private void StartExe(string path)
-        {
-            using (var process = new Process())
-            {
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = path,
-                    CreateNoWindow = false,
-                    WindowStyle = ProcessWindowStyle.Normal,
-                    UseShellExecute = true
-                };
-
-                process.Start();
             }
         }
     }

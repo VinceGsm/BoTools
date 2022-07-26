@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using log4net;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace BoTools.Service
         public RoleService(DiscordSocketClient client)
         {
             _client = client;
-            _client.GuildMembersDownloaded += GuildMembersDownloaded;
+            _client.GuildMembersDownloaded += GuildMembersDownloaded;            
         }
 
 
@@ -87,13 +86,16 @@ namespace BoTools.Service
                         case "📹":
                             _roleToEmoteSpecial.Add(role, "📹");
                             break;
+                        case "🎵":                            
+                            _roleToEmoteSpecial.Add(role, "🎵");
+                            break;
                     }
                 }
                 else
                 {
                     switch (role.Name)
                     {
-                        //CONTAINS
+                        // CONTAINS
                         case string name when name.Contains("Anime"):
                         //case "👺 Anime 💘":                        
                             _roleToEmoteSpecial.Add(role, "👺");
@@ -103,13 +105,9 @@ namespace BoTools.Service
                             _roleToEmoteSpecial.Add(role, "👒");
                             break;
 
-                        //ENDS
-                        case string name when name.EndsWith("DJ"):
-                            //case "DJ":
-                            _roleToEmoteSpecial.Add(role, "🎵");
-                            break;
-                        //case "🎥 Content Creator":
+                        // ENDS                       
                         case string name when name.EndsWith("Creator"):
+                            //case "🎥 Content Creator":
                             _roleToEmoteSpecial.Add(role, "🌐");
                             break;
                         case string name when name.EndsWith("Casino"):
@@ -204,9 +202,12 @@ namespace BoTools.Service
                     {
                         if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                         {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
-                            subject.AddRoleAsync(roleToAssign);
-                            log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
+                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
+                            if (!subject.Roles.Contains(roleToAssign))
+                            {
+                                subject.AddRoleAsync(roleToAssign);
+                                log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
+                            }
                         }
                     }
                 }
@@ -226,9 +227,12 @@ namespace BoTools.Service
                     {
                         if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                         {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);
-                            subject.AddRoleAsync(roleToAssign);
-                            log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
+                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
+                            if (!subject.Roles.Contains(roleToAssign))
+                            {
+                                subject.AddRoleAsync(roleToAssign);
+                                log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
+                            }                            
                         }
                     }
                 }
@@ -258,8 +262,11 @@ namespace BoTools.Service
                 {
                     if (okUser.Id != 493020872303443969) // compte qui met les reaction 
                     {
-                        var subject = _allUsers.First(x => x.Id == okUser.Id);
-                        subject.AddRoleAsync(_IRoleRules);
+                        var subject = _allUsers.First(x => x.Id == okUser.Id);                        
+                        
+                        if (!subject.Roles.Contains(_IRoleRules))
+                            await subject.AddRoleAsync(_IRoleRules);
+                        
                         log.Info($"CheckRules done for {subject.Username}");
                     }
                 }
@@ -271,7 +278,7 @@ namespace BoTools.Service
 
         public async Task UpdateListUser()
         {
-            await _client.DownloadUsersAsync(Helper.GetZderLands(_client)); // DL all user
+            await _client.DownloadUsersAsync(_client.Guilds); // DL all user
 
             _allUsers = Helper.GetZderLand(_client).Users.ToList();
             _allUsers.RemoveAll(x => x.IsBot);
@@ -320,19 +327,5 @@ namespace BoTools.Service
             subject.AddRoleAsync(roleToAssign);
         }
         #endregion
-
-
-        public Task PurgeRoles()
-        {
-            foreach (var user in _allUsers)
-            {
-                if (!user.Username.Trim().Contains("Vince"))
-                {
-                    user.RemoveRoleAsync(_IRoleRules);
-                    user.RemoveRolesAsync(_IRolesAttribution);
-                }
-            }
-            return Task.CompletedTask;
-        }
     }
 }

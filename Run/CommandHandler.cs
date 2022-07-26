@@ -2,7 +2,6 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using log4net;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,6 +10,8 @@ namespace BoTools.Run
 {
     public class CommandHandler
     {
+        private const ulong _vinceId = 312317884389130241;
+        private const ulong _logChannelId = 826144013920501790;
         private const ulong _gamesMsgId = 848582017091108904;
         private const ulong _specialMsgId = 848582133994881054;
         private const ulong _readRuleMsgId = 848582652718219345;       
@@ -40,10 +41,12 @@ namespace BoTools.Run
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
 
             _client.UserJoined += UserJoined;
-            _client.ReactionAdded += ReactionAdded;
+            _client.ReactionAdded += ReactionAdded;            
             _client.ReactionRemoved += ReactionRemoved;
             _client.MessageReceived += HandleCommandAsync;
         }
+
+
 
         private async Task UserJoined(SocketGuildUser guildUser)
         {            
@@ -75,7 +78,7 @@ namespace BoTools.Run
             await _commands.ExecuteAsync(context: context, argPos: argPos, services: _services);
         }
 
-        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
             switch (arg1.Id)
             {
@@ -94,7 +97,9 @@ namespace BoTools.Run
             return Task.CompletedTask;
         }
 
-        private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction reaction)
+        //     The source channel of the reaction addition will be passed into the Discord.WebSocket.ISocketMessageChannel parameter.
+        //     The reaction that was added will be passed into the Discord.WebSocket.SocketReaction parameter.
+        private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
             switch (arg1.Id)
             {
@@ -108,7 +113,13 @@ namespace BoTools.Run
                     _roleService.RulesReactionAdded(reaction.UserId);
                     break;
 
-                default: break;
+                //Si réaction by me dans log = OP dispo
+                default:                   
+                    if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId) 
+                    {
+                        _messageService.OnePieceDispo();
+                    }
+                    break;
             }
             return Task.CompletedTask;
         }

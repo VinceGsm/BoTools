@@ -8,6 +8,7 @@ My personnal Discord BOT.
 
 ![image](https://user-images.githubusercontent.com/29730840/126081201-23527563-5336-498d-bce7-4b64d7859f4c.png)
 
+Based on [this doc](https://docs.stillu.cc/).
 
 Designed and coded by [Vince](https://github.com/VinceGusmini).
 
