@@ -85,7 +85,7 @@ namespace BoTools.Module
 
 
         [Command("Dodo")]
-        [Summary("Fait dodo")]
+        [Summary("Kill Ngrok + BoTools")]
         public async Task DodosAsync()
         {
             SocketUserMessage userMsg = Context.Message;
@@ -94,9 +94,9 @@ namespace BoTools.Module
             var reference = new MessageReference(userMsg.Id);
             if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
             {
-                await Helper.KillProcess("cmd.exe"); //ngrok dans cmd
+                await Helper.KillProcess("ngrok");                
                 await _messageService.AddReactionRobot(userMsg);
-                await Helper.KillProcess("BoTools");                          
+                await Helper.KillProcess("BoTools");                        
             }
             else
             {

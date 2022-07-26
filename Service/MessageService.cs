@@ -44,8 +44,7 @@ namespace BoTools.Service
         {
             _client = client;                                   
             _client.Ready += Ready;
-            _client.UserLeft += UserLeft;                      
-            //_client.InviteCreated += InviteCreated;
+            _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
         }
 

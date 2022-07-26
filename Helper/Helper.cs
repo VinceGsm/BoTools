@@ -120,8 +120,7 @@ namespace BoTools
 
         internal static SocketGuild GetZderLand(DiscordSocketClient client)
         {
-            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland
-            //return client.GetGuild(Convert.ToUInt64(_zderLandId)); //in case of using testServer
+            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland            
         }
         internal static IEnumerable<SocketGuild> GetZderLands(DiscordSocketClient client)
         {
