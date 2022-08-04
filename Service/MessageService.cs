@@ -11,27 +11,9 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private static ulong _idRoleModo = 322489502562123778; 
         private static ulong _idChannelGeneral = 312966999414145034;
-        private static ulong _idJellyfinChannel = 816283362478129182;
-        private static string _eternalInvite = "https://discord.gg/g43kWat";
-        #region emote                
-        private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
-        private static readonly string _doneEmote = "<a:check:626017543340949515>";
-        private static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
-        private static readonly string _alarmEmote = "<a:alert:637645061764415488>";
-        private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
-        private static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
-        private static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
-        private static readonly string _checkEmote = "<a:verified:773622374926778380>";        
-        private static readonly string _catVibeEmote = "<a:catvibe:792184060054732810>";
-        private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
-        #endregion
-        #region emoji
-        private static readonly string _coeurEmoji = "\u2764";        
-        private static readonly string _tvEmoji = "\uD83D\uDCFA";
-        private static readonly string _dlEmoji = "<:DL:894171464167747604>";
-        #endregion        
+        private static ulong _idJellyfinChannel = 816283362478129182;         
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -67,12 +49,12 @@ namespace BoTools.Service
             {                
                 var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter *Vince#0420*\n" +
-                    $"A très vite pour de nouvelles aventures sur ZderLand {_coeurEmote}" ;
+                    $"A très vite pour de nouvelles aventures sur ZderLand {Helper.GetCoeurEmote()}" ;
 
                 var builder = MakeMessageBuilder(guildUser);
                 Embed embed = builder.Build();
 
-                string message = $"{_pikachuEmote}";
+                string message = $"{Helper.GetPikachuEmote()}";
 
                 await guildUser.SendMessageAsync(text:message, false, embed:embed, null, null);
                 await guildUser.SendMessageAsync(msg);
@@ -134,13 +116,13 @@ namespace BoTools.Service
 
         public async Task AddReactionAlarm(SocketUserMessage message)
         {            
-            var alarm = Emote.Parse(_alarmEmote) ;            
+            var alarm = Emote.Parse(Helper.GetAlarmEmote()) ;            
             await message.AddReactionAsync(alarm);
         }
 
         public async Task AddReactionBirthDay(IMessage message)
         {            
-            var bravo = Emote.Parse(_bravoEmote);
+            var bravo = Emote.Parse(Helper.GetBravoEmote());
             // --> 🎂
             Emoji cake = new Emoji("\uD83C\uDF82");
 
@@ -152,7 +134,7 @@ namespace BoTools.Service
         {
             await message.RemoveAllReactionsAsync();
 
-            var check = Emote.Parse(_doneEmote);
+            var check = Emote.Parse(Helper.GetDoneEmote());
             await message.AddReactionAsync(check);
         }
         #endregion
@@ -180,7 +162,7 @@ namespace BoTools.Service
         private async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
-            string msgStart = $"@here {_pikachuEmote} \n" +
+            string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
@@ -208,7 +190,7 @@ namespace BoTools.Service
                     string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
 
                     string message = msgStart + $" <@{id}> aujourd'hui !\n" +                    
-                    $"{_coeurEmote}";
+                    $"{Helper.GetCoeurEmote()}";
 
                     if (channel != null)
                     {
@@ -220,11 +202,35 @@ namespace BoTools.Service
             }                        
         }
 
+        internal async void SendSpecialMessage(ISocketMessageChannel channel)
+        {
+            //ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
+            await channel.SendMessageAsync($"Salutations <@&816282726654279702> !\n\n");
+            string msg =                 
+                $"**J'ai le plaisir de vous annoncer la version 2 du service Jellyfin de Zderland** {Helper.GetPepeSmokeEmote()}\n\n" + 
+                $"{Helper.GetCoinEmote()} Un server maison a été mit en place afin de permettre une disponibilité du service **24h/24h**\n" +
+                $"Cela veut aussi dire que les liens générés par mes soins seront actifs de manière *casi* permanente\n" +
+                $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
+                $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
+                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé (et testé avec l'aide de xxxxxx) ce qui inclut : \n" +
+                $"```- Chapitrage illustré des épisodes qui le permettent\n" +
+                $"- Moins de bug {Helper.GetTvEmoji()}\n" +
+                $"- SyncPlay de nouveau fonctionnel \n" +
+                $"- Nouveau compte pour tous les anciens + compte invité\n" +
+                $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +
+                $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
+            await channel.SendMessageAsync(msg);
+
+            string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{_idJellyfinChannel}> contactez un <@&{_idRoleModo}>\n" +
+                $"{Helper.GetPikachuEmote()}";
+            await channel.SendMessageAsync(msg2);
+        }
+
         internal void OnePieceDispo()
         {
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);                        
 
-            channel.SendMessageAsync(Helper.GetOnePieceMessage(_dlEmoji, _coeurEmote));
+            channel.SendMessageAsync(Helper.GetOnePieceMessage(Helper.GetDlEmoji(), Helper.GetCoeurEmote()));
         }
 
         internal void SendToLeader(string message)
@@ -252,7 +258,7 @@ namespace BoTools.Service
 
         internal async Task SendNgrokReset(ISocketMessageChannel channel)
         {
-            await channel.SendMessageAsync($"{_alarmEmote} Un nouveau lien va être généré ! {_alarmEmote}\n" +
+            await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
                 $"En cas de soucis direct avec Jellyfin merci de contacter Vince");            
         }
         #endregion
@@ -274,9 +280,9 @@ namespace BoTools.Service
                 ImageUrl = _discordImgUrl,
                 ThumbnailUrl = _boToolsGif,
 
-                Title = $"{GetCheckEmote()}︱Cliquez ici︱{GetCheckEmote()}",                
-                Description = $"{GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
-                    $"{GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
+                Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
+                Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
+                    $"{Helper.GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = GetFooterBuilder()
@@ -290,7 +296,7 @@ namespace BoTools.Service
                 Color = Color.DarkRed,                
                 ThumbnailUrl = _boToolsGif,
 
-                Title = $"{GetCheckEmote()}︱WELCOME︱{GetCheckEmote()}",
+                Title = $"{Helper.GetCheckEmote()}︱WELCOME︱{Helper.GetCheckEmote()}",
                 Description = $"Bienvenue sur Zderland {guildUser.Username} !",     
 
                 Author = new EmbedAuthorBuilder { Name = "Mes circuits ont détectés l'arrivée de " + guildUser.Username, IconUrl = guildUser.GetAvatarUrl() },
@@ -304,22 +310,9 @@ namespace BoTools.Service
             return new EmbedFooterBuilder
             {
                 IconUrl = _urlAvatarVince,
-                Text = $"Powered with {GetCoeurEmoji()} by Vince"
+                Text = $"Powered with {Helper.GetCoeurEmoji()} by Vince"
             };
         }
-        #endregion
-
-        #region Get Emoji/Emote
-        public string GetCoinEmote() { return _coinEmote; }
-        public string GetCoeurEmote() { return _coeurEmote; }
-        public string GetCheckEmote() { return _checkEmote; }
-        public string GetCatVibeEmote() { return _catVibeEmote; } 
-        public string GetArrowEmote() { return _arrowEmote; }
-        public string GetDoneEmote() { return _doneEmote; }
-        public string GetPepeSmokeEmote() { return _pepeSmokeEmote; }
-        public string GetLuffyEmote() { return _luffyEmote; }
-        public string GetCoeurEmoji() { return _coeurEmoji; }
-        public string GetTvEmoji() { return _tvEmoji; }
         #endregion
     }
 }

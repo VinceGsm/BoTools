@@ -60,9 +60,9 @@ namespace BoTools.Module
                 Embed embed = builder.Build();
 
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
-                    message = $"{_messageService.GetLuffyEmote()}";
+                    message = $"{Helper.GetLuffyEmote()}";
                 else
-                    message = $"{_messageService.GetPepeSmokeEmote()}";
+                    message = $"{Helper.GetPepeSmokeEmote()}";
 
                 await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
                 await _messageService.AddDoneReaction(userMsg);                               
@@ -78,7 +78,7 @@ namespace BoTools.Module
 
         [Command("Dodo")]
         [Summary("Kill Ngrok + BoTools")]
-        public async Task DodosAsync()
+        public async Task DodoAsync()
         {
             SocketUserMessage userMsg = Context.Message;
             log.Info($"Dodo by {userMsg.Author}");
@@ -97,6 +97,27 @@ namespace BoTools.Module
             }
 
             log.Info($"Dodo done");
+        }
+
+        [Command("Special")]
+        [Summary("Send special message in a specific channel")]
+        public async Task SpecialAsync()
+        {
+            SocketUserMessage userMsg = Context.Message;
+            log.Info($"Special by {userMsg.Author}");            
+
+            var reference = new MessageReference(userMsg.Id);
+            if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
+            {
+                _messageService.SendSpecialMessage(Context.Message.Channel);
+            }
+            else
+            {
+                await _messageService.AddReactionAlarm(userMsg);
+                await _messageService.CommandForbidden(Context.Channel, reference);
+            }
+
+            log.Info($"Special done");
         }
     }
 }

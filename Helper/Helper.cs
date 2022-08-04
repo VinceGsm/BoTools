@@ -22,7 +22,7 @@ namespace BoTools
             "wassap?","what's the rumpus?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
             "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
-            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation"
+            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
         };        
         public static readonly List<ulong> _rolesAttributionId = new List<ulong>
         {
@@ -46,6 +46,25 @@ namespace BoTools
             615822402781315073, //lol
             712589813605203979, //wow
         };
+        #region emote                
+        private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
+        private static readonly string _doneEmote = "<a:check:626017543340949515>";
+        private static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
+        private static readonly string _alarmEmote = "<a:alert:637645061764415488>";
+        private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
+        private static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
+        private static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
+        private static readonly string _checkEmote = "<a:verified:773622374926778380>";                
+        private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
+        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
+        private static readonly string _pepeMdrEmote = "<a:pepeMDR:912738745105674292>";
+        private static readonly string _heheEmote = "<a:hehe:773622227064979547>";
+        #endregion
+        #region emoji
+        private static readonly string _coeurEmoji = "\u2764";        
+        private static readonly string _tvEmoji = "\uD83D\uDCFA";
+        private static readonly string _dlEmoji = "<:DL:894171464167747604>";
+        #endregion    
 
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
@@ -136,13 +155,14 @@ namespace BoTools
             return channels;
         }
 
+        #region Message
         internal static string GetGreeting()
         {
             Random random = new Random();
             string res = _greetings[random.Next(_greetings.Count)];
 
             //First letter Uper
-            return res.First().ToString().ToUpper() + res.Substring(1); 
+            return res.First().ToString().ToUpper() + res.Substring(1);
         }
 
         internal static string GetOnePieceMessage(string dlEmoji, string coeurEmote)
@@ -160,6 +180,8 @@ namespace BoTools
 
             return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
         }
+        #endregion
+
 
         internal static Dictionary<string,DateTime> GetBirthsDay()
         {
@@ -194,5 +216,23 @@ namespace BoTools
         {
             return channel.Name.EndsWith("log");
         }
+
+        #region Get Emoji/Emote
+        public static string GetCoinEmote() { return _coinEmote; }
+        public static string GetCoeurEmote() { return _coeurEmote; }
+        public static string GetCheckEmote() { return _checkEmote; }
+        public static string GetPikachuEmote() { return _pikachuEmote; }
+        public static string GetAlarmEmote() { return _alarmEmote; }
+        public static string GetBravoEmote() { return _bravoEmote; }        
+        public static string GetArrowEmote() { return _arrowEmote; }
+        public static string GetDoneEmote() { return _doneEmote; }
+        public static string GetPepeSmokeEmote() { return _pepeSmokeEmote; }
+        public static string GetPepeMdrEmote() { return _pepeMdrEmote; }
+        public static string GetHeheEmote() { return _heheEmote; } 
+        public static string GetLuffyEmote() { return _luffyEmote; }
+        public static string GetCoeurEmoji() { return _coeurEmoji; }
+        public static string GetTvEmoji() { return _tvEmoji; }
+        public static string GetDlEmoji() { return _dlEmoji; }
+        #endregion
     }
 }
