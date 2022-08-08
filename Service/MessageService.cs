@@ -10,17 +10,10 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class MessageService
-    {
-        private static ulong _idRoleModo = 322489502562123778; 
-        private static ulong _idChannelGeneral = 312966999414145034;
-        private static ulong _idJellyfinChannel = 816283362478129182;         
+    {       
         private DiscordSocketClient _client;
         private ISocketMessageChannel _logChannel;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
-        private static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif"; 
-        private static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif"; 
-
 
         public MessageService(DiscordSocketClient client)
         {
@@ -29,8 +22,7 @@ namespace BoTools.Service
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
         }
-
-
+        
         #region Client
         /// <summary>
         /// When guild data has finished downloading (+state : Ready)
@@ -48,7 +40,7 @@ namespace BoTools.Service
             if (!guildUser.IsBot)
             {                
                 var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
-                    $"En cas de problème merci de contacter *Vince#0420*\n" +
+                    $"En cas de problème merci de contacter **Vince#0420**\n" +
                     $"A très vite pour de nouvelles aventures sur ZderLand {Helper.GetCoeurEmote()}" ;
 
                 var builder = MakeMessageBuilder(guildUser);
@@ -86,6 +78,7 @@ namespace BoTools.Service
             {
                 string message = $"<@{arg.Author.Id}> *says* : " + arg.Content ;
                 SendToLeader(message);
+                AddReactionRobot((SocketUserMessage)arg);
             }
                 
             return Task.CompletedTask;
@@ -130,7 +123,7 @@ namespace BoTools.Service
             await message.AddReactionAsync(bravo);
         }
 
-        internal async Task AddDoneReaction(SocketUserMessage message)
+        public async Task AddDoneReaction(SocketUserMessage message)
         {
             await message.RemoveAllReactionsAsync();
 
@@ -165,7 +158,7 @@ namespace BoTools.Service
             string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
             IAsyncEnumerable<IReadOnlyCollection<IMessage>> msg = channel.GetMessagesAsync(99);
             var msgAsync = msg.ToListAsync().Result;
 
@@ -221,16 +214,16 @@ namespace BoTools.Service
                 $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
             await channel.SendMessageAsync(msg);
 
-            string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{_idJellyfinChannel}> contactez un <@&{_idRoleModo}>\n" +
+            string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{Helper._idJellyfinChannel}> contactez un <@&{Helper._idModoRole}>\n" +
                 $"{Helper.GetPikachuEmote()}";
             await channel.SendMessageAsync(msg2);
         }
 
         internal void OnePieceDispo()
         {
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idJellyfinChannel);                        
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idJellyfinChannel);                        
 
-            channel.SendMessageAsync(Helper.GetOnePieceMessage(Helper.GetDlEmoji(), Helper.GetCoeurEmote()));
+            channel.SendMessageAsync(Helper.GetOnePieceMessage());
         }
 
         internal void SendToLeader(string message)
@@ -277,8 +270,8 @@ namespace BoTools.Service
             {
                 Url = ngRockUrl,
                 Color = Color.DarkRed,
-                ImageUrl = _discordImgUrl,
-                ThumbnailUrl = _boToolsGif,
+                ImageUrl = Helper._discordImgUrl,
+                ThumbnailUrl = Helper._boToolsGif,
 
                 Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
                 Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
@@ -294,7 +287,7 @@ namespace BoTools.Service
             EmbedBuilder res = new EmbedBuilder
             {                
                 Color = Color.DarkRed,                
-                ThumbnailUrl = _boToolsGif,
+                ThumbnailUrl = Helper._boToolsGif,
 
                 Title = $"{Helper.GetCheckEmote()}︱WELCOME︱{Helper.GetCheckEmote()}",
                 Description = $"Bienvenue sur Zderland {guildUser.Username} !",     
@@ -309,7 +302,7 @@ namespace BoTools.Service
         {
             return new EmbedFooterBuilder
             {
-                IconUrl = _urlAvatarVince,
+                IconUrl = Helper._urlAvatarVince,
                 Text = $"Powered with {Helper.GetCoeurEmoji()} by Vince"
             };
         }

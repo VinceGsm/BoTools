@@ -17,15 +17,15 @@ namespace BoTools.Module
         private const ulong _vinceId = 312317884389130241;
         private const ulong _PortableId = 493020872303443969;
         private readonly MessageService _messageService;
-        private readonly RoleService _roleService;
+        private readonly EventService _eventService;
         private readonly JellyfinService _jellyfinService;
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
 
-		public MainModule(MessageService messageService, JellyfinService jellyfinService, RoleService roleService) 
+		public MainModule(MessageService messageService, JellyfinService jellyfinService, EventService eventService) 
 		{
 			_jellyfinService = jellyfinService;
 			_messageService = messageService;
-            _roleService = roleService;
+            _eventService = eventService;
         }
 
         
@@ -42,30 +42,33 @@ namespace BoTools.Module
             {
                 if (Process.GetProcessesByName("ngrok").Any())
                 {
-                    await _messageService.SendNgrokReset(Context.Channel); 
+                    await _messageService.SendNgrokReset(Context.Channel);
                     await Helper.KillProcess("ngrok");
                 }
-                    
-                await _jellyfinService.ClearChannel(Context.Client);             
+
+                await _jellyfinService.ClearChannel(Context.Client);
                 await _messageService.AddReactionVu(userMsg);
 
                 // Jellyfin
-                _jellyfinService.Activate();                                      
+                _jellyfinService.Activate();
 
                 //activation NGrok + récupération du lien http
                 string ngrokUrl = await _jellyfinService.GetNgrokUrl();
-                log.Info($"ngrokUrl = {ngrokUrl}");                    
+                log.Info($"ngrokUrl = {ngrokUrl}");
 
                 var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
                 Embed embed = builder.Build();
 
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                if (Helper.IsSundayToday())
+                {
                     message = $"{Helper.GetLuffyEmote()}";
+                    _eventService.CreateNextOnePiece();
+                }                    
                 else
                     message = $"{Helper.GetPepeSmokeEmote()}";
 
                 await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
-                await _messageService.AddDoneReaction(userMsg);                               
+                await _messageService.AddDoneReaction(userMsg);
             }
             else
             {
@@ -74,7 +77,6 @@ namespace BoTools.Module
             }
             log.Info($"JellyfinAsync done");            
         }
-
 
         [Command("Dodo")]
         [Summary("Kill Ngrok + BoTools")]
@@ -118,6 +120,19 @@ namespace BoTools.Module
             }
 
             log.Info($"Special done");
+        }
+
+        [Command("OnePiece")]
+        [Summary("Create next Event for OnePiece streaming")]
+        public async Task EventOnePieceAsync()
+        {
+            SocketUserMessage userMsg = Context.Message;
+            log.Info($"EventOnePieceAsync by {userMsg.Author}");            
+
+            await _eventService.CreateNextOnePiece();
+            await _messageService.AddDoneReaction(userMsg);
+
+            log.Info($"EventOnePieceAsync done");
         }
     }
 }

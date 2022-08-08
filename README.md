@@ -4,6 +4,7 @@ My personnal Discord BOT.
 
 - Send messages (birthdays & alerts)
 - Add / remove roles
+- Create events
 - Using Jellyfin + Ngrok :
 
 ![image](https://user-images.githubusercontent.com/29730840/126081201-23527563-5336-498d-bce7-4b64d7859f4c.png)

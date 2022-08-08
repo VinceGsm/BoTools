@@ -13,17 +13,13 @@ namespace BoTools
     public static class Helper
     {
         public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
-        private static readonly List<string> _greetings = new List<string>
-        {
-            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
-            "konnichi wa","'sup, b?","what's poppin'?","greetings","What's in the bag?","sup","wussup?","how ya goin?",
-            "what's the dizzle?","good morning","what's cracking?","quoi de neuf la cité ?","whazzup?","guten Tag",
-            "EDGAAAAAAR","good afternoon","hola","hello","coucou !","what's the dilly?","très heureux d'être là",
-            "wassap?","what's the rumpus?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
-            "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
-            "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
-            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
-        };        
+        public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
+        public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
+        public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
+        public static ulong _idModoRole = 322489502562123778;
+        public static ulong _idGeneralChannel = 312966999414145034;
+        public static ulong _idJellyfinChannel = 816283362478129182;        
+        public static ulong _idSaloonVoice = 493036345686622210;
         public static readonly List<ulong> _rolesAttributionId = new List<ulong>
         {
             698852663764451381, //games
@@ -46,6 +42,7 @@ namespace BoTools
             615822402781315073, //lol
             712589813605203979, //wow
         };
+        
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         private static readonly string _doneEmote = "<a:check:626017543340949515>";
@@ -64,7 +61,18 @@ namespace BoTools
         private static readonly string _coeurEmoji = "\u2764";        
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
         private static readonly string _dlEmoji = "<:DL:894171464167747604>";
-        #endregion    
+        #endregion
+        private static readonly List<string> _greetings = new List<string>
+        {
+            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
+            "konnichi wa","'sup, b?","what's poppin'?","greetings","What's in the bag?","sup","wussup?","how ya goin?",
+            "what's the dizzle?","good morning","what's cracking?","quoi de neuf la cité ?","whazzup?","guten Tag",
+            "EDGAAAAAAR","good afternoon","hola","hello","coucou !","what's the dilly?","très heureux d'être là",
+            "wassap?","what's the rumpus?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
+            "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
+            "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
+            "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
+        };
 
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
@@ -165,23 +173,32 @@ namespace BoTools
             return res.First().ToString().ToUpper() + res.Substring(1);
         }
 
-        internal static string GetOnePieceMessage(string dlEmoji, string coeurEmote)
+        internal static string GetOnePieceMessage()
         {
             var r = new Random();
             int i = r.Next(2);
 
-            string startMsg = $" {dlEmoji} \n";
+            string startMsg = $" {GetDlEmoji()} \n";
             string messageKanji = startMsg +
                 "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
-                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {coeurEmote}";
+                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {GetCoeurEmote()}";
             string messageJap = startMsg +
                 "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
-                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {coeurEmote}";
+                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {GetCoeurEmote()}";
 
             return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
         }
         #endregion
 
+        internal static bool IsSundayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Sunday; }
+
+        internal static DateTime GetNextWeekday(DateTime start, DayOfWeek day)
+        {
+            start = start.AddDays(1); //excluding today if its corresponding to 'day'
+            // The (... + 7) % 7 ensures we end up with a value in the range [0, 6]
+            int daysToAdd = ((int)day - (int)start.DayOfWeek + 7) % 7;
+            return start.AddDays(daysToAdd);
+        }
 
         internal static Dictionary<string,DateTime> GetBirthsDay()
         {
