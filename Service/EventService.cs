@@ -27,16 +27,24 @@ namespace BoTools.Service
 
         public async Task CreateNextOnePiece()
         {
-            SocketGuild serv = Helper.GetZderLand(_client);                        
-            var name = $"One Piece {GetNextNumOnePiece()} Streaming";
-            DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);             
-            DateTimeOffset startTime =  new DateTimeOffset(target.AddHours(21.2));   // 21h15 
-            GuildScheduledEventType type = GuildScheduledEventType.Voice;
-            string description = "**RDV hebdomadaire du server !**";
-            ulong? channelId = Helper._idSaloonVoice;
-            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
+            SocketGuild serv = Helper.GetZderLand(_client);
+            var events = serv.GetEventsAsync().Result.ToList();
+            bool isNeeded = events.First(x => x.Name.StartsWith("One Piece 1")) == null ;
 
-            serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);               
+            if (isNeeded)
+            {
+                var name = $"One Piece {GetNextNumOnePiece()} Streaming";
+                DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
+                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21.2));   // 21h12
+                GuildScheduledEventType type = GuildScheduledEventType.Voice;
+                string description = "**RDV hebdomadaire du server !**";
+                ulong? channelId = Helper._idSaloonVoice;
+                Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
+
+                serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+            }
+            else
+                log.Warn("CreateNextOnePiece : An event is already programmed !");
         }
 
         public int GetNextNumOnePiece()
