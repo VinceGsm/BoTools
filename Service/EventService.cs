@@ -3,11 +3,8 @@ using Discord.WebSocket;
 using HtmlAgilityPack;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -51,22 +48,27 @@ namespace BoTools.Service
         {            
             string html;                     
             var htmlDoc = new HtmlDocument();
-            using (HttpClient httpClient = new HttpClient())
-            {                
-                html = httpClient.GetStringAsync("https://www.vostfr-episode.com/anime-one-piece").Result;
-            }                        
-            htmlDoc.LoadHtml(html);
-            
-            string xpathBeforeTarget = "/html[1]/body[1]/div[2]/div[4]/div[6]/div[1]/div[1]/ul[1]/li[21]/a[1]";
-            var listNode = htmlDoc.DocumentNode.Descendants("a").ToList();
-            var beforeTargetNode = htmlDoc.DocumentNode.SelectSingleNode(xpathBeforeTarget);
 
-            var target = listNode[listNode.IndexOf(beforeTargetNode) + 1].InnerText.Trim();            
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    html = httpClient.GetStringAsync("https://www.vostfr-episode.com/anime-one-piece").Result;
+                }
+                htmlDoc.LoadHtml(html);
 
-            var season =  Regex.Match(target, @"\d+").Value;
-            int num = Int32.Parse(target.Substring(13, 4));
+                string xpathBeforeTarget = "/html[1]/body[1]/div[2]/div[4]/div[6]/div[1]/div[1]/ul[1]/li[21]/a[1]";
+                var listNode = htmlDoc.DocumentNode.Descendants("a").ToList();
+                var beforeTargetNode = htmlDoc.DocumentNode.SelectSingleNode(xpathBeforeTarget);
 
-            return num+1;
+                var target = listNode[listNode.IndexOf(beforeTargetNode) + 1].InnerText.Trim();
+
+                var season = Regex.Match(target, @"\d+").Value;
+                int num = Int32.Parse(target.Substring(13, 4));
+
+                return num + 1;
+            }
+            catch(Exception ex) { return 0; }
         }
     }
 }
