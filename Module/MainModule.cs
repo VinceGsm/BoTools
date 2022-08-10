@@ -78,29 +78,6 @@ namespace BoTools.Module
             log.Info($"JellyfinAsync done");            
         }
 
-        [Command("Dodo")]
-        [Summary("Kill Ngrok + BoTools")]
-        public async Task DodoAsync()
-        {
-            SocketUserMessage userMsg = Context.Message;
-            log.Info($"Dodo by {userMsg.Author}");
-
-            var reference = new MessageReference(userMsg.Id);
-            if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
-            {
-                await Helper.KillProcess("ngrok");                
-                await _messageService.AddReactionRobot(userMsg);
-                await Helper.KillProcess("BoTools");                        
-            }
-            else
-            {
-                await _messageService.AddReactionAlarm(userMsg);
-                await _messageService.CommandForbidden(Context.Channel, reference);
-            }
-
-            log.Info($"Dodo done");
-        }
-
         [Command("Special")]
         [Summary("Send special message in a specific channel")]
         public async Task SpecialAsync()
