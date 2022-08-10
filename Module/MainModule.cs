@@ -111,7 +111,7 @@ namespace BoTools.Module
             var reference = new MessageReference(userMsg.Id);
             if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
             {
-                _messageService.SendSpecialMessage(Context.Message.Channel);
+                _messageService.SendSpecialMessage();
             }
             else
             {

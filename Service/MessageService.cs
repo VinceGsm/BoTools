@@ -195,17 +195,17 @@ namespace BoTools.Service
             }                        
         }
 
-        internal async void SendSpecialMessage(ISocketMessageChannel channel)
+        internal async void SendSpecialMessage()
         {
-            //ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, _idChannelGeneral);
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
             await channel.SendMessageAsync($"Salutations <@&816282726654279702> !\n\n");
             string msg =                 
                 $"**J'ai le plaisir de vous annoncer la version 2 du service Jellyfin de Zderland** {Helper.GetPepeSmokeEmote()}\n\n" + 
                 $"{Helper.GetCoinEmote()} Un server maison a été mit en place afin de permettre une disponibilité du service **24h/24h**\n" +
-                $"Cela veut aussi dire que les liens générés par mes soins seront actifs de manière *casi* permanente\n" +
+                $"Cela veut aussi dire que les liens générés seront actifs de manière *casi* permanente\n" +
                 $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
                 $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
-                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé (et testé avec l'aide de xxxxxx) ce qui inclut : \n" +
+                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé et testé (merci aux testeurs) ce qui inclut : \n" +
                 $"```- Chapitrage illustré des épisodes qui le permettent\n" +
                 $"- Moins de bug {Helper.GetTvEmoji()}\n" +
                 $"- SyncPlay de nouveau fonctionnel \n" +
