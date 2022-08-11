@@ -1,6 +1,7 @@
 ﻿using BoTools.Service;
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using log4net;
 using log4net.Config;
@@ -31,14 +32,12 @@ namespace BoTools.Run
             Since the gateway will wait on all invoked event handlers to finish before processing any additional data from the gateway,
             this will create a deadlock that will be impossible to recover from.
 
-            Exceptions in commands will be swallowed by the gateway and logged out through the client's log method.
-        */
+            Exceptions in commands will be swallowed by the gateway and logged out through the client's log method.     */
 
         private CommandHandler _commands;
+        private InteractionHandler _interaction;
         private DiscordSocketClient _client;
-        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");               
-        private static readonly string _ngrokPath = @"D:\Apps\Ngrok\ngrok.exe";
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");                               
 
 
         public static void Main(string[] args)
@@ -55,6 +54,7 @@ namespace BoTools.Run
             _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);            
 
             _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
+            _interaction ??= new InteractionHandler(_client, new InteractionService(_client), BuildServiceProvider());
         }        
 
         public async Task MainAsync()
@@ -62,7 +62,9 @@ namespace BoTools.Run
             LoadLogConfig();
 
             await _commands.InitializeCommandsAsync();
-            Console.WriteLine("[InstallCommandsAsync : done] LET'S GO !");
+            Console.WriteLine("InitializeCommandsAsync : done");
+            await _interaction.InitializeInteractionAsync();
+            Console.WriteLine("InitializeInteractionAsync : done");
 
             await _client.LoginAsync(TokenType.Bot, _token);
             await _client.StartAsync();
@@ -83,11 +85,10 @@ namespace BoTools.Run
                 .AddSingleton(new LogService(_client))
                 .AddSingleton(new RoleService(_client))
                 .AddSingleton(new EventService(_client))
-                .AddSingleton(new JellyfinService());
+                .AddSingleton(new JellyfinService());                
 
             return services.BuildServiceProvider();
         }
-
 
         private static void LoadLogConfig()
         {

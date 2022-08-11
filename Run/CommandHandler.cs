@@ -39,14 +39,12 @@ namespace BoTools.Run
             // Starting from Discord.NET 2.0, a service provider is required to be passed into
             // the module registration method to inject the required dependencies
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
-
+            
             _client.UserJoined += UserJoined;
             _client.ReactionAdded += ReactionAdded;            
             _client.ReactionRemoved += ReactionRemoved;
             _client.MessageReceived += HandleCommandAsync;
         }
-
-
 
         private async Task UserJoined(SocketGuildUser guildUser)
         {            
@@ -71,7 +69,6 @@ namespace BoTools.Run
 
             // Create a WebSocket-based command context based on the message
             var context = new SocketCommandContext(_client, message);
-
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
@@ -131,6 +128,7 @@ namespace BoTools.Run
         /// <returns></returns>
         private Task AutoCheck(SocketUserMessage message)
         {                     
+            //Robot emoji if @
             if (message.Content.ToLower().Contains("<@!825790068090339369>"))
                 _messageService.AddReactionRobot(message);
 

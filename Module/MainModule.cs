@@ -3,7 +3,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
-using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;

@@ -26,7 +26,7 @@ namespace BoTools.Service
         {
             SocketGuild serv = Helper.GetZderLand(_client);
             var events = serv.GetEventsAsync().Result.ToList();
-            bool isNeeded = events.First(x => x.Name.StartsWith("One Piece 1")) == null ;
+            bool isNeeded = events.Where(x => x.Name.StartsWith("One Piece 1")).Count() < 1 ;
 
             if (isNeeded)
             {

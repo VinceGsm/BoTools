@@ -17,8 +17,7 @@ namespace BoTools.Service
 
         public MessageService(DiscordSocketClient client)
         {
-            _client = client;                                   
-            _client.Ready += Ready;
+            _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
         }
