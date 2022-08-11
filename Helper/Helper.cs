@@ -13,6 +13,7 @@ namespace BoTools
     public static class Helper
     {
         public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
+        public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1007299117447401502/brookByVince.gif";
         public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
@@ -145,6 +146,11 @@ namespace BoTools
             return channel.Name.ToLower().Contains("jellyfin");
         }
 
+        /// <summary>
+        /// Return SocketGuild as ZderLand
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
         internal static SocketGuild GetZderLand(DiscordSocketClient client)
         {
             return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland            
@@ -250,6 +256,11 @@ namespace BoTools
         public static string GetCoeurEmoji() { return _coeurEmoji; }
         public static string GetTvEmoji() { return _tvEmoji; }
         public static string GetDlEmoji() { return _dlEmoji; }
+
+        internal static string GetZderLandIconUrl()
+        {
+            return _zderLandIconUrl;
+        }
         #endregion
     }
 }
