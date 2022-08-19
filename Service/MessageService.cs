@@ -11,8 +11,7 @@ namespace BoTools.Service
 {
     public class MessageService
     {       
-        private DiscordSocketClient _client;
-        private ISocketMessageChannel _logChannel;        
+        private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MessageService(DiscordSocketClient client)
@@ -20,20 +19,15 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-        }
-        
-        #region Client
-        /// <summary>
-        /// When guild data has finished downloading (+state : Ready)
-        /// </summary>
-        /// <returns></returns>
-        public async Task Ready()
-        {            
-            await SendLatencyAsync();
-            await CheckBirthday();            
-            await _client.DownloadUsersAsync(_client.Guilds); // DL all user
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
         }
 
+        private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
+        {
+            await CheckBirthday();            
+        }
+
+        #region Client
         public async Task UserJoined(SocketGuildUser guildUser)
         {            
             if (!guildUser.IsBot)
@@ -62,10 +56,12 @@ namespace BoTools.Service
         private async Task UserLeft(SocketGuild arg1, SocketUser guildUser)
         {
             log.Warn($"{guildUser.Username} left");                                                     
-            string message = $"<@{guildUser.Id}> left Zderland !";             
+            string message = $"<@{guildUser.Id}> left Zderland !";
 
-            if (_logChannel != null)
-                await _logChannel.SendMessageAsync(message);
+            var logChannel = Helper.GetSocketMessageChannel(_client);
+
+            if (logChannel != null)
+                await logChannel.SendMessageAsync(message);
 
             return;
         }
@@ -132,26 +128,7 @@ namespace BoTools.Service
         #endregion
 
         #region Message
-        public async Task SendLatencyAsync()
-        {   
-            _logChannel = Helper.GetSocketMessageChannel(_client, 826144013920501790);
-
-            IAsyncEnumerable<IReadOnlyCollection<IMessage>> lastMsgAsync = _logChannel.GetMessagesAsync(1); 
-            var lastMsg = lastMsgAsync.FirstAsync().Result;
-            bool newLog = lastMsg.ElementAt(0).Timestamp.Day != DateTimeOffset.Now.Day;
-
-            if (newLog)
-            {
-                string message = $"{Helper.GetGreeting()}```Je suis à {_client.Latency}ms de Zderland !```";
-
-                if (_logChannel != null)
-                    await _logChannel.SendMessageAsync(message, isTTS: true);
-            }
-            
-            log.Info($"Latency : {_client.Latency} ms");
-        }
-
-        private async Task CheckBirthday()
+        public async Task CheckBirthday()
         {
             bool isAlreadyDone = false;
             string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
@@ -165,7 +142,7 @@ namespace BoTools.Service
             {
                 IMessage message = list.First(x => x.Content.StartsWith(msgStart));
                 
-                if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day))
+                if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day) && (message.Content.Contains("anniversaire")) )
                 {
                     isAlreadyDone = true;
                     break;
@@ -204,11 +181,10 @@ namespace BoTools.Service
                 $"Cela veut aussi dire que les liens générés seront actifs de manière *casi* permanente\n" +
                 $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
                 $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
-                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé et testé (merci aux testeurs) ce qui inclut : \n" +
+                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé ce qui inclut : \n" +
                 $"```- Chapitrage illustré des épisodes qui le permettent\n" +
-                $"- Moins de bug {Helper.GetTvEmoji()}\n" +
-                $"- SyncPlay de nouveau fonctionnel \n" +
-                $"- Nouveau compte pour tous les anciens + compte invité\n" +
+                $"- Un peu moins de bug {Helper.GetTvEmoji()}\n" +                
+                $"- Nouveau compte pour tous les anciens\n" +
                 $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +
                 $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
             await channel.SendMessageAsync(msg);

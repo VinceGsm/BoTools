@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 namespace BoTools.Module
 {
     // Your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
-    public class MainModule : ModuleBase<SocketCommandContext>
+    public class PrefixModule : ModuleBase<SocketCommandContext>
     {        
+        private bool _tempLock = true; // Lock $special until next devlopment --> TODO
         private const ulong _vinceId = 312317884389130241;
         private const ulong _PortableId = 493020872303443969;
         private readonly MessageService _messageService;
@@ -20,7 +21,7 @@ namespace BoTools.Module
         private readonly JellyfinService _jellyfinService;
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
 
-		public MainModule(MessageService messageService, JellyfinService jellyfinService, EventService eventService) 
+		public PrefixModule(MessageService messageService, JellyfinService jellyfinService, EventService eventService) 
 		{
 			_jellyfinService = jellyfinService;
 			_messageService = messageService;
@@ -81,21 +82,27 @@ namespace BoTools.Module
         [Summary("Send special message in a specific channel")]
         public async Task SpecialAsync()
         {
-            SocketUserMessage userMsg = Context.Message;
-            log.Info($"Special by {userMsg.Author}");            
-
-            var reference = new MessageReference(userMsg.Id);
-            if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
+            if (_tempLock)
             {
-                _messageService.SendSpecialMessage();
+                SocketUserMessage userMsg = Context.Message;
+                log.Info($"Special by {userMsg.Author}");
+
+                var reference = new MessageReference(userMsg.Id);
+                if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
+                {
+                    _messageService.SendSpecialMessage();
+                }
+                else
+                {
+                    await _messageService.AddReactionAlarm(userMsg);
+                    await _messageService.CommandForbidden(Context.Channel, reference);
+                }
+
+                log.Info($"Special done");
+                _tempLock = false;
             }
             else
-            {
-                await _messageService.AddReactionAlarm(userMsg);
-                await _messageService.CommandForbidden(Context.Channel, reference);
-            }
-
-            log.Info($"Special done");
+                log.Info("special triger one more time");            
         }
 
         [Command("OnePiece")]

@@ -1,4 +1,5 @@
-﻿using BoTools.Service;
+﻿using BoTools.Module;
+using BoTools.Service;
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;
@@ -33,11 +34,9 @@ namespace BoTools.Run
             this will create a deadlock that will be impossible to recover from.
 
             Exceptions in commands will be swallowed by the gateway and logged out through the client's log method.     */
-
-        private CommandHandler _commands;
-        private InteractionHandler _interaction;
+        
         private DiscordSocketClient _client;
-        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");                               
+        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");                                       
 
 
         public static void Main(string[] args)
@@ -51,20 +50,31 @@ namespace BoTools.Run
             _client = client ?? new DiscordSocketClient(
                 new DiscordSocketConfig { MessageCacheSize = 100, AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.All }
              );
-            _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);            
-
-            _commands ??= new CommandHandler(_client, new CommandService(), BuildServiceProvider());
-            _interaction ??= new InteractionHandler(_client, new InteractionService(_client), BuildServiceProvider());
+            _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);                                   
         }        
 
         public async Task MainAsync()
         {
             LoadLogConfig();
 
-            await _commands.InitializeCommandsAsync();
-            Console.WriteLine("InitializeCommandsAsync : done");
-            await _interaction.InitializeInteractionAsync();
+            IServiceProvider serviceProvider = BuildServiceProvider();
+
+            var sCommands = serviceProvider.GetRequiredService<InteractionService>();
+            await serviceProvider.GetRequiredService<InteractionHandler>().InitializeInteractionAsync();            
             Console.WriteLine("InitializeInteractionAsync : done");
+
+            var pCommands = serviceProvider.GetRequiredService<PrefixHandler>();
+            pCommands.AddModule<PrefixModule>();
+            await pCommands.InitializeCommandsAsync();
+            
+            Console.WriteLine("InitializeCommandsAsync: done");
+
+            // When guild data has finished downloading (+state : Ready)
+            _client.Ready += async () =>
+            {
+                await sCommands.RegisterCommandsToGuildAsync(UInt64.Parse(Helper.GetZderLandId()));
+                await _client.DownloadUsersAsync(_client.Guilds); // DL all user
+            };
 
             await _client.LoginAsync(TokenType.Bot, _token);
             await _client.StartAsync();
@@ -78,14 +88,19 @@ namespace BoTools.Run
         /// </summary>
         /// <returns></returns>
         public IServiceProvider BuildServiceProvider()
-        {
+        {              
             IServiceCollection services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(new MessageService(_client))
                 .AddSingleton(new LogService(_client))
                 .AddSingleton(new RoleService(_client))
                 .AddSingleton(new EventService(_client))
-                .AddSingleton(new JellyfinService());                
+                .AddSingleton(new JellyfinService())
+                .AddSingleton(x => new InteractionService(_client)) //
+                .AddSingleton<InteractionHandler>() //
+                .AddSingleton(x => new CommandService()) //
+                .AddSingleton<PrefixHandler>() //
+                ;
 
             return services.BuildServiceProvider();
         }
