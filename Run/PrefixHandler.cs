@@ -64,9 +64,7 @@ namespace BoTools.Run
             if (message == null) return;
 
             // Create a number to track where the prefix ends and the command begins
-            int argPos = 0;
-
-            await AutoCheck(message);
+            int argPos = 0;            
 
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
             if (!(message.HasCharPrefix(_commandPrefix, ref argPos) ||message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||message.Author.IsBot)
@@ -123,20 +121,6 @@ namespace BoTools.Run
                     }
                     break;
             }
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Process that need a regular or systematic check on them
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private Task AutoCheck(SocketUserMessage message)
-        {                     
-            //Robot emoji if @
-            if (message.Content.ToLower().Contains("<@!825790068090339369>"))
-                _messageService.AddReactionRobot(message);
-
             return Task.CompletedTask;
         }
     }

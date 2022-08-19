@@ -1,13 +1,7 @@
-﻿using BoTools.Service;
-using Discord;
-using Discord.Interactions;
-using Discord.Net;
+﻿using Discord.Interactions;
 using Discord.WebSocket;
 using log4net;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
