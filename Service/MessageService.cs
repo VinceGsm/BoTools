@@ -182,7 +182,7 @@ namespace BoTools.Service
                 $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
                 $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
                 $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé ce qui inclut : \n" +
-                $"```- Chapitrage illustré des épisodes qui le permettent\n" +
+                $"```- Chapitrage illustré des médias qui le permettent\n" +
                 $"- Un peu moins de bug {Helper.GetTvEmoji()}\n" +                
                 $"- Nouveau compte pour tous les anciens\n" +
                 $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +

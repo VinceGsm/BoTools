@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -26,12 +25,6 @@ namespace BoTools.Module
         public async Task HandlePingPongInteraction()
         {                       
             await RespondAsync("PONG !");            
-        }
-
-        [SlashCommand("echo", "Echo an input #Test")]
-        public async Task Echo(string input)
-        {
-            await RespondAsync(input);
         }
 
 
