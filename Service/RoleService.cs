@@ -40,7 +40,8 @@ namespace BoTools.Service
             log.Info($"| GuildMembersDownloaded first={_connexion}");
             if (_connexion)
             {
-                await CheckRoles();
+                await Helper.SendLatencyAsync(_client);
+                await CheckRoles();                
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");

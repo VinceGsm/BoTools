@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BoTools.Run
 {
-    public class CommandHandler
+    public class PrefixHandler
     {
         private const ulong _vinceId = 312317884389130241;
         private const ulong _logChannelId = 826144013920501790;
@@ -23,7 +23,7 @@ namespace BoTools.Run
         private readonly IServiceProvider _services;
         private static readonly char _commandPrefix = '$';        
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
+        public PrefixHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
             _commands = commands;
             _client = client;
@@ -50,6 +50,11 @@ namespace BoTools.Run
         {            
             _messageService.UserJoined(guildUser);
             await _roleService.UpdateListUser();
+        }
+
+        public void AddModule<T>()
+        {
+            _commands.AddModuleAsync<T>(null);
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)

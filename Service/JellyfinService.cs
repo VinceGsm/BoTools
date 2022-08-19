@@ -13,7 +13,7 @@ namespace BoTools.Service
     public class JellyfinService
     {                                
         private static readonly string _ngrokBatPath = @"C:\Program Files\Ngrok\ngrok.bat";
-        private static readonly string _jellyfinPath = @"C:\Program Files\Jellyfin\jellyfin_10.8.3\jellyfin.exe";
+        private static readonly string _jellyfinPath = @"C:\Program Files\Jellyfin\jellyfin_10.8.4\jellyfin.exe";
         private List<IMessage> _toDelete = new List<IMessage>();        
 
 

@@ -17,6 +17,7 @@ namespace BoTools
         public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
+        public static ulong _idLogChannel = 826144013920501790;
         public static ulong _idModoRole = 322489502562123778;
         public static ulong _idGeneralChannel = 312966999414145034;
         public static ulong _idJellyfinChannel = 816283362478129182;        
@@ -107,6 +108,25 @@ namespace BoTools
         }
         #endregion
 
+        public static async Task SendLatencyAsync(DiscordSocketClient client)
+        {
+            ISocketMessageChannel logChannel = GetSocketMessageChannel(client, _idLogChannel);
+
+            IAsyncEnumerable<IReadOnlyCollection<IMessage>> lastMsgAsync = logChannel.GetMessagesAsync(1);
+            var lastMsg = lastMsgAsync.FirstAsync().Result;
+            bool newLog = lastMsg.ElementAt(0).CreatedAt.Day != DateTime.Today.Day;
+
+            if (newLog)
+            {
+                string message = $"{Helper.GetGreeting()}```Je suis à {client.Latency}ms de Zderland !```";
+
+                if (logChannel != null)
+                    await logChannel.SendMessageAsync(message, isTTS: true);
+            }
+
+            log.Info($"Latency : {client.Latency} ms");
+        }
+
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
             var channels = GetAllChannels(client);
@@ -114,6 +134,17 @@ namespace BoTools
             ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Id == channelId);
 
             if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel {channelId}");
+
+            return channel;
+        }
+
+        internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client) // Log by default
+        {
+            var channels = GetAllChannels(client);
+
+            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Id == _idLogChannel);
+
+            if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel LogChannel");
 
             return channel;
         }
@@ -260,6 +291,10 @@ namespace BoTools
         internal static string GetZderLandIconUrl()
         {
             return _zderLandIconUrl;
+        }
+        internal static string GetZderLandId()
+        {
+            return _zderLandId;
         }
         #endregion
     }
