@@ -49,6 +49,7 @@ namespace BoTools.Service
 
         public async Task CheckRoles()
         {
+            log.Info($"CheckRoles IN");
             if (_IRoleRules == null) _IRoleRules = Helper.GetRoleById(_client, _readTheRulesId);
 
             if (_allUsers.Count == 0)
@@ -63,6 +64,7 @@ namespace BoTools.Service
                 RolesToEmoteReaction(_IRolesAttribution);
 
             CheckAttribution();
+            log.Info($"CheckRoles OUT");
         }
 
         private void RolesToEmoteReaction(List<IRole> rolesAttribution)
@@ -246,6 +248,8 @@ namespace BoTools.Service
 
         private async Task CheckRules()
         {
+            log.Info($"CheckRules IN");
+
             var chrono = new Stopwatch();
             chrono.Start();
 
@@ -274,7 +278,7 @@ namespace BoTools.Service
             }
 
             chrono.Stop();
-            log.Info($"CheckRules done in {chrono.ElapsedMilliseconds}ms");
+            log.Info($"CheckRules OUT in {chrono.ElapsedMilliseconds}ms");
         }
 
         public async Task UpdateListUser()
