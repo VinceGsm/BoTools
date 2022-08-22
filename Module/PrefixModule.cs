@@ -78,32 +78,32 @@ namespace BoTools.Module
             log.Info($"JellyfinAsync done");            
         }
 
-        [Command("Special")]
-        [Summary("Send special message in a specific channel")]
-        public async Task SpecialAsync()
-        {
-            if (_tempLock)
-            {
-                SocketUserMessage userMsg = Context.Message;
-                log.Info($"Special by {userMsg.Author}");
+        //[Command("Special")]
+        //[Summary("Send special message in a specific channel")]
+        //public async Task SpecialAsync()
+        //{
+        //    if (_tempLock)
+        //    {
+        //        SocketUserMessage userMsg = Context.Message;
+        //        log.Info($"Special by {userMsg.Author}");
 
-                var reference = new MessageReference(userMsg.Id);
-                if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
-                {
-                    _messageService.SendSpecialMessage();
-                }
-                else
-                {
-                    await _messageService.AddReactionAlarm(userMsg);
-                    await _messageService.CommandForbidden(Context.Channel, reference);
-                }
+        //        var reference = new MessageReference(userMsg.Id);
+        //        if (userMsg.Author.Id == _vinceId || userMsg.Author.Id == _PortableId)
+        //        {
+        //            _messageService.SendSpecialMessage();
+        //        }
+        //        else
+        //        {
+        //            await _messageService.AddReactionAlarm(userMsg);
+        //            await _messageService.CommandForbidden(Context.Channel, reference);
+        //        }
 
-                log.Info($"Special done");
-                _tempLock = false;
-            }
-            else
-                log.Info("special triger one more time");            
-        }
+        //        log.Info($"Special done");
+        //        _tempLock = false;
+        //    }
+        //    else
+        //        log.Info("special triger one more time");            
+        //}
 
         [Command("OnePiece")]
         [Summary("Create next Event for OnePiece streaming")]

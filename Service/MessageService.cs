@@ -227,7 +227,8 @@ namespace BoTools.Service
         internal async Task SendNgrokReset(ISocketMessageChannel channel)
         {
             await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
-                $"En cas de soucis direct avec Jellyfin merci de contacter Vince");            
+                $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||" +            
+                $"*En cas de soucis direct avec Jellyfin merci de contacter Vince*");
         }
         #endregion
         #endregion        
