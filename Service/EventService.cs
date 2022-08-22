@@ -22,13 +22,14 @@ namespace BoTools.Service
             _client = client;
         }
 
-        public async Task CreateNextOnePiece()
+        public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
         {
             SocketGuild serv = Helper.GetZderLand(_client);
             var events = serv.GetEventsAsync().Result.ToList();
+
             bool isNeeded = events.Where(x => x.Name.StartsWith("One Piece 1")).Count() < 1 ;
 
-            if (isNeeded)
+            if (isNeeded || isJellyfinRequest)
             {
                 var name = $"One Piece {GetNextNumOnePiece()} Streaming";
                 DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
