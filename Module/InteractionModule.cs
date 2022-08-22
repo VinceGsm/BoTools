@@ -34,8 +34,8 @@ namespace BoTools.Module
             [Choice("1. Mauvais !", $"💩💩💩"),
             Choice("2. Ennuyant", $"💤💤💤"),
             Choice("3. Passable", $"👁👁👁"),
-            Choice("4. Régale", $"🔥🔥🔥"),
-            Choice("5. Epoustouflant", $"⭐️⭐️⭐️"),
+            Choice("4. Sympa", $"👍👍👍"),
+            Choice("5. Epoustouflant", $"🔥🔥🔥"),
             Choice("6. Légendaire !", $"❤️❤️❤️")] string feeback)
         {                                 
             string nameFeedback = string.Empty;
@@ -50,10 +50,10 @@ namespace BoTools.Module
                 case $"👁👁👁":
                     nameFeedback = "3. Passable";
                     break;
-                case $"🔥🔥🔥":
-                    nameFeedback = "4. Régale";
+                case $"👍👍👍":
+                    nameFeedback = "4. Sympa";
                     break;
-                case $"⭐️⭐️⭐️":
+                case $"🔥🔥🔥":
                     nameFeedback = "5. Epoustouflant";
                     break;
                 case $"❤️❤️❤️":
@@ -61,16 +61,26 @@ namespace BoTools.Module
                     break;
             }
 
-            string urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1007316947135889418/unknown.png"; //middle by default
+            string urlIcon = "";
             switch (Int32.Parse(nameFeedback.First().ToString()))
             {
                 case 1:
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290456782557184/vomit.png";
+                    break;
                 case 2:
-                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1007316947513380914/unknown.png";
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290442140237834/bad-review.png";
+                    break;
+                case 3:
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290427002982491/mood.png";
+                    break;
+                case 4:
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290410867495003/good-review.png";
                     break;
                 case 5:
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290390063759420/satisfaction.png";
+                    break;
                 case 6:
-                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1007316948578730015/unknown.png";
+                    urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290172836552844/heart.png";
                     break;
             }
 
