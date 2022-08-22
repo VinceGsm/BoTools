@@ -23,8 +23,10 @@ namespace BoTools.Module
             "BoTools es-tu là ?",    // Descriptions can have a max length of 100.
             false, RunMode.Async)]     
         public async Task HandlePingPongInteraction()
-        {                       
-            await RespondAsync("PONG !");            
+        {
+            log.Info("HandlePingPongInteraction IN");
+            await RespondAsync("PONG !");
+            log.Info("HandlePingPongInteraction OUT");
         }
 
 
@@ -37,7 +39,9 @@ namespace BoTools.Module
             Choice("4. Sympa", $"👍👍👍"),
             Choice("5. Epoustouflant", $"🔥🔥🔥"),
             Choice("6. Légendaire !", $"❤️❤️❤️")] string feeback)
-        {                                 
+        {        
+            log.Info("HandleRateOpCommand IN");
+
             string nameFeedback = string.Empty;
             switch (feeback)
             {
@@ -92,12 +96,15 @@ namespace BoTools.Module
                 .WithImageUrl(urlIcon);
 
             await RespondAsync(embed: embedBuilder.Build());
+            log.Info("HandleRateOpCommand OUT");
         }
 
 
         [SlashCommand("main-roles", "Affiche la liste des rôles principaux du server", false, RunMode.Async)]        
         public async Task HandleMainRolesCommand()
         {
+            log.Info("HandleMainRolesCommand IN");
+
             List<string> roles = new List<string>();
             roles.Add("<@&689144324939710527>");
             roles.Add("<@&322489502562123778>");
@@ -116,6 +123,7 @@ namespace BoTools.Module
                 .WithImageUrl(Helper.GetZderLandIconUrl());
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+            log.Info("HandleMainRolesCommand OUT");
         }
     }
 }
