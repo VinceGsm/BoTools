@@ -62,7 +62,7 @@ namespace BoTools.Module
                 if (Helper.IsSundayToday())
                 {
                     message = $"{Helper.GetLuffyEmote()}";
-                    _eventService.CreateNextOnePiece();
+                    _eventService.CreateNextOnePiece(true);
                 }                    
                 else
                     message = $"{Helper.GetPepeSmokeEmote()}";
