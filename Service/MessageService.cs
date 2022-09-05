@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class MessageService
-    {       
+    {
+        Dictionary<string, DateTime> _birthDays = null;
         private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -20,10 +21,14 @@ namespace BoTools.Service
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
             _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
+            
+            if (_birthDays == null)
+                _birthDays = Helper.GetBirthDays();
         }
 
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
         {
+            //DateTime du check 
             await CheckBirthday();            
         }
 
@@ -151,22 +156,26 @@ namespace BoTools.Service
 
             if (!isAlreadyDone)
             {
-                Dictionary<string, DateTime> birthsDay = Helper.GetBirthsDay();
-                bool isSomeoneBD = birthsDay.ContainsValue(DateTime.Today);
-
-                if (isSomeoneBD)
+                if (_birthDays == null)
+                    log.Error("list birthdays null !");
+                else
                 {
-                    string id = birthsDay.First(x => x.Value == DateTime.Today).Key;
+                    bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
 
-                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +                    
-                    $"{Helper.GetCoeurEmote()}";
-
-                    if (channel != null)
+                    if (isSomeoneBD)
                     {
-                        var res = (IMessage)channel.SendMessageAsync(message).Result;
-                        await AddReactionBirthDay(res);
+                        string id = _birthDays.First(x => x.Value == DateTime.Today).Key;
+
+                        string message = msgStart + $" <@{id}> aujourd'hui !\n" +
+                        $"{Helper.GetCoeurEmote()}";
+
+                        if (channel != null)
+                        {
+                            var res = (IMessage)channel.SendMessageAsync(message).Result;
+                            await AddReactionBirthDay(res);
+                        }
+                        else log.Error("Can't wish HB because general was not found");
                     }
-                    else log.Error("Can't wish HB because general was not found");
                 }
             }                        
         }
@@ -227,7 +236,7 @@ namespace BoTools.Service
         internal async Task SendNgrokReset(ISocketMessageChannel channel)
         {
             await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
-                $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||" +            
+                $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||\n" +            
                 $"*En cas de soucis direct avec Jellyfin merci de contacter Vince*");
         }
         #endregion
