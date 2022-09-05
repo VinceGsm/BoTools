@@ -237,7 +237,7 @@ namespace BoTools
             return start.AddDays(daysToAdd);
         }
 
-        internal static Dictionary<string,DateTime> GetBirthsDay()
+        internal static Dictionary<string,DateTime> GetBirthDays()
         {
             _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
             _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
