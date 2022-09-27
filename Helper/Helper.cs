@@ -239,6 +239,8 @@ namespace BoTools
 
         internal static Dictionary<string,DateTime> GetBirthDays()
         {
+            log.Info("GetBirthDays call");
+
             _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
             _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
             _birthsDay.Add("!560259660578291715", DateTime.Parse("14/02")); //Babiss
@@ -263,7 +265,7 @@ namespace BoTools
             _birthsDay.Add("!143706383064367104", DateTime.Parse("04/12")); //Nico            
             _birthsDay.Add("!173837924599726080", DateTime.Parse("09/12")); //Paul
             _birthsDay.Add("!355731040913850398", DateTime.Parse("23/12")); //Majid            
-            return _birthsDay;
+            return _birthsDay;            
         }
 
         internal static bool IsLogChannel(ISocketMessageChannel channel)
