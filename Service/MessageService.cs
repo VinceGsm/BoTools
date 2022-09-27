@@ -12,6 +12,7 @@ namespace BoTools.Service
     public class MessageService
     {
         Dictionary<string, DateTime> _birthDays = null;
+        DateTime? _onGoingBirthday = null;
         private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -27,9 +28,9 @@ namespace BoTools.Service
         }
 
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
-        {
-            //DateTime du check 
-            await CheckBirthday();            
+        {            
+            if(_onGoingBirthday == null)
+                await CheckBirthday();            
         }
 
         #region Client
@@ -135,73 +136,58 @@ namespace BoTools.Service
         #region Message
         public async Task CheckBirthday()
         {
-            bool isAlreadyDone = false;
             string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
                         $"On me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
-            IAsyncEnumerable<IReadOnlyCollection<IMessage>> msg = channel.GetMessagesAsync(99);
-            var msgAsync = msg.ToListAsync().Result;
-
-            foreach (var list in msgAsync)
+            
+            if (_birthDays == null)
+                log.Error("list birthdays null !");
+            else
             {
-                IMessage message = list.First(x => x.Content.StartsWith(msgStart));
-                
-                if (message.Author.IsBot && (message.CreatedAt.Day == DateTime.Today.Day) && (message.Content.Contains("anniversaire")) )
-                {
-                    isAlreadyDone = true;
-                    break;
-                }                    
-            }
+                bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
 
-            if (!isAlreadyDone)
-            {
-                if (_birthDays == null)
-                    log.Error("list birthdays null !");
-                else
+                if (isSomeoneBD)
                 {
-                    bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
+                    string id = _birthDays.First(x => x.Value == DateTime.Today).Key;
 
-                    if (isSomeoneBD)
+                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +
+                    $"{Helper.GetCoeurEmote()}";
+
+                    if (channel != null)
                     {
-                        string id = _birthDays.First(x => x.Value == DateTime.Today).Key;
+                        _onGoingBirthday = DateTime.Today;
 
-                        string message = msgStart + $" <@{id}> aujourd'hui !\n" +
-                        $"{Helper.GetCoeurEmote()}";
-
-                        if (channel != null)
-                        {
-                            var res = (IMessage)channel.SendMessageAsync(message).Result;
-                            await AddReactionBirthDay(res);
-                        }
-                        else log.Error("Can't wish HB because general was not found");
+                        var res = (IMessage)channel.SendMessageAsync(message).Result;
+                        await AddReactionBirthDay(res);
                     }
+                    else log.Error("Can't wish HB because general was not found");
                 }
-            }                        
+            }            
         }
 
-        internal async void SendSpecialMessage()
-        {
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
-            await channel.SendMessageAsync($"Salutations <@&816282726654279702> !\n\n");
-            string msg =                 
-                $"**J'ai le plaisir de vous annoncer la version 2 du service Jellyfin de Zderland** {Helper.GetPepeSmokeEmote()}\n\n" + 
-                $"{Helper.GetCoinEmote()} Un server maison a été mit en place afin de permettre une disponibilité du service **24h/24h**\n" +
-                $"Cela veut aussi dire que les liens générés seront actifs de manière *casi* permanente\n" +
-                $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
-                $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
-                $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé ce qui inclut : \n" +
-                $"```- Chapitrage illustré des médias qui le permettent\n" +
-                $"- Un peu moins de bug {Helper.GetTvEmoji()}\n" +                
-                $"- Nouveau compte pour tous les anciens\n" +
-                $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +
-                $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
-            await channel.SendMessageAsync(msg);
+        //internal async void SendSpecialMessage()
+        //{
+        //    ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
+        //    await channel.SendMessageAsync($"Salutations <@&816282726654279702> !\n\n");
+        //    string msg =                 
+        //        $"**J'ai le plaisir de vous annoncer la version 2 du service Jellyfin de Zderland** {Helper.GetPepeSmokeEmote()}\n\n" + 
+        //        $"{Helper.GetCoinEmote()} Un server maison a été mit en place afin de permettre une disponibilité du service **24h/24h**\n" +
+        //        $"Cela veut aussi dire que les liens générés seront actifs de manière *casi* permanente\n" +
+        //        $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
+        //        $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
+        //        $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé ce qui inclut : \n" +
+        //        $"```- Chapitrage illustré des médias qui le permettent\n" +
+        //        $"- Un peu moins de bug {Helper.GetTvEmoji()}\n" +                
+        //        $"- Nouveau compte pour tous les anciens\n" +
+        //        $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +
+        //        $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
+        //    await channel.SendMessageAsync(msg);
 
-            string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{Helper._idJellyfinChannel}> contactez un <@&{Helper._idModoRole}>\n" +
-                $"{Helper.GetPikachuEmote()}";
-            await channel.SendMessageAsync(msg2);
-        }
+        //    string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{Helper._idJellyfinChannel}> contactez un <@&{Helper._idModoRole}>\n" +
+        //        $"{Helper.GetPikachuEmote()}";
+        //    await channel.SendMessageAsync(msg2);
+        //}
 
         internal void OnePieceDispo()
         {
