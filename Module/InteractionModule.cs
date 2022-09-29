@@ -95,7 +95,7 @@ namespace BoTools.Module
             }
 
             var embedBuilder = new EmbedBuilder()
-                //.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+                
                 .WithTitle($"Feedback : {nameFeedback.Remove(0, 3)}")
                 .WithDescription($"{feeback}")
                 .WithColor(Color.Red)
@@ -134,23 +134,21 @@ namespace BoTools.Module
 
         [RequireRole(roleId: _idModoRole)]
         [SlashCommand("event-series", "Créé tout les events pour episodes hebdo", false, RunMode.Async)] 
-        public async Task HandleEventSeriesCommand(string name, int numFirstEpisode, int numLastEpisode, string dayOfWeek, Double hour)
+        public async Task HandleEventSeriesCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
         {
-            log.Info("HandleEventSeriesCommand IN");             
+            log.Info("HandleEventSeriesCommand IN");
 
-            string msg = $"N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !" +
-                $" + numFirstEpisode = {numFirstEpisode} + numLastEpisode = {numLastEpisode} + dayOfWeek = {dayOfWeek} + hour = {hour}";
+            string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";               
 
             int nbEp = numLastEpisode - numFirstEpisode +1;
 
-            var embedBuiler = new EmbedBuilder()
-                //.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+            var embedBuiler = new EmbedBuilder()                
                 .WithTitle($"Création de {nbEp} events {name} en cours...")
                 .WithDescription(msg)
                 .WithColor(Color.Green)
-                .WithImageUrl("https://cdn.discordapp.com/attachments/617462663374438411/1025039446745301012/unknown.png");
+                .WithImageUrl(Helper.GetZderLandIconUrl());            
 
-            await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
 
             _eventService.CreateEventSeries(name, numFirstEpisode, nbEp, dayOfWeek, hour);
 

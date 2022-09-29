@@ -24,6 +24,9 @@
     <None Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PNG\eventDiscord.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="PNG\Onepiece.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
