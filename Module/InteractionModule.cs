@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using BoTools.Service;
+using Discord;
 using Discord.Interactions;
 using log4net;
 using System;
@@ -12,12 +13,17 @@ namespace BoTools.Module
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
         private const ulong _idOpRole = 552134779210825739;
+        private const ulong _idModoRole = 322489502562123778;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly EventService _eventService;
 
-        public InteractionModule()
+
+        public InteractionModule(EventService eventService)
         {
+            _eventService = eventService;
         }
         
+
         
         [SlashCommand("ping",        // Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
             "BoTools es-tu là ?",    // Descriptions can have a max length of 100.
@@ -31,7 +37,7 @@ namespace BoTools.Module
 
 
         [RequireRole(roleId: _idOpRole)]
-        [SlashCommand("feedback_one-piece", "Comment as-tu trouver le dernier épisode de One Piece ?")]
+        [SlashCommand("feedback_one-piece", "Comment était le dernier épisode de One Piece ?")]
         public async Task HandleRateOpCommand(
             [Choice("1. Mauvais !", $"💩💩💩"),
             Choice("2. Ennuyant", $"💤💤💤"),
@@ -124,6 +130,31 @@ namespace BoTools.Module
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleMainRolesCommand OUT");
+        }
+
+        [RequireRole(roleId: _idModoRole)]
+        [SlashCommand("event-series", "Créé tout les events pour episodes hebdo", false, RunMode.Async)] 
+        public async Task HandleEventSeriesCommand(string name, int numFirstEpisode, int numLastEpisode, string dayOfWeek, Double hour)
+        {
+            log.Info("HandleEventSeriesCommand IN");             
+
+            string msg = $"N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !" +
+                $" + numFirstEpisode = {numFirstEpisode} + numLastEpisode = {numLastEpisode} + dayOfWeek = {dayOfWeek} + hour = {hour}";
+
+            int nbEp = numLastEpisode - numFirstEpisode +1;
+
+            var embedBuiler = new EmbedBuilder()
+                //.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+                .WithTitle($"Création de {nbEp} events {name} en cours...")
+                .WithDescription(msg)
+                .WithColor(Color.Green)
+                .WithImageUrl("https://cdn.discordapp.com/attachments/617462663374438411/1025039446745301012/unknown.png");
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+
+            _eventService.CreateEventSeries(name, numFirstEpisode, nbEp, dayOfWeek, hour);
+
+            log.Info("HandleEventSeriesCommand OUT");
         }
     }
 }
