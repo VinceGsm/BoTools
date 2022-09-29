@@ -14,18 +14,17 @@ namespace BoTools.Service
 {
     public class EventService
     {
-        private DiscordSocketClient _client;
-        private SocketGuild _serv;
+        private DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public EventService(DiscordSocketClient client)
         {
-            _client = client;
-            _serv = Helper.GetZderLand(_client);
+            _client = client;            
         }
 
         public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
-        {            
+        {
+            SocketGuild _serv = Helper.GetZderLand(_client);
             var events = _serv.GetEventsAsync().Result.ToList();
 
             bool isNeeded = events.Where(x => x.Name.StartsWith("One Piece 1")).Count() < 1 ;
@@ -73,83 +72,41 @@ namespace BoTools.Service
             catch(Exception ex) { return 0; }
         }
 
-        internal void CreateEventSeries(string name, int numFirstEpisode, int nbEp, string dayOfWeek, Double hour)
+        public async void CreateEventSeries(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
         {
             log.Info("CreateEventSeries IN");
 
-            DayOfWeek targetDayOfWeek;            
-            switch (dayOfWeek)
-            {
-                case "lundi":
-                case "Lundi":
-                case "monday":
-                case "Monday":
-                    targetDayOfWeek = DayOfWeek.Monday;
-                    break;
-                case "mardi":
-                case "Mardi":
-                case "tuesday":
-                case "Tuesday":
-                    targetDayOfWeek = DayOfWeek.Tuesday;
-                    break;
-                case "mercredi":
-                case "Mercredi":
-                case "wednesday":
-                case "Wednesday":
-                    targetDayOfWeek = DayOfWeek.Wednesday;
-                    break;
-                case "jeudi":
-                case "Jeudi":
-                case "thursday":
-                case "Thursday":
-                    targetDayOfWeek = DayOfWeek.Thursday;
-                    break;
-                case "vendredi":
-                case "Vendredi":
-                case "friday":
-                case "Friday":
-                    targetDayOfWeek = DayOfWeek.Friday;
-                    break;
-                case "samedi":
-                case "Samedi":
-                case "saturday":
-                case "Saturday":
-                    targetDayOfWeek = DayOfWeek.Saturday;
-                    break;
-                case "dimanche":
-                case "Dimanche":
-                case "sunday":
-                case "Sunday":
-                    targetDayOfWeek = DayOfWeek.Sunday;
-                    break;
-
-                default:
-                    targetDayOfWeek = DayOfWeek.Thursday;
-                    break;
-            }
+            SocketGuild _serv = Helper.GetZderLand(_client);
 
             DateTime target = DateTime.Now;
-            DateTime firstTargetDay = Helper.GetNextWeekday(DateTime.Today, targetDayOfWeek);
-
+            DateTime firstTargetDay = Helper.GetNextWeekday(DateTime.Today, dayOfWeek);
+            
             for (int i=0; i<nbEp; i++)
             {
                 var nameEvent = $"{name} #{numFirstEpisode} Streaming";
                 log.Info($"CreateEventSeries : {nameEvent}");
-                
-                if (i == 0)
-                    target = firstTargetDay;
-                else                
-                    target = Helper.GetNextWeekday(target, targetDayOfWeek);
-                                
-                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));
-                GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                string description = "À voir ou à télécharger sur Jellyfin !";
-                ulong? channelId = Helper._idSaloonVoice;
-                Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventDiscord.png"));
 
-                _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                try
+                {
+                    if (i == 0)
+                        target = firstTargetDay;
+                    else
+                        target = Helper.GetNextWeekday(target, dayOfWeek);
 
-                numFirstEpisode++;
+                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));
+                    GuildScheduledEventType type = GuildScheduledEventType.Voice;
+                    string description = "À voir ou à télécharger sur Jellyfin !";
+                    ulong? channelId = Helper._idSaloonVoice;
+                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventDiscord.jpg"));
+
+                    _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                }
+                catch(Exception ex)
+                {
+                    log.Error(ex.InnerException.Message);
+                }
+
+                numFirstEpisode++;                
             }
 
             log.Info("CreateEventSeries OUT");            
