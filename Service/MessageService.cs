@@ -246,7 +246,8 @@ namespace BoTools.Service
 
                 Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
                 Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
-                    $"{Helper.GetCoinEmote()}  Relancer **$Jellyfin** si le lien ne fonctionne plus",
+                    $"{Helper.GetCoinEmote()}  ERR_NGROK = relancer **$Jellyfin** \n"+
+                    $"{Helper.GetCoinEmote()}  Site lent/bug = contacter **Vince**",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = GetFooterBuilder()
