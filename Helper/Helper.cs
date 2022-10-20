@@ -18,7 +18,7 @@ namespace BoTools
         public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1032712994246889492/jellyV2.png";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
-        public static ulong _idLogChannel = 826144013920501790;
+        public static ulong _idLogChannel = 826144013920501790; 
         public static ulong _idModoRole = 322489502562123778;
         public static ulong _idGeneralChannel = 312966999414145034;
         public static ulong _idJellyfinChannel = 816283362478129182;        
@@ -195,8 +195,7 @@ namespace BoTools
         internal static IEnumerable<SocketGuildChannel> GetAllChannels(DiscordSocketClient client)
         {
             SocketGuild guild = GetZderLand(client);
-            var channels = guild.Channels.ToList();
-            channels.Remove(channels.ElementAt(0)); // conference
+            var channels = guild.Channels.ToList();            
 
             return channels;
         }
