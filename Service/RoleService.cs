@@ -37,7 +37,7 @@ namespace BoTools.Service
         #region Update At Start
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
-            log.Info($"| GuildMembersDownloaded first={_connexion}");
+            log.Info($"| GuildMembersDownloaded IN --> firstIN={_connexion}");
             if (_connexion)
             {
                 await Helper.SendLatencyAsync(_client);

@@ -97,7 +97,7 @@ namespace BoTools.Service
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
                     string description = "À voir ou à télécharger sur Jellyfin !";
                     ulong? channelId = Helper._idSaloonVoice;
-                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventDiscord.jpg"));
+                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventDiscord.png"));
 
                     _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
                 }
