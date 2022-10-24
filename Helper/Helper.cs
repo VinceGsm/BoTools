@@ -15,7 +15,7 @@ namespace BoTools
         public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
         public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1007299117447401502/brookByVince.gif";
         //public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
-        public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1032712994246889492/jellyV2.png";
+        public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1034046643504435230/jellyTest.png";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
         public static ulong _idLogChannel = 826144013920501790; 
