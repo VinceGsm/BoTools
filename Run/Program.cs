@@ -4,6 +4,8 @@ using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Lavalink4NET.DiscordNet;
+using Lavalink4NET;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,7 +90,15 @@ namespace BoTools.Run
         /// </summary>
         /// <returns></returns>
         public IServiceProvider BuildServiceProvider()
-        {              
+        {
+            var lavalinkOptions = new LavalinkNodeOptions
+            {
+                RestUri = "http://localhost:2333/",
+                WebSocketUri = "ws://localhost:2333/",
+                Password = "youshallnotpass",
+                DisconnectOnStop = true,
+            };
+
             IServiceCollection services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(new MessageService(_client))
@@ -96,13 +106,16 @@ namespace BoTools.Run
                 .AddSingleton(new RoleService(_client))
                 .AddSingleton(new EventService(_client))
                 .AddSingleton(new JellyfinService())
-                .AddSingleton(x => new InteractionService(_client)) //
-                .AddSingleton<InteractionHandler>() //
-                .AddSingleton(x => new CommandService()) //
-                .AddSingleton<PrefixHandler>() //
+                .AddSingleton<IAudioService, LavalinkNode>()
+                .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
+	            .AddSingleton(lavalinkOptions)               
+                .AddSingleton(x => new InteractionService(_client))
+                .AddSingleton<InteractionHandler>()
+                .AddSingleton(x => new CommandService())
+                .AddSingleton<PrefixHandler>()
                 ;
 
-            return services.BuildServiceProvider();
+            return services.BuildServiceProvider();            
         }
 
         private static void LoadLogConfig()

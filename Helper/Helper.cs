@@ -18,11 +18,12 @@ namespace BoTools
         public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1034046643504435230/jellyTest.png";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
-        public static ulong _idLogChannel = 826144013920501790; 
-        public static ulong _idModoRole = 322489502562123778;
-        public static ulong _idGeneralChannel = 312966999414145034;
-        public static ulong _idJellyfinChannel = 816283362478129182;        
-        public static ulong _idSaloonVoice = 493036345686622210;
+        public static readonly ulong _ZderLandId = 312966999414145034;
+        public static readonly ulong _idLogChannel = 826144013920501790;
+        public static readonly ulong _idModoRole = 322489502562123778;
+        public static readonly ulong _idGeneralChannel = 312966999414145034;
+        public static readonly ulong _idJellyfinChannel = 816283362478129182;        
+        public static readonly ulong _idSaloonVoice = 493036345686622210;
         public static readonly List<ulong> _rolesAttributionId = new List<ulong>
         {
             698852663764451381, //games
@@ -241,8 +242,7 @@ namespace BoTools
         {
             log.Info("GetBirthDays call");
 
-            _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco
-            _birthsDay.Add("!312317884389130241", DateTime.Parse("22/01")); //Vince
+            _birthsDay.Add("!786748190283792414", DateTime.Parse("03/01")); //Coco            
             _birthsDay.Add("!560259660578291715", DateTime.Parse("14/02")); //Babiss
             _birthsDay.Add("!418426899786760194", DateTime.Parse("21/02")); //Jerem            
             _birthsDay.Add("!126259389962125312", DateTime.Parse("02/06")); //Flo
