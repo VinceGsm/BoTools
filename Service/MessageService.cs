@@ -29,8 +29,13 @@ namespace BoTools.Service
 
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
         {            
-            if(_onGoingBirthday == null)
-                await CheckBirthday();            
+            if(_onGoingBirthday == null)             
+                await CheckBirthday();
+            else
+            {
+                if(_onGoingBirthday != DateTime.Today)
+                    await CheckBirthday();
+            }            
         }
 
         #region Client
@@ -149,9 +154,9 @@ namespace BoTools.Service
 
                 if (isSomeoneBD)
                 {
-                    string id = _birthDays.First(x => x.Value == DateTime.Today).Key;
+                    string idTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;                    
 
-                    string message = msgStart + $" <@{id}> aujourd'hui !\n" +
+                    string message = msgStart + $" <@{idTarget}> aujourd'hui !\n" +
                     $"{Helper.GetCoeurEmote()}";
 
                     if (channel != null)
