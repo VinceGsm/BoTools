@@ -13,7 +13,10 @@ namespace BoTools.Service
     {
         Dictionary<string, DateTime> _birthDays = null;
         DateTime? _onGoingBirthday = null;
-        private DiscordSocketClient _client;        
+        private DiscordSocketClient _client;
+        private static ulong _birthdayId = 1052530092082995201;
+        private IRole _IRoleBirthday = null;
+
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MessageService(DiscordSocketClient client)
@@ -22,18 +25,20 @@ namespace BoTools.Service
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
             _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-            
+
+            if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
+
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();
         }
 
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
-        {            
-            if(_onGoingBirthday == null)             
-                await CheckBirthday();
+        {
+            if (_onGoingBirthday == null) //pas anniv en cours                         
+                await CheckBirthday();            
             else
             {
-                if(_onGoingBirthday != DateTime.Today)
+                if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
                     await CheckBirthday();
             }            
         }
@@ -157,11 +162,13 @@ namespace BoTools.Service
                     string idTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;                    
 
                     string message = msgStart + $" <@{idTarget}> aujourd'hui !\n" +
-                    $"{Helper.GetCoeurEmote()}";
+                        $"{Helper.GetCoeurEmote()} sur toi";
 
                     if (channel != null)
                     {
                         _onGoingBirthday = DateTime.Today;
+                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTarget));
+                        userTarget.AddRoleAsync(_IRoleBirthday);
 
                         var res = (IMessage)channel.SendMessageAsync(message).Result;
                         await AddReactionBirthDay(res);
