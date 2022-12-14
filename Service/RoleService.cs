@@ -109,21 +109,17 @@ namespace BoTools.Service
                             break;
 
                         // ENDS                       
-                        case string name when name.EndsWith("Creator"):
-                            //case "🎥 Content Creator":
+                        case string name when name.EndsWith("TV"):
+                            //case "🎞️ Twitch TV":
                             _roleToEmoteSpecial.Add(role, "🌐");
                             break;
                         case string name when name.EndsWith("Casino"):
                             //case "🎰 Casino":
                             _roleToEmoteSpecial.Add(role, "🎰");
                             break;
-                        //case "👾 Games":
+                        //case "👾 Apps & Games":
                         case string name when name.EndsWith("Games"):
                             _roleToEmoteSpecial.Add(role, "👾");
-                            break;
-                        //case "💾 Fortnite":
-                        case string name when name.EndsWith("Fortnite"):
-                            _roleToEmoteGames.Add(role, "🦙");
                             break;
                         //case "💾 Minecraft":
                         case string name when name.EndsWith("Minecraft"):
@@ -143,19 +139,6 @@ namespace BoTools.Service
                         case string name2 when name2.EndsWith("GTA"):
                             _roleToEmoteGames.Add(role, "💰");
                             break;
-                        //case "💾 League of Legends":
-                        case string name when name.EndsWith("League of Legends"):
-                        case string name2 when name2.EndsWith("LoL"):
-                            _roleToEmoteGames.Add(role, "🤬");
-                            break;
-                        //case "💾 World of Warcraft":
-                        case string name when name.EndsWith("World of Warcraft"):                        
-                            _roleToEmoteGames.Add(role, "🐼");
-                            break;
-                        //case "🔌 PC":
-                        case string name when name.EndsWith("PC"):
-                            _roleToEmoteGames.Add(role, "⌨️");
-                            break;
                         //case "🔌 Mac":
                         case string name when name.EndsWith("Mac"):
                             _roleToEmoteGames.Add(role, "🍎");
@@ -163,11 +146,6 @@ namespace BoTools.Service
                         //case "🔌 Switch":
                         case string name when name.EndsWith("Switch"):
                             _roleToEmoteGames.Add(role, "🎌");
-                            break;
-                        //case "🔌 PlayStation":
-                        case string name when name.EndsWith("PlayStation"):
-                        case string name2 when name2.EndsWith("PS5"):
-                            _roleToEmoteGames.Add(role, "🎮");
                             break;
                     }
                 }                                          
