@@ -13,8 +13,7 @@ namespace BoTools
     public static class Helper
     {
         public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
-        public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1007299117447401502/brookByVince.gif";
-        //public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/863110514199494656/5ffdaa1e9978e227df8b2e2f.webp";
+        public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1007299117447401502/brookByVince.gif";        
         public static readonly string _discordImgUrl = "https://cdn.discordapp.com/attachments/617462663374438411/1034046643504435230/jellyTest.png";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/617462663374438411/830856271321497670/BoTools.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
@@ -23,29 +22,7 @@ namespace BoTools
         public static readonly ulong _idModoRole = 322489502562123778;
         public static readonly ulong _idGeneralChannel = 312966999414145034;
         public static readonly ulong _idJellyfinChannel = 816283362478129182;        
-        public static readonly ulong _idSaloonVoice = 493036345686622210;
-        public static readonly List<ulong> _rolesAttributionId = new List<ulong>
-        {
-            698852663764451381, //games
-            620700703580618762, //casino
-            613331423000133634, //anime
-            536174000439558185, //music
-            802193968402137148, //contentCreator
-            613381032569339943, //stoner
-            552134779210825739, //OP
-            773174545258774568, //visio
-            588340175357214729, //pc
-            797968836707352606, //mac
-            572073517462323201, //switch
-            572076063887327242, //playst
-            607260961765589032, //fortnite
-            689157917521346684, //mine
-            843280439698259998, //bf            
-            638175689270493205, //cod
-            818518545720803341, //gta
-            615822402781315073, //lol
-            712589813605203979, //wow
-        };
+        public static readonly ulong _idSaloonVoice = 493036345686622210;       
         
         #region emote                
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
@@ -151,11 +128,11 @@ namespace BoTools
             return channel;
         }
 
-        internal static IEnumerable<IRole> GetRolesAttribution(DiscordSocketClient client)
+        internal static IEnumerable<IRole> GetRolesAttribution(DiscordSocketClient client, List<ulong> rolesAttributionId)
         {
             List<IRole> res = new List<IRole>();
 
-            foreach (ulong id in _rolesAttributionId)
+            foreach (ulong id in rolesAttributionId)
             {
                 res.Add(GetZderLand(client).GetRole(id));
             }
