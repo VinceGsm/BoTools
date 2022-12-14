@@ -24,9 +24,7 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-
-            if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;            
 
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();
@@ -34,6 +32,8 @@ namespace BoTools.Service
 
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
         {
+            if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
+
             if (_onGoingBirthday == null) //pas anniv en cours                         
                 await CheckBirthday();            
             else
