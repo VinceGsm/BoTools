@@ -142,7 +142,7 @@ namespace BoTools
 
         internal static IRole GetRoleById(DiscordSocketClient client, ulong id)
         {
-            return GetZderLand(client).Roles.First(x => x.Id == id);
+            return GetZderLand(client).Roles.First(x => x.Id == id);            
         }
 
         internal static string ConvertToSimpleDate(DateTimeOffset dateTimeOffset)
