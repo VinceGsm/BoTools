@@ -14,6 +14,7 @@ namespace BoTools.Service
         Dictionary<string, DateTime> _birthDays = null;
         DateTime? _onGoingBirthday = null;
         private DiscordSocketClient _client;
+        private static ulong _saloonVoiceId = 493036345686622210;
         private static ulong _birthdayId = 1052530092082995201;
         private IRole _IRoleBirthday = null;
 
@@ -40,7 +41,7 @@ namespace BoTools.Service
             {
                 if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
                     await CheckBirthday();
-            }            
+            }      
         }
 
         #region Client
@@ -147,7 +148,7 @@ namespace BoTools.Service
         public async Task CheckBirthday()
         {
             string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
-                        $"On me souffle dans l'oreille que c'est l'anniversaire de";
+                        $"Vince me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
             
@@ -159,15 +160,15 @@ namespace BoTools.Service
 
                 if (isSomeoneBD)
                 {
-                    string idTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;                    
+                    string idTagTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;                    
 
-                    string message = msgStart + $" <@{idTarget}> aujourd'hui !\n" +
+                    string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
                         $"{Helper.GetCoeurEmote()} sur toi";
 
                     if (channel != null)
                     {
                         _onGoingBirthday = DateTime.Today;
-                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTarget));
+                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0,1)));
                         userTarget.AddRoleAsync(_IRoleBirthday);
 
                         var res = (IMessage)channel.SendMessageAsync(message).Result;
@@ -178,28 +179,6 @@ namespace BoTools.Service
             }            
         }
 
-        //internal async void SendSpecialMessage()
-        //{
-        //    ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
-        //    await channel.SendMessageAsync($"Salutations <@&816282726654279702> !\n\n");
-        //    string msg =                 
-        //        $"**J'ai le plaisir de vous annoncer la version 2 du service Jellyfin de Zderland** {Helper.GetPepeSmokeEmote()}\n\n" + 
-        //        $"{Helper.GetCoinEmote()} Un server maison a été mit en place afin de permettre une disponibilité du service **24h/24h**\n" +
-        //        $"Cela veut aussi dire que les liens générés seront actifs de manière *casi* permanente\n" +
-        //        $"{Helper.GetArrowEmote()} ||Donc pensez à vérifier le dernier lien présent avant d'en regénérer un autre pour ne pas couper l'accès Jellyfin à quelqu'un {Helper.GetHeheEmote()}||\n" +
-        //        $"{Helper.GetCoinEmote()} Un NAS maison a aussi été mit en place afin de garantir un espace de stockage croissant au fil du temps !\n" +                
-        //        $"{Helper.GetCoinEmote()} Une nouvelle version de Jellyfin a été installé ce qui inclut : \n" +
-        //        $"```- Chapitrage illustré des médias qui le permettent\n" +
-        //        $"- Un peu moins de bug {Helper.GetTvEmoji()}\n" +                
-        //        $"- Nouveau compte pour tous les anciens\n" +
-        //        $"- Jusqu'à 3 flux de streaming en 4K simultanés\n" +
-        //        $"- Jusqu'à 5 flux de streaming en 1080p simultanés```";
-        //    await channel.SendMessageAsync(msg);
-
-        //    string msg2 = $"Si vous souhaitez essayer le service mais que vous n'avez pas encore accès à <#{Helper._idJellyfinChannel}> contactez un <@&{Helper._idModoRole}>\n" +
-        //        $"{Helper.GetPikachuEmote()}";
-        //    await channel.SendMessageAsync(msg2);
-        //}
 
         internal void OnePieceDispo()
         {
