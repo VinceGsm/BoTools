@@ -14,4 +14,4 @@ My personnal  <a href="https://discord.com/developers/applications"><img src="ht
 
 Based on [this doc](https://docs.stillu.cc/).
 
-Designed and coded by [Vince](https://github.com/VinceGusmini).
+Designed and coded by [Vince](https://github.com/VinceGsm).
