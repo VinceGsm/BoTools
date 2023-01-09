@@ -13,21 +13,21 @@ namespace BoTools.Service
     public class RoleService
     {
         private static ulong _readTheRulesId = 847048535799234560; 
-        private static ulong _separatorId = 1052542257737256980;         
+        private static ulong _separatorId = 1052542257737256980;         // change namùe
         private static ulong _vipId = 322490732885835776;
         private static ulong _valideId = 344912149728067584;
 
         private bool _connexion = true;
         private IRole _IRoleRules = null;                 
-        private IRole _IRoleSeparator = null;
+        private IRole _IRoleSeparator = null; // en list
         private List<IRole> _IRolesAttribution = new List<IRole>();
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
         private Dictionary<IRole, string> _roleToEmoteGames = new Dictionary<IRole, string>();
         private Dictionary<IRole, string> _roleToEmoteSpecial = new Dictionary<IRole, string>();
-        public static readonly List<ulong> _rolesAttributionId = new List<ulong>
+        public static readonly List<ulong> _listRoleAttributionId = new List<ulong>
         {
-            698852663764451381, //apps&games
-            620700703580618762, //casino
+            698852663764451381, //apps
+            620700703580618762, //games
             613331423000133634, //anime
             536174000439558185, //music            
             613381032569339943, //stoner
@@ -69,7 +69,7 @@ namespace BoTools.Service
         {
             log.Info($"CheckRoles IN");
             if (_IRoleRules == null) _IRoleRules = Helper.GetRoleById(_client, _readTheRulesId);
-            if (_IRoleSeparator == null) _IRoleSeparator = Helper.GetRoleById(_client, _separatorId);            
+            if (_IRoleSeparator == null) _IRoleSeparator = Helper.GetRoleById(_client, _separatorId);        //    chnage
 
             if (_allUsers.Count == 0)
             {
@@ -81,14 +81,13 @@ namespace BoTools.Service
 
             if (_IRolesAttribution.Count == 0)
                 RolesToEmoteReaction(_IRolesAttribution);
-
-            //CheckAttribution();
+            
             log.Info($"CheckRoles OUT");
         }
 
         private void RolesToEmoteReaction(List<IRole> rolesAttribution)
         {
-            _IRolesAttribution = Helper.GetRolesAttribution(_client, _rolesAttributionId).ToList();
+            _IRolesAttribution = Helper.GetRolesAttribution(_client, _listRoleAttributionId).ToList();
             FillRolesDicos(_IRolesAttribution);
         }
 
@@ -119,10 +118,10 @@ namespace BoTools.Service
                     {
                         // CONTAINS
                         case string name when name.Contains("Anime"):
-                        //case "👺 Anime 💘":                        
+                        //case "Anime 💘":                        
                             _roleToEmoteSpecial.Add(role, "👺");
                             break;
-                        //case "👒 One Piece 💘":
+                        //case "👒 One Piece":
                         case string name when name.Contains("One Piece"):
                             _roleToEmoteSpecial.Add(role, "👒");
                             break;
@@ -132,13 +131,13 @@ namespace BoTools.Service
                             //case "🎞️ Twitch TV":
                             _roleToEmoteSpecial.Add(role, "🌐");
                             break;
-                        case string name when name.EndsWith("Casino"):
-                            //case "🎰 Casino":
-                            _roleToEmoteSpecial.Add(role, "🎰");
-                            break;
-                        //case "👾 Apps & Games":
                         case string name when name.EndsWith("Games"):
+                            //case "👾 Games":
                             _roleToEmoteSpecial.Add(role, "👾");
+                            break;
+                        //case "🤖 Apps":
+                        case string name when name.EndsWith("Apps"):
+                            _roleToEmoteSpecial.Add(role, "🤖");
                             break;
                         //case "💾 Minecraft":
                         case string name when name.EndsWith("Minecraft"):
@@ -170,80 +169,7 @@ namespace BoTools.Service
                 }                                          
             }            
         }
-        /*
-        private Task CheckAttribution()
-        {
-            var chrono = new Stopwatch();
-            chrono.Start();
-
-            var channelRules = Helper.GetSocketMessageChannel(_client, 846714456788172800); //rôles 
-            var iMsgs = channelRules.GetMessagesAsync(2).ToListAsync().Result;
-
-            IMessage msgGames = null;
-            IMessage msgSpecial = null;
-
-            foreach (var msg in iMsgs.First())
-            {
-                if (msg.Content.Contains("Plateforme")) msgGames = msg;
-                if (msg.Content.Contains("Spécial")) msgSpecial = msg;
-            }
-
-            foreach (var reaction in msgSpecial.Reactions)
-            {
-                List<IReadOnlyCollection<IUser>> reactListUsers = msgSpecial.GetReactionUsersAsync(reaction.Key, 1000).ToListAsync().Result;
-                var roleToAssign = _roleToEmoteSpecial.First(x => x.Value == reaction.Key.Name).Key;
-                log.Info($"s_roleToAssign : {roleToAssign}");
-
-                foreach (var userLst in reactListUsers)
-                {
-                    var okUserslist = userLst.ToList();
-
-                    foreach (var okUser in okUserslist)
-                    {
-                        if (okUser.Id != 493020872303443969) // compte qui met les reaction 
-                        {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
-                            if (!subject.Roles.Contains(roleToAssign))
-                            {
-                                subject.AddRoleAsync(roleToAssign);
-                                log.Info($"SPE_{roleToAssign.Name} add for {subject.Username}");
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach (var reaction in msgGames.Reactions)
-            {
-                List<IReadOnlyCollection<IUser>> reactListUsers = msgGames.GetReactionUsersAsync(reaction.Key, 1000).ToListAsync().Result;
-                var roleToAssign = _roleToEmoteGames.First(x => x.Value == reaction.Key.Name).Key;
-                log.Info($"g_roleToAssign : {roleToAssign}");
-
-                foreach (var userLst in reactListUsers)
-                {
-                    var okUserslist = userLst.ToList();
-
-                    foreach (var okUser in okUserslist)
-                    {
-                        if (okUser.Id != 493020872303443969) // compte qui met les reaction 
-                        {
-                            SocketGuildUser subject = _allUsers.First(x => x.Id == okUser.Id);                            
-                            if (!subject.Roles.Contains(roleToAssign))
-                            {
-                                subject.AddRoleAsync(roleToAssign);
-                                log.Info($"GAME_{roleToAssign.Name} add for {subject.Username}");
-                            }                            
-                        }
-                    }
-                }
-            }
-
-            chrono.Stop();
-            log.Info($"CheckAttribution done in {chrono.ElapsedMilliseconds}ms");
-            return Task.CompletedTask;
-        }
-        */
-
+       
         private async Task CheckRules()
         {
             log.Info($"CheckRules IN");
