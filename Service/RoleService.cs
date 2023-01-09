@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using log4net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -65,7 +66,8 @@ namespace BoTools.Service
             if (_connexion)
             {
                 await Helper.SendLatencyAsync(_client);
-                await CheckRoles();                
+                await CheckRoles();
+
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");
