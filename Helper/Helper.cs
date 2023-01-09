@@ -128,11 +128,11 @@ namespace BoTools
             return channel;
         }
 
-        internal static IEnumerable<IRole> GetRolesAttribution(DiscordSocketClient client, List<ulong> rolesAttributionId)
+        internal static IEnumerable<IRole> GetIRolesFromServer(DiscordSocketClient client, List<ulong> rolesId)
         {
             List<IRole> res = new List<IRole>();
 
-            foreach (ulong id in rolesAttributionId)
+            foreach (ulong id in rolesId)
             {
                 res.Add(GetZderLand(client).GetRole(id));
             }
