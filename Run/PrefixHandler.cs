@@ -110,7 +110,7 @@ namespace BoTools.Run
                     _roleService.SpecialReactionAdded(reaction);
                     break;
                 case _readRuleMsgId:
-                    _roleService.RulesReactionAdded(reaction.UserId);
+                    _roleService.RulesReactionAddedAsync(reaction.UserId);
                     break;
 
                 //Si réaction by me dans log = OP dispo

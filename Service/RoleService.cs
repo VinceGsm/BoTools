@@ -11,20 +11,19 @@ using System.Threading.Tasks;
 namespace BoTools.Service
 {
     public class RoleService
-    {
-        private static ulong _readTheRulesId = 847048535799234560; 
-        private static ulong _separatorId = 1052542257737256980;         // change namùe
+    {        
+        private static ulong _readTheRulesId = 847048535799234560;
         private static ulong _vipId = 322490732885835776;
         private static ulong _valideId = 344912149728067584;
 
         private bool _connexion = true;
         private IRole _IRoleRules = null;                 
-        private IRole _IRoleSeparator = null; // en list
+        private List<IRole> _IRolesSeparators = new List<IRole>();
         private List<IRole> _IRolesAttribution = new List<IRole>();
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
         private Dictionary<IRole, string> _roleToEmoteGames = new Dictionary<IRole, string>();
         private Dictionary<IRole, string> _roleToEmoteSpecial = new Dictionary<IRole, string>();
-        public static readonly List<ulong> _listRoleAttributionId = new List<ulong>
+        public static readonly List<ulong> _roleAttributionIds = new List<ulong>
         {
             698852663764451381, //apps
             620700703580618762, //games
@@ -39,6 +38,13 @@ namespace BoTools.Service
             843280439698259998, //bf            
             638175689270493205, //cod
             818518545720803341, //gta                        
+        };
+        public static readonly List<ulong> _roleSeparatorIds = new List<ulong>
+        {
+            1061919166199775232, //_separatorBonusId
+            1061919390607605770, //_separatoIrlId
+            1052542257737256980, //_separatorPrivilegesId
+            1052521533135917137, //_separatorAccreditationsId                        
         };
 
         private DiscordSocketClient _client;
@@ -69,7 +75,6 @@ namespace BoTools.Service
         {
             log.Info($"CheckRoles IN");
             if (_IRoleRules == null) _IRoleRules = Helper.GetRoleById(_client, _readTheRulesId);
-            if (_IRoleSeparator == null) _IRoleSeparator = Helper.GetRoleById(_client, _separatorId);        //    chnage
 
             if (_allUsers.Count == 0)
             {
@@ -79,16 +84,19 @@ namespace BoTools.Service
 
             await CheckRules();
 
-            if (_IRolesAttribution.Count == 0)
-                RolesToEmoteReaction(_IRolesAttribution);
-            
+            if (_IRolesAttribution.Count == 0 || _IRolesSeparators.Count == 0)
+                FillRoles();            
+
             log.Info($"CheckRoles OUT");
         }
 
-        private void RolesToEmoteReaction(List<IRole> rolesAttribution)
+        private void FillRoles()
         {
-            _IRolesAttribution = Helper.GetRolesAttribution(_client, _listRoleAttributionId).ToList();
-            FillRolesDicos(_IRolesAttribution);
+            _IRolesSeparators = Helper.GetIRolesFromServer(_client, _roleSeparatorIds).ToList();
+
+            //dico for attribution
+            _IRolesAttribution = Helper.GetIRolesFromServer(_client, _roleAttributionIds).ToList();
+            FillRolesDicos(_IRolesAttribution);            
         }
 
         internal void FillRolesDicos(List<IRole> rolesAttribution)
@@ -238,11 +246,13 @@ namespace BoTools.Service
         }
 
         //ADDED
-        internal void RulesReactionAdded(ulong userId)
+        internal async Task RulesReactionAddedAsync(ulong userId)
         {
             var subject = _allUsers.First(x => x.Id == userId);
-            subject.AddRoleAsync(_IRoleRules);
-            subject.AddRoleAsync(_IRoleSeparator);
+            await subject.AddRoleAsync(_IRoleRules);
+
+            foreach(IRole separatorRole in _IRolesSeparators)
+                await subject.AddRoleAsync(separatorRole);
         }
 
         internal void SpecialReactionAdded(SocketReaction reaction)
