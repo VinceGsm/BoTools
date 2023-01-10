@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using log4net;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace BoTools.Service
             {
                 if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
                     await CheckBirthday();
-            }      
+            }
         }
 
         #region Client
@@ -145,6 +146,17 @@ namespace BoTools.Service
         #endregion
 
         #region Message
+        public async Task CleanLastMsgChannel(ulong idTargetChannel)
+        {
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, idTargetChannel);
+            IReadOnlyCollection<IMessage> lasthundredMsg = channel.GetMessagesAsync(100).FirstAsync().Result;            
+
+            foreach (var msg in lasthundredMsg)
+            {
+                await channel.DeleteMessageAsync(msg);
+            }            
+        }
+
         public async Task CheckBirthday()
         {
             string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
