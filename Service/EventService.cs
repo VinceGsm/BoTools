@@ -26,22 +26,15 @@ namespace BoTools.Service
             SocketGuild _serv = Helper.GetZderLand(_client);
             var events = _serv.GetEventsAsync().Result.ToList();
 
-            bool isNeeded = events.Where(x => x.Name.StartsWith("One Piece 1")).Count() < 1 ;
+            var name = $"One Piece {GetNextNumOnePiece()} Streaming";
+            DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
+            DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
+            GuildScheduledEventType type = GuildScheduledEventType.Voice;
+            string description = "**RDV hebdomadaire du server !**";
+            ulong? channelId = Helper._idSaloonVoice;
+            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-            if (isNeeded || isJellyfinRequest)
-            {
-                var name = $"One Piece {GetNextNumOnePiece()} Streaming";
-                DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
-                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
-                GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                string description = "**RDV hebdomadaire du server !**";
-                ulong? channelId = Helper._idSaloonVoice;
-                Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
-
-                _serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
-            }
-            else
-                log.Warn("CreateNextOnePiece : An event is already programmed !");
+            _serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
         public int GetNextNumOnePiece()
