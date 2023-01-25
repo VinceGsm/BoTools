@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
 using HtmlAgilityPack;
 using log4net;
@@ -56,6 +56,46 @@ namespace BoTools.Service
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
+        }
+
+        public async void CreateEventSeries(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
+        {
+            log.Info("CreateEventSeries IN");
+
+            SocketGuild _serv = Helper.GetZderLand(_client);
+
+            DateTime target = DateTime.Now;
+            DateTime firstTargetDay = Helper.GetNextWeekday(DateTime.Today, dayOfWeek);
+            
+            for (int i=0; i<nbEp; i++)
+            {
+                var nameEvent = $"{name} #{numFirstEpisode} Streaming";
+                log.Info($"CreateEventSeries : {nameEvent}");
+
+                try
+                {
+                    if (i == 0)
+                        target = firstTargetDay;
+                    else
+                        target = Helper.GetNextWeekday(target, dayOfWeek);
+
+                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));
+                    GuildScheduledEventType type = GuildScheduledEventType.Voice;
+                    string description = "À voir ou à télécharger sur Jellyfin !";
+                    ulong? channelId = Helper._idSaloonVoice;
+                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventDiscord.png"));
+
+                    _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                }
+                catch(Exception ex)
+                {
+                    log.Error(ex.InnerException.Message);
+                }
+
+                numFirstEpisode++;                
+            }
+
+            log.Info("CreateEventSeries OUT");            
         }
 
         public async void CreateEventSeries(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
