@@ -44,12 +44,12 @@ namespace BoTools.Module
             Choice("3. Passable", $"👁👁👁"),
             Choice("4. Sympa", $"👍👍👍"),
             Choice("5. Epoustouflant", $"🔥🔥🔥"),
-            Choice("6. Légendaire !", $"❤️❤️❤️")] string feeback)
+            Choice("6. Légendaire !", $"❤️❤️❤️")] string feedback)
         {        
             log.Info("HandleRateOpCommand IN");
 
             string nameFeedback = string.Empty;
-            switch (feeback)
+            switch (feedback)
             {
                 case $"💩💩💩":
                     nameFeedback = "1. Mauvais !";
@@ -97,12 +97,54 @@ namespace BoTools.Module
             var embedBuilder = new EmbedBuilder()
                 
                 .WithTitle($"Feedback : {nameFeedback.Remove(0, 3)}")
-                .WithDescription($"{feeback}")
-                .WithColor(Color.Red)
+                .WithDescription($"{feedback}")
+                .WithColor(Color.DarkBlue)
                 .WithImageUrl(urlIcon);
 
             await RespondAsync(embed: embedBuilder.Build());
             log.Info("HandleRateOpCommand OUT");
+        }
+
+        [RequireRole(roleId: _idOpRole)]
+        [SlashCommand("feedback_one-piece-lite", "Comment était le dernier épisode de One Piece ?")]
+        public async Task HandleRateOpCommandLite(
+            [Choice("1. Nullissime", "⭐"),
+            Choice("2. Pas ouf", "⭐⭐"),
+            Choice("3. Ok", "⭐⭐⭐"),
+            Choice("4. Bien", "⭐⭐⭐⭐"),
+            Choice("5. Excellent", "⭐⭐⭐⭐⭐")            
+            ] string feedback) 
+        {
+            log.Info("HandleRateOpLiteCommand IN");
+
+            string nameFeedBack = string.Empty;
+
+            switch (feedback)
+            {
+                case $"⭐":
+                    nameFeedBack = "NULLISSIME";
+                    break;
+                case $"⭐⭐":
+                    nameFeedBack = "PAS OUF";
+                    break;
+                case $"⭐⭐⭐":
+                    nameFeedBack = "OK";
+                    break;
+                case $"⭐⭐⭐⭐":
+                    nameFeedBack = "BIEN";
+                    break;
+                case $"⭐⭐⭐⭐⭐":
+                    nameFeedBack = "EXCELLENT";
+                    break;
+            }
+
+            var embedBuilder = new EmbedBuilder()
+                .WithTitle($"Feedback : {nameFeedBack}")
+                .WithDescription($"{feedback}")
+                .WithColor(Color.DarkRed);
+
+            await RespondAsync(embed: embedBuilder.Build());
+            log.Info("HandleRateOpLiteCommand OUT");
         }
 
 
