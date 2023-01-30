@@ -106,7 +106,7 @@ namespace BoTools.Module
         }
 
 
-        [SlashCommand("main-roles", "Affiche la liste des rôles principaux du server", false, RunMode.Async)]        
+        [SlashCommand("roles", "Affiche la liste des rôles principaux du server", false, RunMode.Async)]        
         public async Task HandleMainRolesCommand()
         {
             log.Info("HandleMainRolesCommand IN");
@@ -133,10 +133,10 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("event-series", "Créé tout les events pour episodes hebdo", false, RunMode.Async)] 
-        public async Task HandleEventSeriesCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
+        [SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", false, RunMode.Async)] 
+        public async Task HandleEventSeriesHebdoCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
         {
-            log.Info("HandleEventSeriesCommand IN");
+            log.Info("HandleEventSeriesHebdoCommand IN");
 
             string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";               
 
@@ -150,7 +150,30 @@ namespace BoTools.Module
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
 
-            _eventService.CreateEventSeries(name, numFirstEpisode, nbEp, dayOfWeek, hour);
+            _eventService.CreateEventHebdoSerie(name, numFirstEpisode, nbEp, dayOfWeek, hour);
+
+            log.Info("HandleEventSeriesHebdoCommand OUT");
+        }
+
+        [RequireRole(roleId: _idModoRole)]
+        [SlashCommand("event-enserie", "Créé X event : selectionner les jours autre que la cible (s'il y en a)", false, RunMode.Async)]
+        public async Task HandleEventSeriesCommand(string name, int nbSession, Double hour, bool isIrlEvent,
+        DayOfWeek? siLundi=null, DayOfWeek? siMardi=null, DayOfWeek? siMercredi=null, DayOfWeek? siJeudi=null, DayOfWeek? siVendredi=null, DayOfWeek? siSamedi=null, DayOfWeek? siDimanche=null)        
+        {
+            log.Info("HandleEventSeriesCommand IN");
+
+            string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";            
+            
+            var embedBuiler = new EmbedBuilder()
+                .WithTitle($"Création de {nbSession} events {name} en cours...")
+                .WithDescription(msg)
+                .WithColor(Color.Green)
+                .WithImageUrl(Helper.GetZderLandIconUrl());
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);            
+
+            _eventService.CreateEventEnSerie(name, hour, nbSession, isIrlEvent,
+                siLundi,siMardi,siMercredi,siJeudi,siVendredi,siSamedi,siDimanche);
 
             log.Info("HandleEventSeriesCommand OUT");
         }

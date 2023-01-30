@@ -27,16 +27,15 @@
     <None Update="PNG\eventDiscord.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="PNG\eventDiscord.png">
+    <None Update="PNG\eventEnSerie.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PNG\eventSerie.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="PNG\Onepiece.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PNG\" />
   </ItemGroup>
 
 </Project>
