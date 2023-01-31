@@ -198,7 +198,7 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("event-enserie", "Créé X event : selectionner les jours autre que la cible (s'il y en a)", false, RunMode.Async)]
+        [SlashCommand("event-enserie", "Créé X event : selectionner les jours où auront lieu cet event", false, RunMode.Async)]
         public async Task HandleEventSeriesCommand(string name, int nbSession, Double hour, bool isIrlEvent,
         DayOfWeek? siLundi=null, DayOfWeek? siMardi=null, DayOfWeek? siMercredi=null, DayOfWeek? siJeudi=null, DayOfWeek? siVendredi=null, DayOfWeek? siSamedi=null, DayOfWeek? siDimanche=null)        
         {

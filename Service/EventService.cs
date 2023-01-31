@@ -106,6 +106,7 @@ namespace BoTools.Service
             log.Info("CreateEventEnSerie IN");
 
             SocketGuild _serv = Helper.GetZderLand(_client);
+            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
             List<DayOfWeek> lstDay = BuildOrderedEventDays(siLundi, siMardi, siMercredi, siJeudi, siVendredi, siSamedi, siDimanche);
             
             DateTime target = DateTime.Today;
@@ -117,25 +118,24 @@ namespace BoTools.Service
                 log.Info($"CreateEventEnSerie : {nameEvent}");
 
                 try
-                {
+                {                    
                     target = Helper.GetNextWeekday(target, lstDay[cptWeek]);
 
                     DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));                                                                                                    
                     if (isIrlEvent)
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.External;
-                        string description = "Event qui fait prendre l'air, c'est bon ça !";
-                        Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
+                        var endTime = startTime.AddHours(2);
+                        string description = "Event qui fait prendre l'air, c'est bon ça !";                        
 
-                        _serv.CreateEventAsync(nameEvent, startTime: startTime, endTime: startTime.AddHours(2), type: type, description: description, coverImage: coverImage);
+                        _serv.CreateEventAsync(nameEvent, startTime: startTime, endTime: endTime, type: type, description: description, coverImage: coverImage);
                     }
                     else
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.Voice;
                         ulong? channelId = Helper._idSaloonVoice;
-                        string description = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-                        Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
-
+                        string description = "Faites de la place dans le Saloon, on va tout péter !!!!";
+                        
                         _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
                     }
                     if (cptWeek == lstDay.Count-1) //end of list
