@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace BoTools.Service

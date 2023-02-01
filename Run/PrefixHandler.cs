@@ -111,14 +111,13 @@ namespace BoTools.Run
                     break;
                 case _readRuleMsgId:
                     _roleService.RulesReactionAddedAsync(reaction.UserId);
-                    break;
-
-                //Si réaction by me dans log = OP dispo
-                default:                   
-                    if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId) 
-                    {
-                        _messageService.OnePieceDispo();
-                    }
+                    break;                
+                default:
+                    //Si réaction by me dans log = OP dispo
+                    //if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId) 
+                    //{
+                    //    _messageService.OnePieceDispo();
+                    //}
                     break;
             }
             return Task.CompletedTask;

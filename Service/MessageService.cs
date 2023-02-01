@@ -192,12 +192,12 @@ namespace BoTools.Service
         }
 
 
-        internal void OnePieceDispo()
-        {
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idJellyfinChannel);                        
+        //internal void OnePieceDispo()
+        //{
+        //    ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idJellyfinChannel);                        
 
-            channel.SendMessageAsync(Helper.GetOnePieceMessage());
-        }
+        //    channel.SendMessageAsync(Helper.GetOnePieceMessage());
+        //}
 
         internal void SendToLeader(string message)
         {

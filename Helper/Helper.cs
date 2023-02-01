@@ -188,21 +188,21 @@ namespace BoTools
             return res.First().ToString().ToUpper() + res.Substring(1);
         }
 
-        internal static string GetOnePieceMessage()
-        {
-            var r = new Random();
-            int i = r.Next(2);
+        //internal static string GetOnePieceMessage()
+        //{
+        //    var r = new Random();
+        //    int i = r.Next(2);
 
-            string startMsg = $" {GetDlEmoji()} \n";
-            string messageKanji = startMsg +
-                "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
-                $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {GetCoeurEmote()}";
-            string messageJap = startMsg +
-                "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
-                $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {GetCoeurEmote()}";
+        //    string startMsg = $" {GetDlEmoji()} \n";
+        //    string messageKanji = startMsg +
+        //        "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
+        //        $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {GetCoeurEmote()}";
+        //    string messageJap = startMsg +
+        //        "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
+        //        $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {GetCoeurEmote()}";
 
-            return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
-        }
+        //    return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
+        //}
         #endregion
 
         internal static bool IsSundayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Sunday; }
