@@ -1,8 +1,10 @@
 ﻿using BoTools.Service;
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -12,8 +14,7 @@ namespace BoTools.Module
 {
     // Your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
     public class PrefixModule : ModuleBase<SocketCommandContext>
-    {        
-        private bool _tempLock = true; // Lock $special until next devlopment --> TODO
+    {                
         private const ulong _vinceId = 312317884389130241;
         private const ulong _ordiPortableId = 493020872303443969;
         private readonly MessageService _messageService;
@@ -33,9 +34,17 @@ namespace BoTools.Module
         [Command("Jellyfin")]
         [Summary("Active et partage un lien d'accès au server Jellyfin")]
         public async Task JellyfinAsync()
-        {
+        {            
+            List<RestMessage> pinneds = Context.Channel.GetPinnedMessagesAsync().Result.ToList();            
+            var test = pinneds.First() as IUserMessage;
+            if (test != null)
+                await test.UnpinAsync();
+
             string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
+                        
+            userMsg.PinAsync();
+
             log.Info($"JellyfinAsync by {userMsg.Author}");
             
             var reference = new MessageReference(userMsg.Id);

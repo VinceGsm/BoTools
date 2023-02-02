@@ -243,7 +243,7 @@ namespace BoTools.Service
             {
                 Url = ngRockUrl,
                 Color = Color.DarkRed,
-                ImageUrl = Helper._discordImgUrl,
+                ImageUrl = Helper._JellyfinImgUrl,
                 ThumbnailUrl = Helper._boToolsGif,
 
                 Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
