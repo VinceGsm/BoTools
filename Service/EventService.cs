@@ -104,8 +104,7 @@ namespace BoTools.Service
         {
             log.Info("CreateEventEnSerie IN");
 
-            SocketGuild _serv = Helper.GetZderLand(_client);
-            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
+            SocketGuild _serv = Helper.GetZderLand(_client);            
             List<DayOfWeek> lstDay = BuildOrderedEventDays(siLundi, siMardi, siMercredi, siJeudi, siVendredi, siSamedi, siDimanche);
             
             DateTime target = DateTime.Today;
@@ -116,6 +115,7 @@ namespace BoTools.Service
                 var nameEvent = $"{name} #{i + 1}";
                 log.Info($"CreateEventEnSerie : {nameEvent}");
 
+                Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
                 try
                 {                    
                     target = Helper.GetNextWeekday(target, lstDay[cptWeek]);

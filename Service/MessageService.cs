@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 using log4net;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -50,7 +49,7 @@ namespace BoTools.Service
         {            
             if (!guildUser.IsBot)
             {                
-                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
+                var msg = $"Je t'RGe à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter **Vince#0420**\n" +
                     $"A très vite pour de nouvelles aventures sur ZderLand {Helper.GetCoeurEmote()}" ;
 

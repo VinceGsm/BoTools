@@ -36,6 +36,21 @@ namespace BoTools.Module
         }
 
 
+        [SlashCommand("invite", "Reçois l'invitation éternelle du server en réponse masquée", false, RunMode.Async)]
+        public async Task HandleInviteCommand()
+        {
+            log.Info("HandleInviteCommand IN");
+           
+            var embedBuiler = new EmbedBuilder()                
+                .WithTitle("Invitation éternelle de ZderLand :")
+                .WithDescription("https://discord.gg/g43kWat")
+                .WithColor(Color.Green)
+                .WithImageUrl(Helper.GetZderLandIconUrl());
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+            log.Info("HandleInviteCommand OUT");
+        }
+
         [RequireRole(roleId: _idOpRole)]
         [SlashCommand("feedback_one-piece", "Comment était le dernier épisode de One Piece ?")]
         public async Task HandleRateOpCommand(
