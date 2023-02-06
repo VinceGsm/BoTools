@@ -19,8 +19,7 @@ namespace BoTools.Service
 
         public EventService(DiscordSocketClient client)
         {
-            _client = client;
-            GetNextNumOnePiece();
+            _client = client;            
         }
 
         public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
