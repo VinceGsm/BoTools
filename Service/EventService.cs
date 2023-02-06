@@ -24,10 +24,14 @@ namespace BoTools.Service
 
         public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
         {
+            int nextNumOnePiece = GetNextNumOnePiece();
             SocketGuild _serv = Helper.GetZderLand(_client);
             var events = _serv.GetEventsAsync().Result.ToList();
 
-            var name = $"One Piece {GetNextNumOnePiece()} Streaming";
+            if (isJellyfinRequest) // = isSunday
+                CreateThreadOnePiece(nextNumOnePiece);
+
+            var name = $"One Piece {nextNumOnePiece} Streaming";
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
@@ -38,6 +42,15 @@ namespace BoTools.Service
             _serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
+        private Task CreateThreadOnePiece(int nextNumOnePiece)
+        {
+            nextNumOnePiece = nextNumOnePiece - 1;
+            var opCHannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
+            opCHannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
+            log.Info($"Thread OP {nextNumOnePiece} created");
+            return Task.CompletedTask;
+        }
+
         public int GetNextNumOnePiece()
         {            
             string html;                     
@@ -46,15 +59,14 @@ namespace BoTools.Service
             try
             {
                 using (HttpClient httpClient = new HttpClient())
-                {
-                    //html = httpClient.GetStringAsync("https://www.imdb.com/title/tt0388629/episodes/?year=2023").Result;
+                {                    
                     html = httpClient.GetStringAsync("https://www.imdb.com/title/tt0388629/episodes").Result;
                 }
                 htmlDoc.LoadHtml(html);
                 
                 var lastnode = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'zero-z-index')]").ToList().Last();
                 
-                int.TryParse(lastnode.InnerText.Substring(8, 4),out int res);
+                int.TryParse(lastnode.InnerText.Substring(8, 4),out int res);                
 
                 return res +1;                
             }

@@ -95,7 +95,7 @@ namespace BoTools.Module
             SocketUserMessage userMsg = Context.Message;
             log.Info($"EventOnePieceAsync by {userMsg.Author}");            
 
-            await _eventService.CreateNextOnePiece();
+            await _eventService.CreateNextOnePiece(false);
             await _messageService.AddDoneReaction(userMsg);
 
             log.Info($"EventOnePieceAsync done");

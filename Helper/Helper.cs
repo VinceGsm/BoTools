@@ -23,6 +23,7 @@ namespace BoTools
         public static readonly ulong _idModoRole = 322489502562123778;
         public static readonly ulong _idGeneralChannel = 312966999414145034;
         public static readonly ulong _idJellyfinChannel = 816283362478129182;        
+        public static readonly ulong _idOnePieceChannel = 553256709439750151;
         public static readonly ulong _idSaloonVoice = 493036345686622210;       
         
         #region emote                
