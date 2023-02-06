@@ -19,7 +19,8 @@ namespace BoTools.Service
 
         public EventService(DiscordSocketClient client)
         {
-            _client = client;            
+            _client = client;
+            GetNextNumOnePiece();
         }
 
         public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
@@ -47,13 +48,16 @@ namespace BoTools.Service
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    html = httpClient.GetStringAsync("https://www.themoviedb.org/tv/37854/episode_group/5ad0f096c3a36825a300e78b/group/5ad0f3230e0a260942006562").Result;
+                    //html = httpClient.GetStringAsync("https://www.imdb.com/title/tt0388629/episodes/?year=2023").Result;
+                    html = httpClient.GetStringAsync("https://www.imdb.com/title/tt0388629/episodes").Result;
                 }
                 htmlDoc.LoadHtml(html);
                 
-                var nbEpReleased = htmlDoc.DocumentNode.SelectNodes("//span[contains(@class, 'episode_number')]").Count;
+                var lastnode = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'zero-z-index')]").ToList().Last();
                 
-                return nbEpReleased + 2; //check if regular (seems stuck to 1047)
+                int.TryParse(lastnode.InnerText.Substring(8, 4),out int res);
+
+                return res +1;                
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
