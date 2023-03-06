@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -25,13 +26,14 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;            
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;                     
 
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();
         }
 
-        private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
+        //in = arg2 unknown // out = arg3 unknown
+        private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)        
         {
             if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
 
@@ -42,6 +44,16 @@ namespace BoTools.Service
                 if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
                     await CheckBirthday();
             }
+            
+            //Compte secondaire Deaf IN
+            if (arg3.VoiceChannel != null && arg1.Id == 493020872303443969)
+            {
+                List<SocketGuildUser> targets = arg3.VoiceChannel.ConnectedUsers.ToList();
+                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == 312317884389130241);
+                if (indexMe != null)//I'm in
+                    targets.Remove(indexMe);
+                await AskForLive(targets);                
+            }                           
         }
 
         #region Client
@@ -49,7 +61,7 @@ namespace BoTools.Service
         {            
             if (!guildUser.IsBot)
             {                
-                var msg = $"Je t'RGe à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
+                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
                     $"En cas de problème merci de contacter **Vince#0420**\n" +
                     $"A très vite pour de nouvelles aventures sur ZderLand {Helper.GetCoeurEmote()}" ;
 
@@ -145,6 +157,22 @@ namespace BoTools.Service
         #endregion
 
         #region Message
+        public async Task AskForLive(List<SocketGuildUser> targets)
+        {
+            foreach (SocketGuildUser user in targets)
+            {
+                // check if the user is playing a game and not streaming
+                if (!user.IsStreaming && user.Activities.Count > 0)   
+                {
+                    await user.SendMessageAsync($"Hello {user.Username}, Voici un GIF simbolisant une demande de Stream :\n" +
+                        $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
+
+                    // wait for a short period of time before sending the next message (to avoid rate limiting)
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));                    
+                }
+            }
+        }
+
         public async Task CleanLastMsgChannel(ulong idTargetChannel)
         {
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, idTargetChannel);
@@ -238,7 +266,8 @@ namespace BoTools.Service
         /// <param name="ngRockUrl"></param>
         /// <returns></returns>
         public EmbedBuilder MakeJellyfinMessageBuilder(SocketUserMessage userMsg, string ngRockUrl)
-        {                        
+        {
+            log.Info($"IMG_url: " + Helper._JellyfinImgUrl);
             return new EmbedBuilder
             {
                 Url = ngRockUrl,
