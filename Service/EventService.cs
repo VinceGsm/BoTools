@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using HtmlAgilityPack;
 using log4net;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+
 
 namespace BoTools.Service
 {
@@ -25,10 +27,12 @@ namespace BoTools.Service
         public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
         {
             int nextNumOnePiece = GetNextNumOnePiece();
-            SocketGuild _serv = Helper.GetZderLand(_client);
-            var events = _serv.GetEventsAsync().Result.ToList();
+            SocketGuild _serv = Helper.GetZderLand(_client);            
+            var eventsAsync = await _serv.GetEventsAsync();
+            List<RestGuildEvent> events = eventsAsync.ToList();
 
-            if (isJellyfinRequest) // = isSunday
+            // = isSunday (probably) && no OnePiece event already planned
+            if (isJellyfinRequest && events.Any(x => x.Name.Contains(nextNumOnePiece.ToString()))) 
                 CreateThreadOnePiece(nextNumOnePiece);
 
             var name = $"One Piece {nextNumOnePiece} Streaming";

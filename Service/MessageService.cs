@@ -168,7 +168,8 @@ namespace BoTools.Service
                         $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
 
                     // wait for a short period of time before sending the next message (to avoid rate limiting)
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));                    
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    log.Info($"AskForLive to {user.Username}");
                 }
             }
         }
