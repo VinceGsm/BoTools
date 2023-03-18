@@ -277,7 +277,7 @@ namespace BoTools.Service
                 ThumbnailUrl = Helper._boToolsGif,
 
                 Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
-                Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Google Chrome** | **Firefox** | **Safari** \n" +
+                Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Jellyfin Media Player** sur PC\n" +
                     $"{Helper.GetCoinEmote()}  ERR_NGROK = relancer **$Jellyfin** \n"+
                     $"{Helper.GetCoinEmote()}  Site lent/bug = contacter **Vince**",
 

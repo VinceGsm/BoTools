@@ -31,7 +31,7 @@ namespace BoTools.Service
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();
 
-            // = isSunday (probably) && no OnePiece event already planned
+            // = isSunday (probably) && no next OnePiece event already planned
             if (isJellyfinRequest && events.Any(x => x.Name.Contains(nextNumOnePiece.ToString()))) 
                 CreateThreadOnePiece(nextNumOnePiece);
 
