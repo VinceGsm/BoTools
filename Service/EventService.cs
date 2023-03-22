@@ -24,18 +24,19 @@ namespace BoTools.Service
             _client = client;            
         }
 
-        public async Task CreateNextOnePiece(bool isJellyfinRequest = false)
+        public async Task CreateNextOnePiece()
         {
             int nextNumOnePiece = GetNextNumOnePiece();
+            var nameEvent = $"One Piece {nextNumOnePiece} Streaming";
+
             SocketGuild _serv = Helper.GetZderLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();
 
-            // = isSunday (probably) && no next OnePiece event already planned
-            if (isJellyfinRequest && events.Any(x => x.Name.Contains(nextNumOnePiece.ToString()))) 
+            // no next OnePiece event already planned
+            if (!events.Any(x => x.Name == nameEvent)) 
                 CreateThreadOnePiece(nextNumOnePiece);
-
-            var name = $"One Piece {nextNumOnePiece} Streaming";
+            
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
@@ -43,7 +44,7 @@ namespace BoTools.Service
             ulong? channelId = Helper._idSaloonVoice;
             Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-            _serv.CreateEventAsync(name, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+            _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
         private Task CreateThreadOnePiece(int nextNumOnePiece)

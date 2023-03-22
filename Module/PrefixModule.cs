@@ -87,18 +87,5 @@ namespace BoTools.Module
             }
             log.Info($"JellyfinAsync done");            
         }
-
-        [Command("OnePiece")]
-        [Summary("Mannualy create the next Event for OnePiece streaming")]
-        public async Task EventOnePieceAsync()
-        {
-            SocketUserMessage userMsg = Context.Message;
-            log.Info($"EventOnePieceAsync by {userMsg.Author}");            
-
-            await _eventService.CreateNextOnePiece(false);
-            await _messageService.AddDoneReaction(userMsg);
-
-            log.Info($"EventOnePieceAsync done");
-        }
     }
 }
