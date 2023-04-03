@@ -9,16 +9,11 @@ using System.Threading.Tasks;
 namespace BoTools.Run
 {
     public class PrefixHandler
-    {
-        private const ulong _vinceId = 312317884389130241;
-        private const ulong _logChannelId = 826144013920501790;
-        private const ulong _gamesMsgId = 848582017091108904;
-        private const ulong _specialMsgId = 848582133994881054;
+    {        
         private const ulong _readRuleMsgId = 848582652718219345;       
         
         private readonly DiscordSocketClient _client;
-        private readonly RoleService _roleService;
-        private readonly MessageService _messageService;
+        private readonly RoleService _roleService;        
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
         private static readonly char _commandPrefix = '$';        
@@ -29,8 +24,7 @@ namespace BoTools.Run
             _client = client;
             _services = services;            
 
-            _roleService ??= (RoleService)_services.GetService(typeof(RoleService));
-            _messageService ??= (MessageService)_services.GetService(typeof(MessageService));
+            _roleService ??= (RoleService)_services.GetService(typeof(RoleService));            
         }
 
         public async Task InitializeCommandsAsync()
@@ -47,8 +41,7 @@ namespace BoTools.Run
         }
 
         private async Task UserJoined(SocketGuildUser guildUser)
-        {            
-            _messageService.UserJoined(guildUser);
+        {                        
             await _roleService.UpdateListUser();
         }
 
@@ -80,20 +73,9 @@ namespace BoTools.Run
 
         private Task ReactionRemoved(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
-            switch (arg1.Id)
-            {
-                case _gamesMsgId:
-                    _roleService.GamesReactionRemoved(reaction);
-                    break;
-                case _specialMsgId:
-                    _roleService.SpecialReactionRemoved(reaction);
-                    break;
-                case _readRuleMsgId:
-                    _roleService.RulesReactionRemoved(reaction.UserId);
-                    break;
+            if(arg1.Id == _readRuleMsgId)
+                _roleService.RulesReactionRemoved(reaction.UserId);
 
-                default: break;
-            }
             return Task.CompletedTask;
         }
 
@@ -101,25 +83,9 @@ namespace BoTools.Run
         //     The reaction that was added will be passed into the Discord.WebSocket.SocketReaction parameter.
         private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
-            switch (arg1.Id)
-            {
-                case _gamesMsgId:
-                    _roleService.GamesReactionAdded(reaction);
-                    break;
-                case _specialMsgId:
-                    _roleService.SpecialReactionAdded(reaction);
-                    break;
-                case _readRuleMsgId:
-                    _roleService.RulesReactionAddedAsync(reaction.UserId);
-                    break;                
-                default:
-                    //Si réaction by me dans log = OP dispo
-                    //if (reaction.User.Value.Id == _vinceId && arg2.Id == _logChannelId) 
-                    //{
-                    //    _messageService.OnePieceDispo();
-                    //}
-                    break;
-            }
+            if (arg1.Id == _readRuleMsgId)
+                _roleService.RulesReactionRemoved(reaction.UserId);
+
             return Task.CompletedTask;
         }
     }

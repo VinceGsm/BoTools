@@ -15,8 +15,7 @@ namespace BoTools.Module
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventService _eventService;
-
+        private readonly EventService _eventService;        
 
         public InteractionModule(EventService eventService)
         {
@@ -28,11 +27,20 @@ namespace BoTools.Module
         [SlashCommand("ping",        // Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
             "BoTools es-tu là ?",    // Descriptions can have a max length of 100.
             false, RunMode.Async)]     
-        public async Task HandlePingPongInteraction()
+        public async Task HandlePingInteraction()
         {
-            log.Info("HandlePingPongInteraction IN");
-            await RespondAsync("PONG !");
-            log.Info("HandlePingPongInteraction OUT");
+            log.Info("HandlePing IN");
+
+            string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
+
+            //Check NAS online?           
+            if (Pinger.Ping())
+                _eventService._client.SetGameAsync(name: ": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.Streaming);
+            else
+                message = message + "\n NAS offline, retry later";
+
+            await RespondAsync(message, ephemeral: true);
+            log.Info("HandlePing OUT");
         }
 
 
@@ -190,7 +198,7 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", false, RunMode.Async)] 
+        [SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", true, RunMode.Async)] 
         public async Task HandleEventSeriesHebdoCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
         {
             log.Info("HandleEventSeriesHebdoCommand IN");
@@ -213,7 +221,7 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("event-enserie", "Créé X event : selectionner les jours où auront lieu cet event", false, RunMode.Async)]
+        [SlashCommand("event-enserie", "Créé X event : selectionner les jours où auront lieu cet event", true, RunMode.Async)]
         public async Task HandleEventSeriesCommand(string name, int nbSession, Double hour, bool isIrlEvent,
         DayOfWeek? siLundi=null, DayOfWeek? siMardi=null, DayOfWeek? siMercredi=null, DayOfWeek? siJeudi=null, DayOfWeek? siVendredi=null, DayOfWeek? siSamedi=null, DayOfWeek? siDimanche=null)        
         {

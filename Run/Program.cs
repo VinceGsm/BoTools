@@ -49,9 +49,9 @@ namespace BoTools.Run
             // the message cache in your config settings if you plan to use the cached message entity.            
             _client = client ?? new DiscordSocketClient(
                 new DiscordSocketConfig { MessageCacheSize = 100, AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.All }
-             );
-            _client.SetGameAsync(name:": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.CustomStatus);                                   
-        }        
+             );                                             
+            _client.SetGameAsync(name: "/help",  type: ActivityType.Watching);
+        }
 
         public async Task MainAsync()
         {

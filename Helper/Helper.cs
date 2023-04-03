@@ -18,15 +18,14 @@ namespace BoTools
             "https://cdn.discordapp.com/attachments/617462663374438411/1072151541638770698/Vincezder_mesmering_television_detailed_colourful_0_4b6a0db4-18ea-4011-a1db-fadf4e8ce347-NoWhite.png";
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/553256709439750151/1062431704914067566/KatakuriLow.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
-        public static readonly ulong _ZderLandId = 312966999414145034;
-        public static readonly ulong _idLogChannel = 826144013920501790;
+        public static readonly ulong _ZderLandId = 312966999414145034;        
         public static readonly ulong _idModoRole = 322489502562123778;
         public static readonly ulong _idGeneralChannel = 312966999414145034;
         public static readonly ulong _idJellyfinChannel = 816283362478129182;        
         public static readonly ulong _idOnePieceChannel = 553256709439750151;
-        public static readonly ulong _idSaloonVoice = 493036345686622210;       
-        
-        #region emote                
+        public static readonly ulong _idSaloonVoice = 493036345686622210;
+        private static readonly ulong _idModoChannel = 539151743213240331;
+                  
         private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         private static readonly string _doneEmote = "<a:check:626017543340949515>";
         private static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
@@ -39,12 +38,10 @@ namespace BoTools
         private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
         private static readonly string _pepeMdrEmote = "<a:pepeMDR:912738745105674292>";
         private static readonly string _heheEmote = "<a:hehe:773622227064979547>";
-        #endregion
-        #region emoji
         private static readonly string _coeurEmoji = "\u2764";        
         private static readonly string _tvEmoji = "\uD83D\uDCFA";
         private static readonly string _dlEmoji = "<:DL:894171464167747604>";
-        #endregion
+
         private static readonly List<string> _greetings = new List<string>
         {
             "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
@@ -60,6 +57,7 @@ namespace BoTools
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
 
 
         #region Process
@@ -89,25 +87,6 @@ namespace BoTools
         }
         #endregion
 
-        public static async Task SendLatencyAsync(DiscordSocketClient client)
-        {
-            ISocketMessageChannel logChannel = GetSocketMessageChannel(client, _idLogChannel);
-
-            IAsyncEnumerable<IReadOnlyCollection<IMessage>> lastMsgAsync = logChannel.GetMessagesAsync(1);
-            var lastMsg = lastMsgAsync.FirstAsync().Result;
-            bool newLog = lastMsg.ElementAt(0).CreatedAt.Day != DateTime.Today.Day;
-
-            if (newLog)
-            {
-                string message = $"{Helper.GetGreeting()}```Je suis à {client.Latency}ms de Zderland !```";
-
-                if (logChannel != null)
-                    await logChannel.SendMessageAsync(message, isTTS: true);
-            }
-
-            log.Info($"Latency : {client.Latency} ms");
-        }
-
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
             var channels = GetAllChannels(client);
@@ -119,11 +98,11 @@ namespace BoTools
             return channel;
         }
 
-        internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client) // Log by default
+        internal static ISocketMessageChannel GetSocketMessageChannelModo(DiscordSocketClient client)
         {
             var channels = GetAllChannels(client);
 
-            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Id == _idLogChannel);
+            ISocketMessageChannel channel = (ISocketMessageChannel)channels.FirstOrDefault(x => x.Id == _idModoChannel);
 
             if (channel == null) log.Error($"GetSocketMessageChannelContains : no channel LogChannel");
 
@@ -189,22 +168,6 @@ namespace BoTools
             //First letter Uper
             return res.First().ToString().ToUpper() + res.Substring(1);
         }
-
-        //internal static string GetOnePieceMessage()
-        //{
-        //    var r = new Random();
-        //    int i = r.Next(2);
-
-        //    string startMsg = $" {GetDlEmoji()} \n";
-        //    string messageKanji = startMsg +
-        //        "よろしくお願いします\nワンピースの最後のエピソードが利用可能です。次回の視聴のために、" +
-        //        $"事前にダウンロードすることを躊躇しないでください。ありがとう、\nキス {GetCoeurEmote()}";
-        //    string messageJap = startMsg +
-        //        "Yoroshikuonegaītashimasu,\nOne Piece no saigo no episōdo ga riyō kanōdesu. " +
-        //        $"Jikai no shichō no tame ni, jizen ni daunrōdo suru koto o chūcho shinaide kudasai.\nArigatō, kisu {GetCoeurEmote()}";
-
-        //    return (i == 0) ? messageJap : messageKanji; // 50% Jap / 50% Kanji
-        //}
         #endregion
 
         internal static bool IsSundayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Sunday; }
@@ -247,10 +210,6 @@ namespace BoTools
             return _birthsDay;            
         }
 
-        internal static bool IsLogChannel(ISocketMessageChannel channel)
-        {
-            return channel.Name.EndsWith("log");
-        }
 
         #region Get Emoji/Emote
         public static string GetCoinEmote() { return _coinEmote; }

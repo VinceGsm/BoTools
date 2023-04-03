@@ -15,8 +15,6 @@ namespace BoTools.Module
     // Your module must be public and inherit ModuleBase to be discovered by AddModulesAsync.    
     public class PrefixModule : ModuleBase<SocketCommandContext>
     {                
-        private const ulong _vinceId = 312317884389130241;
-        private const ulong _ordiPortableId = 493020872303443969;
         private readonly MessageService _messageService;
         private readonly EventService _eventService;
         private readonly JellyfinService _jellyfinService;        
@@ -34,51 +32,61 @@ namespace BoTools.Module
         [Command("Jellyfin")]
         [Summary("Active et partage un lien d'accès au server Jellyfin")]
         public async Task JellyfinAsync()
-        {            
-            List<RestMessage> pinneds = Context.Channel.GetPinnedMessagesAsync().Result.ToList();            
-            var test = pinneds.First() as IUserMessage;
-            if (test != null)
-                await test.UnpinAsync();
-
+        {
             string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
-                        
-            userMsg.PinAsync();
-
-            log.Info($"JellyfinAsync by {userMsg.Author}");
-            
             var reference = new MessageReference(userMsg.Id);
+
+            if (Process.GetProcessesByName("ngrok").Any()) //already in use
+            {
+                // PLUS BESOIN #refonte
+                //await _messageService.SendNgrokReset(Context.Channel);
+                //await Helper.KillProcess("ngrok");
+
+                await _messageService.AddReactionAlarm(userMsg);
+                await _messageService.SendJellyfinAlreadyInUse(Context.Channel, reference);                
+            }
+                     
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
-                if (Process.GetProcessesByName("ngrok").Any())
+                log.Info($"JellyfinAsync by {userMsg.Author}");
+
+                //check NAS
+                if (true)
                 {
-                    await _messageService.SendNgrokReset(Context.Channel);
-                    await Helper.KillProcess("ngrok");
+                    List<RestMessage> pinneds = Context.Channel.GetPinnedMessagesAsync().Result.ToList();
+                    _messageService.UnPinLastJelly(pinneds);
+                    userMsg.PinAsync();
+
+                    await _jellyfinService.ClearChannel(Context.Client);
+                    await _messageService.AddReactionVu(userMsg);
+
+                    // Jellyfin
+                    _jellyfinService.Activate();
+
+                    //activation NGrok + récupération du lien http
+                    string ngrokUrl = await _jellyfinService.GetNgrokUrl();
+                    log.Info($"ngrokUrl = {ngrokUrl}");
+
+                    var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
+                    Embed embed = builder.Build();
+
+                    if (Helper.IsSundayToday())
+                    {
+                        message = $"{Helper.GetLuffyEmote()}";
+                        _eventService.CreateNextOnePiece();
+                    }
+                    else
+                        message = $"{Helper.GetPepeSmokeEmote()}";
+
+                    await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
+                    await _messageService.AddDoneReaction(userMsg);
                 }
-
-                await _jellyfinService.ClearChannel(Context.Client);
-                await _messageService.AddReactionVu(userMsg);
-
-                // Jellyfin
-                _jellyfinService.Activate();
-
-                //activation NGrok + récupération du lien http
-                string ngrokUrl = await _jellyfinService.GetNgrokUrl();
-                log.Info($"ngrokUrl = {ngrokUrl}");
-
-                var builder = _messageService.MakeJellyfinMessageBuilder(userMsg, ngrokUrl);
-                Embed embed = builder.Build();
-
-                if (Helper.IsSundayToday())
-                {
-                    message = $"{Helper.GetLuffyEmote()}";
-                    _eventService.CreateNextOnePiece(true);
-                }                    
                 else
-                    message = $"{Helper.GetPepeSmokeEmote()}";
-
-                await Context.Channel.SendMessageAsync(message, false, embed, null, null, reference);
-                await _messageService.AddDoneReaction(userMsg);
+                {
+                    await _messageService.AddReactionAlarm(userMsg);
+                    await _messageService.JellyfinNotAvailable(Context.Channel, reference);
+                }
             }
             else
             {

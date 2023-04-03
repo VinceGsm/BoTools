@@ -1,9 +1,9 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private const long _vinceId = 312317884389130241;
+        private const long _vinceBisId = 493020872303443969;
         Dictionary<string, DateTime> _birthDays = null;
         DateTime? _onGoingBirthday = null;
         private DiscordSocketClient _client;
@@ -35,6 +37,8 @@ namespace BoTools.Service
         //in = arg2 unknown // out = arg3 unknown
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)        
         {
+
+            //      BIRTHDAY PART
             if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
 
             if (_onGoingBirthday == null) //pas anniv en cours                         
@@ -45,11 +49,11 @@ namespace BoTools.Service
                     await CheckBirthday();
             }
             
-            //Compte secondaire Deaf IN
-            if (arg3.VoiceChannel != null && arg1.Id == 493020872303443969)
+            //      RequestLive PART            
+            if (arg3.VoiceChannel != null && arg1.Id == _vinceBisId)//Compte Deaf IN
             {
                 List<SocketGuildUser> targets = arg3.VoiceChannel.ConnectedUsers.ToList();
-                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == 312317884389130241);
+                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == _vinceId); 
                 if (indexMe != null)//I'm in
                     targets.Remove(indexMe);
                 await AskForLive(targets);                
@@ -57,25 +61,6 @@ namespace BoTools.Service
         }
 
         #region Client
-        public async Task UserJoined(SocketGuildUser guildUser)
-        {            
-            if (!guildUser.IsBot)
-            {                
-                var msg = $"Je t'invite à prendre quelques minutes pour lire les règles du serveur sur le canal textuel <#846694705177165864>\n" +                    
-                    $"En cas de problème merci de contacter **Vince#0420**\n" +
-                    $"A très vite pour de nouvelles aventures sur ZderLand {Helper.GetCoeurEmote()}" ;
-
-                var builder = MakeMessageBuilder(guildUser);
-                Embed embed = builder.Build();
-
-                string message = $"{Helper.GetPikachuEmote()}";
-
-                await guildUser.SendMessageAsync(text:message, false, embed:embed, null, null);
-                await guildUser.SendMessageAsync(msg);
-            }
-            return;
-        }
-
         /// <summary>
         /// When a User left the Guild
         /// </summary>
@@ -86,13 +71,11 @@ namespace BoTools.Service
         {
             log.Warn($"{guildUser.Username} left");                                                     
             string message = $"<@{guildUser.Id}> left Zderland !";
+            
+            var modoChannel = Helper.GetSocketMessageChannelModo(_client);
 
-            var logChannel = Helper.GetSocketMessageChannel(_client);
-
-            if (logChannel != null)
-                await logChannel.SendMessageAsync(message);
-
-            return;
+            if (modoChannel != null)
+                await modoChannel.SendMessageAsync(message);            
         }
 
         private Task MessageReceived(SocketMessage arg)
@@ -164,12 +147,14 @@ namespace BoTools.Service
                 // check if the user is playing a game and not streaming
                 if (!user.IsStreaming && user.Activities.Count > 0)   
                 {
+                    log.Info($"AskForLive {user.Activities.First().ToString()} to {user.Username}");
+
+                    // TODO fix ask ppl who just have emoji status
                     await user.SendMessageAsync($"Hello {user.Username}, Voici un GIF simbolisant une demande de Stream :\n" +
                         $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
 
                     // wait for a short period of time before sending the next message (to avoid rate limiting)
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
-                    log.Info($"AskForLive to {user.Username}");
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));                    
                 }
             }
         }
@@ -219,24 +204,16 @@ namespace BoTools.Service
             }            
         }
 
-
-        //internal void OnePieceDispo()
-        //{
-        //    ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idJellyfinChannel);                        
-
-        //    channel.SendMessageAsync(Helper.GetOnePieceMessage());
-        //}
-
         internal void SendToLeader(string message)
         {
-            var leader = _client.GetUser(312317884389130241);
+            var leader = _client.GetUser(_vinceId);
             leader.SendMessageAsync(message);            
         }
 
         #region Control Message
-        internal async Task CommandNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
+        internal async Task CommandNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference, ulong idChannelWhereLegit)
         {
-            await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#826144013920501790>", messageReference: reference);
+            await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#{idChannelWhereLegit}>", messageReference: reference);
         }
 
         internal async Task CommandForbidden(ISocketMessageChannel channel, MessageReference reference)
@@ -250,12 +227,23 @@ namespace BoTools.Service
                 $" est limitée au channel <#816283362478129182>", messageReference: reference);            
         }
 
-        internal async Task SendNgrokReset(ISocketMessageChannel channel)
+        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
-                $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||\n" +            
-                $"*En cas de soucis direct avec Jellyfin merci de contacter Vince*");
+            await channel.SendMessageAsync($"Attention Jellyfin est déjà en cours d'utilisation ! Merci de regarder les PINS", messageReference: reference);
         }
+
+        internal async Task JellyfinNotAvailable(ISocketMessageChannel channel, MessageReference reference)
+        {
+            await channel.SendMessageAsync($"La base de donnée est indisponible pour le moment. C'est pourtant écrit dans mon statut...\n " +
+                $"Pour rappel, /ping mets à jour mon statut", messageReference: reference);
+        }
+
+        //internal async Task SendNgrokReset(ISocketMessageChannel channel)
+        //{
+        //    await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
+        //        $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||\n" +            
+        //        $"*En cas de soucis direct avec Jellyfin merci de contacter Vince*");
+        //}
         #endregion
         #endregion        
 
@@ -277,29 +265,14 @@ namespace BoTools.Service
                 ThumbnailUrl = Helper._boToolsGif,
 
                 Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
-                Description = $"{Helper.GetCoinEmote()}  À utiliser avec **Jellyfin Media Player** sur PC\n" +
+                Description = $"{Helper.GetCoinEmote()}  En stream avec **Jellyfin Media Player** sur PC\n" +
+                    $"{Helper.GetCoinEmote()}  En **DL** avec Google CHrome sur PC\n" +
                     $"{Helper.GetCoinEmote()}  ERR_NGROK = relancer **$Jellyfin** \n"+
-                    $"{Helper.GetCoinEmote()}  Site lent/bug = contacter **Vince**",
+                    $"{Helper.GetCoinEmote()}  / à venir", //TODO
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = GetFooterBuilder()
             };
-        }
-
-        private EmbedBuilder MakeMessageBuilder(SocketGuildUser guildUser)
-        {                        
-            EmbedBuilder res = new EmbedBuilder
-            {                
-                Color = Color.DarkRed,                
-                ThumbnailUrl = Helper._boToolsGif,
-
-                Title = $"{Helper.GetCheckEmote()}︱WELCOME︱{Helper.GetCheckEmote()}",
-                Description = $"Bienvenue sur Zderland {guildUser.Username} !",     
-
-                Author = new EmbedAuthorBuilder { Name = "Mes circuits ont détectés l'arrivée de " + guildUser.Username, IconUrl = guildUser.GetAvatarUrl() },
-                Footer = GetFooterBuilder()
-            };
-            return res;
         }
 
         private EmbedFooterBuilder GetFooterBuilder()
@@ -310,6 +283,26 @@ namespace BoTools.Service
                 Text = $"Powered with {Helper.GetCoeurEmoji()} by Vince"
             };
         }
+
+        public async Task UnPinLastJelly(List<RestMessage> pinneds)
+        {
+            try
+            {
+                var lastPin = pinneds.First() as IUserMessage;
+                if (lastPin != null)
+                {
+                    if (lastPin.Content.StartsWith('$'))
+                        await lastPin.UnpinAsync();
+                    else
+                    {
+                        var nextPin = pinneds.Skip(1).OfType<IUserMessage>().FirstOrDefault(x => x.Content.StartsWith('$'));
+                        await nextPin.UnpinAsync();
+                    }
+                }
+            }
+            catch (Exception ex) { log.Warn("UnPinLastJelly"); log.Error(ex); }                            
+        }
+
         #endregion
     }
 }

@@ -16,7 +16,7 @@ namespace BoTools.Service
 {
     public class EventService
     {
-        private DiscordSocketClient _client;        
+        public DiscordSocketClient _client;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public EventService(DiscordSocketClient client)
