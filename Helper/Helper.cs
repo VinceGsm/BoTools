@@ -33,7 +33,7 @@ namespace BoTools
         private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
         private static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
         private static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
-        private static readonly string _checkEmote = "<a:verified:773622374926778380>";                
+        private static readonly string _verifiedEmote = "<a:verified:773622374926778380>";                
         private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
         private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
         private static readonly string _pepeMdrEmote = "<a:pepeMDR:912738745105674292>";
@@ -214,7 +214,7 @@ namespace BoTools
         #region Get Emoji/Emote
         public static string GetCoinEmote() { return _coinEmote; }
         public static string GetCoeurEmote() { return _coeurEmote; }
-        public static string GetCheckEmote() { return _checkEmote; }
+        public static string GetVerifiedEmote() { return _verifiedEmote; }
         public static string GetPikachuEmote() { return _pikachuEmote; }
         public static string GetAlarmEmote() { return _alarmEmote; }
         public static string GetBravoEmote() { return _bravoEmote; }        

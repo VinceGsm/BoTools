@@ -51,6 +51,7 @@ namespace BoTools.Run
                 new DiscordSocketConfig { MessageCacheSize = 100, AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.All }
              );                                             
             _client.SetGameAsync(name: "/help",  type: ActivityType.Watching);
+            //_client.SetGameAsync(name: "/!\\en maintenance/!\\",  type: ActivityType.Playing);
         }
 
         public async Task MainAsync()

@@ -25,8 +25,8 @@ namespace BoTools
             string data = "helloWorld";
             byte[] buffer = Encoding.ASCII.GetBytes(data);
 
-            // Wait 3 seconds for a reply.
-            int timeout = 3000;
+            // Wait 2 seconds for a reply.
+            int timeout = 2000;            
 
             // Set options for transmission:
             // The data can go through 64 gateways or routers
@@ -34,8 +34,8 @@ namespace BoTools
             // cannot be fragmented.
             PingOptions options = new PingOptions(64, true);
 
-            Console.WriteLine("Time to live: {0}", options.Ttl);
-            Console.WriteLine("Don't fragment: {0}", options.DontFragment);
+            //Console.WriteLine("Time to live: {0}", options.Ttl);
+            //Console.WriteLine("Don't fragment: {0}", options.DontFragment);
 
             // Send the ping asynchronously.
             // Use the waiter as the user token.
@@ -45,8 +45,7 @@ namespace BoTools
             // Prevent this example application from ending.
             // A real application should do something useful
             // when possible.
-            waiter.WaitOne();
-            Console.WriteLine("Ping completed");
+            waiter.WaitOne();            
             return isNASopen;
         }
 
@@ -89,11 +88,11 @@ namespace BoTools
             Console.WriteLine("ping status: {0}", reply.Status);
             if (reply.Status == IPStatus.Success)
             {
-                Console.WriteLine("Address: {0}", reply.Address.ToString());
-                Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
-                Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
-                Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
-                Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);
+                //Console.WriteLine("Address: {0}", reply.Address.ToString());
+                //Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
+                //Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
+                //Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
+                //Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);
                 isNASopen = true;
             }
         }

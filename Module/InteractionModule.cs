@@ -12,6 +12,7 @@ namespace BoTools.Module
 {
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
+        private const ulong _idReadRulesRole = 847048535799234560;
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -19,48 +20,83 @@ namespace BoTools.Module
 
         public InteractionModule(EventService eventService)
         {
-            _eventService = eventService;
+            _eventService = eventService;                     
         }
-        
 
-        
+
+        [RequireRole(roleId: _idReadRulesRole)]
         [SlashCommand("ping",        // Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-            "BoTools es-tu là ?",    // Descriptions can have a max length of 100.
+            "Mets à jour le statut de BoTools",    // Descriptions can have a max length of 100.
             false, RunMode.Async)]     
         public async Task HandlePingInteraction()
         {
-            log.Info("HandlePing IN");
+            //var toto = _eventService._client.GetGlobalApplicationCommandsAsync();
+            //var test = toto.Result;
+            //foreach (var command in test)
+            //{
+            //    if (command.Name.Contains("main"))
+            //        command.DeleteAsync();
+            //}
+            var user = Context.User;
+            log.Info($"HandlePing IN by {user.Username}");
 
             string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
 
-            //Check NAS online?           
+            //NAS online?           
             if (Pinger.Ping())
                 _eventService._client.SetGameAsync(name: ": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.Streaming);
             else
-                message = message + "\n NAS offline, retry later";
+                message += "NAS offline, retry later";
 
             await RespondAsync(message, ephemeral: true);
             log.Info("HandlePing OUT");
         }
 
+        [RequireRole(roleId: _idReadRulesRole)]
+        [SlashCommand("help", "Liste les commandes du server", false, RunMode.Async)]
+        public async Task HandleHelpCommand()
+        {
+            log.Info("HandleHelpCommand IN");
 
-        [SlashCommand("invite", "Reçois l'invitation éternelle du server en réponse masquée", false, RunMode.Async)]
+            string description = $"{Helper.GetVerifiedEmote()} **Commands générales** {Helper.GetVerifiedEmote()}\n" +
+                $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation éternelle du server\n" +
+                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Mets à jour le statut de BoTools\n" +
+                $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +
+                $"{Helper.GetCoinEmote()} </help:1092816777626521651> : Liste les commandes du server\n\n" +
+                $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +
+                $":warning: A utiliser uniquement de les threads\n" +
+                $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104> : Appréciation personnelle de l'épisode\n" +
+                $"{Helper.GetCoinEmote()} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
+                $"En cas de problème contacter <@312317884389130241>";
+
+            var embedBuiler = new EmbedBuilder()
+                .WithTitle("Liste des commands de ZderLand :")
+                .WithDescription(description)
+                .WithColor(Color.Green)
+                .WithImageUrl(Helper.GetZderLandIconUrl());
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+            log.Info("HandleHelpCommand OUT");
+        }
+
+        [RequireRole(roleId: _idReadRulesRole)]
+        [SlashCommand("invite", "Affiche l'invitation éternelle du server", false, RunMode.Async)]
         public async Task HandleInviteCommand()
         {
             log.Info("HandleInviteCommand IN");
-           
-            var embedBuiler = new EmbedBuilder()                
+
+            var embedBuiler = new EmbedBuilder()
                 .WithTitle("Invitation éternelle de ZderLand :")
                 .WithDescription("https://discord.gg/g43kWat")
-                .WithColor(Color.Green)
-                .WithImageUrl(Helper.GetZderLandIconUrl());
+                .WithColor(Color.Green);
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleInviteCommand OUT");
         }
 
         [RequireRole(roleId: _idOpRole)]
-        [SlashCommand("feedback_one-piece", "Comment était le dernier épisode de One Piece ?")]
+        [RequireRole(roleId: _idReadRulesRole)]
+        [SlashCommand("feedback_one-piece", "Appréciation personnelle de l'épisode")]
         public async Task HandleRateOpCommand(
             [Choice("1. Mauvais !", $"💩💩💩"),
             Choice("2. Ennuyant", $"💤💤💤"),
@@ -129,7 +165,8 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idOpRole)]
-        [SlashCommand("feedback_one-piece-lite", "Comment était le dernier épisode de One Piece ?")]
+        [RequireRole(roleId: _idReadRulesRole)]
+        [SlashCommand("feedback_one-piece-lite", "Appréciation personnelle de l'épisode")]
         public async Task HandleRateOpCommandLite(
             [Choice("1. Nullissime", "⭐"),
             Choice("2. Pas ouf", "⭐⭐"),
@@ -170,28 +207,24 @@ namespace BoTools.Module
             log.Info("HandleRateOpLiteCommand OUT");
         }
 
-
+        [RequireRole(roleId: _idReadRulesRole)]
         [SlashCommand("roles", "Affiche la liste des rôles principaux du server", false, RunMode.Async)]        
         public async Task HandleMainRolesCommand()
         {
             log.Info("HandleMainRolesCommand IN");
 
-            List<string> roles = new List<string>();
-            roles.Add("<@&689144324939710527>");
-            roles.Add("<@&322489502562123778>");
-            roles.Add("<@&322490732885835776>");
-            roles.Add("<@&344912149728067584>");
-            roles.Add("<@&847048535799234560>");
+            var user = Context.User;
+            List<string> roles = new List<string>(){ "<@&689144324939710527>","<@&322489502562123778>", "<@&322490732885835776>",
+            "<@&344912149728067584>","<@&847048535799234560>"};
 
             // We remove the everyone role and select the mention of each role.
-            var roleList = string.Join("\n", roles);            
+            var roleList = string.Join("\n", roles);
 
             var embedBuiler = new EmbedBuilder()
-                //.WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+                .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
                 .WithTitle("Rôles principaux de Zderland :")
                 .WithDescription(roleList)
-                .WithColor(Color.Green)
-                .WithImageUrl(Helper.GetZderLandIconUrl());
+                .WithColor(Color.Green);                
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleMainRolesCommand OUT");
@@ -203,15 +236,16 @@ namespace BoTools.Module
         {
             log.Info("HandleEventSeriesHebdoCommand IN");
 
+            var user = Context.User;
             string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";               
 
             int nbEp = numLastEpisode - numFirstEpisode +1;
 
-            var embedBuiler = new EmbedBuilder()                
+            var embedBuiler = new EmbedBuilder()
+                .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
                 .WithTitle($"Création de {nbEp} events {name} en cours...")
                 .WithDescription(msg)
-                .WithColor(Color.Green)
-                .WithImageUrl(Helper.GetZderLandIconUrl());            
+                .WithColor(Color.Green);                          
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
 
@@ -227,13 +261,14 @@ namespace BoTools.Module
         {
             log.Info("HandleEventSeriesCommand IN");
 
-            string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";            
-            
+            var user = Context.User;
+            string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";
+
             var embedBuiler = new EmbedBuilder()
+                .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
                 .WithTitle($"Création de {nbSession} events {name} en cours...")
                 .WithDescription(msg)
-                .WithColor(Color.Green)
-                .WithImageUrl(Helper.GetZderLandIconUrl());
+                .WithColor(Color.Green);                
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);            
 

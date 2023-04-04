@@ -53,9 +53,11 @@ namespace BoTools.Service
             if (arg3.VoiceChannel != null && arg1.Id == _vinceBisId)//Compte Deaf IN
             {
                 List<SocketGuildUser> targets = arg3.VoiceChannel.ConnectedUsers.ToList();
-                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == _vinceId); 
+
+                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == _vinceBisId); 
                 if (indexMe != null)//I'm in
                     targets.Remove(indexMe);
+
                 await AskForLive(targets);                
             }                           
         }
@@ -147,14 +149,17 @@ namespace BoTools.Service
                 // check if the user is playing a game and not streaming
                 if (!user.IsStreaming && user.Activities.Count > 0)   
                 {
-                    log.Info($"AskForLive {user.Activities.First().ToString()} to {user.Username}");
+                    if(user.Activities.FirstOrDefault().Type == ActivityType.Playing)
+                    {
+                        log.Info($"AskForLive {user.Activities.First().ToString()} to {user.Username}");
 
-                    // TODO fix ask ppl who just have emoji status
-                    await user.SendMessageAsync($"Hello {user.Username}, Voici un GIF simbolisant une demande de Stream :\n" +
-                        $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
+                        // TODO fix ask ppl who just have emoji status
+                        await user.SendMessageAsync($"Hello {user.Username}, (sauf erreur de ma part) Vince m'envoie ici alors voici un GIF symbolisant une demande de Stream :\n" +
+                            $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
 
-                    // wait for a short period of time before sending the next message (to avoid rate limiting)
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));                    
+                        // wait for a short period of time before sending the next message (to avoid rate limiting)
+                        await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    }                  
                 }
             }
         }
@@ -264,11 +269,11 @@ namespace BoTools.Service
                 ImageUrl = Helper._JellyfinImgUrl,
                 ThumbnailUrl = Helper._boToolsGif,
 
-                Title = $"{Helper.GetCheckEmote()}︱Cliquez ici︱{Helper.GetCheckEmote()}",                
+                Title = $"{Helper.GetVerifiedEmote()}︱Cliquez ici︱{Helper.GetVerifiedEmote()}",                
                 Description = $"{Helper.GetCoinEmote()}  En stream avec **Jellyfin Media Player** sur PC\n" +
                     $"{Helper.GetCoinEmote()}  En **DL** avec Google CHrome sur PC\n" +
                     $"{Helper.GetCoinEmote()}  ERR_NGROK = relancer **$Jellyfin** \n"+
-                    $"{Helper.GetCoinEmote()}  / à venir", //TODO
+                    $"{Helper.GetCoinEmote()}  / à venir",
 
                 Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
                 Footer = GetFooterBuilder()
