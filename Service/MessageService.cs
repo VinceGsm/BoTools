@@ -28,7 +28,8 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;                     
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;       
+            
 
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();

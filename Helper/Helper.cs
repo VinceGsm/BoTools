@@ -171,6 +171,7 @@ namespace BoTools
         #endregion
 
         internal static bool IsSundayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Sunday; }
+        internal static bool IsThursdayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Thursday; }
 
         internal static DateTime GetNextWeekday(DateTime start, DayOfWeek day)
         {

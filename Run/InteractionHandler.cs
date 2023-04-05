@@ -19,7 +19,9 @@ namespace BoTools.Run
         {
             _interaction = interaction;
             _client = client;
-            _services = services;            
+            _services = services;
+
+            log.Info($"Latency : {_client.Latency} ms");
         }
 
         public async Task InitializeInteractionAsync()

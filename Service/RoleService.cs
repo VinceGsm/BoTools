@@ -13,6 +13,7 @@ namespace BoTools.Service
     public class RoleService
     {        
         private static ulong _readTheRulesId = 847048535799234560;
+        private static ulong _gamingDealId = 1092072288226115685;
 
         private bool _connexion = true;
         private IRole _IRoleRules = null;                 
@@ -37,19 +38,53 @@ namespace BoTools.Service
             _client.GuildMembersDownloaded += GuildMembersDownloaded;            
         }
 
-
-        #region Update At Start
+        
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
             log.Info($"| GuildMembersDownloaded IN --> firstIN={_connexion}");
             if (_connexion)
-            {
-                log.Info($"Latency : {_client.Latency} ms");
+            {                
                 await CheckRoles();
-
+                await NotifRoles();
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");
+        }
+
+        private async Task NotifRoles()
+        {
+            NotifGamingDeal();
+        }
+
+        private async void NotifGamingDeal()
+        {
+            #region Jeudi = Free Epic Store
+            if (Helper.IsThursdayToday())
+            {
+                ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
+
+                List<IReadOnlyCollection<IMessage>> lastMsgAsync = await mediaChannel.GetMessagesAsync(20).ToListAsync();
+                bool isNew = true;
+
+                foreach (var msg in lastMsgAsync)
+                {
+                    foreach (var wtfDiscord in msg)
+                    {
+                        if (wtfDiscord.CreatedAt.Day == DateTime.Today.Day || wtfDiscord.Author.IsBot)
+                            isNew = false;                        
+                    }
+                }                
+
+                if (isNew)
+                {
+                    string message = $"{Helper.GetPikachuEmote()} <@&{_gamingDealId}> \n" +
+                        $"C'est Jeudi_EPI ! n'oublier pas de recup le ou les jeux gratuit sur le Store EPIC GAMES";
+
+                    if (mediaChannel != null)
+                        await mediaChannel.SendMessageAsync(message, isTTS: true);
+                }
+            }
+            #endregion
         }
 
         public async Task CheckRoles()
@@ -117,8 +152,7 @@ namespace BoTools.Service
 
             _allUsers = Helper.GetZderLand(_client).Users.ToList();
             _allUsers.RemoveAll(x => x.IsBot);
-        }
-        #endregion
+        }        
 
 
         #region Update Live

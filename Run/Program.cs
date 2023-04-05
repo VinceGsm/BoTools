@@ -78,7 +78,7 @@ namespace BoTools.Run
             };
 
             await _client.LoginAsync(TokenType.Bot, _token);
-            await _client.StartAsync();
+            await _client.StartAsync();            
 
             // Block this task until the program is closed.
             await Task.Delay(Timeout.Infinite);
