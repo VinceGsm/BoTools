@@ -58,27 +58,25 @@ namespace BoTools.Service
 
         private async void NotifGamingDeal()
         {
-            #region Jeudi = Free Epic Store
-            if (Helper.IsThursdayToday())
+            #region Vendredi = Epic Store
+            if (Helper.IsFridayToday())
             {
                 ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
 
-                List<IReadOnlyCollection<IMessage>> lastMsgAsync = await mediaChannel.GetMessagesAsync(20).ToListAsync();
+                List<IReadOnlyCollection<IMessage>> batchLastMsgAsync = await mediaChannel.GetMessagesAsync(25).ToListAsync();
+                var lastMsgAsync = batchLastMsgAsync.FirstOrDefault();
                 bool isNew = true;
-
+                
                 foreach (var msg in lastMsgAsync)
                 {
-                    foreach (var wtfDiscord in msg)
-                    {
-                        if (wtfDiscord.CreatedAt.Day == DateTime.Today.Day || wtfDiscord.Author.IsBot)
-                            isNew = false;                        
-                    }
-                }                
+                    if (msg.CreatedAt.Day == DateTime.Today.Day && msg.Author.IsBot)
+                        isNew = false;                        
+                }                              
 
                 if (isNew)
                 {
-                    string message = $"{Helper.GetPikachuEmote()} <@&{_gamingDealId}> \n" +
-                        $"C'est Jeudi_EPI ! n'oublier pas de recup le ou les jeux gratuit sur le Store EPIC GAMES";
+                    string message = $"<@&{_gamingDealId}>\n" +
+                        $"{Helper.GetPikachuEmote()} N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES";
 
                     if (mediaChannel != null)
                         await mediaChannel.SendMessageAsync(message, isTTS: true);
