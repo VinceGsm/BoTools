@@ -36,23 +36,23 @@ namespace BoTools.Module
             string message = string.Empty;
             SocketUserMessage userMsg = Context.Message;
             var reference = new MessageReference(userMsg.Id);
-
-            if (Process.GetProcessesByName("ngrok").Any()) //already in use
-            {
-                // PLUS BESOIN #refonte
-                //await _messageService.SendNgrokReset(Context.Channel);
-                //await Helper.KillProcess("ngrok");
-
-                await _messageService.AddReactionAlarm(userMsg);
-                await _messageService.SendJellyfinAlreadyInUse(Context.Channel, reference);                
-            }
                      
             if (Helper.IsJellyfinCorrectChannel(Context.Channel))
             {
+                if (Process.GetProcessesByName("ngrok").Any()) //already in use
+                {
+                    // PLUS BESOIN #refonte
+                    //await _messageService.SendNgrokReset(Context.Channel);
+                    //await Helper.KillProcess("ngrok");
+
+                    await _messageService.AddReactionAlarm(userMsg);
+                    await _messageService.SendJellyfinAlreadyInUse(Context.Channel, reference);
+                }
+
                 log.Info($"JellyfinAsync by {userMsg.Author}");
 
                 //check NAS
-                if (true)
+                if (Pinger.Ping())
                 {
                     List<RestMessage> pinneds = Context.Channel.GetPinnedMessagesAsync().Result.ToList();
                     _messageService.UnPinLastJelly(pinneds);

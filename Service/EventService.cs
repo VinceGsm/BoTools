@@ -27,20 +27,21 @@ namespace BoTools.Service
         public async Task CreateNextOnePiece()
         {
             int nextNumOnePiece = GetNextNumOnePiece();
-            var nameEvent = $"One Piece {nextNumOnePiece} Streaming";
+            var nameEvent = $"One Piece {nextNumOnePiece}";
 
             SocketGuild _serv = Helper.GetZderLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();
 
-            // no next OnePiece event already planned
+            // no next OnePiece already planned
             if (!events.Any(x => x.Name == nameEvent)) 
                 CreateThreadOnePiece(nextNumOnePiece);
             
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
-            string description = "**RDV hebdomadaire du server !**";
+            string description = "**Monkey D. Luffy décide de prendre la mer à la recherche d'un équipage qui lui permettra de devenir" +
+                " le roi des pirates. Venez suivre son aventure avec nous !**";
             ulong? channelId = Helper._idSaloonVoice;
             Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 

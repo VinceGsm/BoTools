@@ -1,12 +1,19 @@
-﻿using Discord;
+﻿using BoTools.Model;
+using Discord;
 using Discord.WebSocket;
 using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Security.Policy;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace BoTools.Service
 {
@@ -58,31 +65,75 @@ namespace BoTools.Service
 
         private async void NotifGamingDeal()
         {
-            #region Vendredi = Epic Store
+            #region Vendredi = Epic Store            
             if (Helper.IsFridayToday())
-            {
+                {
                 ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
 
                 List<IReadOnlyCollection<IMessage>> batchLastMsgAsync = await mediaChannel.GetMessagesAsync(25).ToListAsync();
                 var lastMsgAsync = batchLastMsgAsync.FirstOrDefault();
                 bool isNew = true;
-                
+
                 foreach (var msg in lastMsgAsync)
                 {
                     if (msg.CreatedAt.Day == DateTime.Today.Day && msg.Author.IsBot)
-                        isNew = false;                        
-                }                              
+                        isNew = false;
+                }
 
                 if (isNew)
-                {
-                    string message = $"<@&{_gamingDealId}>\n" +
-                        $"{Helper.GetPikachuEmote()} N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES";
+                {                    
+                    List<string> urls = await GetEpicGamesStoreImg();
+
+                    string message = $"<@&{_gamingDealId}> {Helper.GetPikachuEmote()}\n" +
+                        $"N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES :";                        
+
+                    Embed embed1 = new EmbedBuilder() {ImageUrl = urls[0]}
+                        .Build();
+                    Embed embed2 = new EmbedBuilder() { ImageUrl = urls[1] }
+                        .Build();
+
+                    Embed[] embeds = {embed1, embed2};
 
                     if (mediaChannel != null)
-                        await mediaChannel.SendMessageAsync(message, isTTS: true);
+                        await mediaChannel.SendMessageAsync(text:message, embeds: embeds, isTTS: true);
                 }
             }
             #endregion
+        }
+
+        private async Task<List<string>> GetEpicGamesStoreImg()
+        {
+            List<string> res = new List<string>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://store-site-backend-static.ak.epicgames.com/");
+
+                HttpResponseMessage response = await client.GetAsync("freeGamesPromotions?locale=fr-FR&country=FR&allowCountries=FR");
+
+                if (response.IsSuccessStatusCode)
+                {                    
+                    string json = await response.Content.ReadAsStringAsync();
+
+                    //LINQ to JSON
+                    JObject jObj = JObject.Parse(json);
+                    var scopedJson = jObj["data"]["Catalog"]["searchStore"]["elements"].Select(x => x.ToString()).ToList();                    
+
+                    foreach (var extract in scopedJson)
+                    {
+                        EpicFreeGames game = JsonConvert.DeserializeObject<EpicFreeGames>(extract);
+
+                        if (game.promotions?.PromotionalOffers?.Count >= 1)
+                        {
+                            if (game.promotions.PromotionalOffers[0].PromotionalOffers[0].DiscountSetting.DiscountPercentage == 0)                            
+                                res.Add(game.keyImages[0].url);                            
+                        } 
+                    }                    
+                }
+                else                
+                    log.Error("Failed to retrieve free games from Epic Games API.");                
+            }
+            return res;
         }
 
         public async Task CheckRoles()

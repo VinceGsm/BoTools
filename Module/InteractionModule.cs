@@ -32,7 +32,7 @@ namespace BoTools.Module
         {
             //var toto = _eventService._client.GetGlobalApplicationCommandsAsync();
             //var test = toto.Result;
-            //foreach (var command in test)
+            //foreach (var command in test) //delete /command
             //{
             //    if (command.Name.Contains("main"))
             //        command.DeleteAsync();
@@ -276,6 +276,19 @@ namespace BoTools.Module
                 siLundi,siMardi,siMercredi,siJeudi,siVendredi,siSamedi,siDimanche);
 
             log.Info("HandleEventSeriesCommand OUT");
+        }
+
+        [RequireRole(roleId: _idModoRole)]
+        [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode", true, RunMode.Async)]
+        public async Task HandleCreateOnePieceCommand()
+        {
+            log.Info("HandleCreateOnePieceCommand IN");
+
+            var user = Context.User;
+
+            _eventService.CreateNextOnePiece();
+
+            log.Info("HandleCreateOnePieceCommand OUT");
         }
     }
 }
