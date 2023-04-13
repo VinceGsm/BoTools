@@ -53,6 +53,7 @@ namespace BoTools.Service
             {                
                 await CheckRoles();
                 await NotifRoles();
+                log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");

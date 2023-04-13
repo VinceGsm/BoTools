@@ -40,8 +40,7 @@ namespace BoTools.Service
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
-            string description = "**Monkey D. Luffy décide de prendre la mer à la recherche d'un équipage qui lui permettra de devenir" +
-                " le roi des pirates. Venez suivre son aventure avec nous !**";
+            string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
             ulong? channelId = Helper._idSaloonVoice;
             Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
