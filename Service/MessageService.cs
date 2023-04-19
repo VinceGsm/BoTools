@@ -18,7 +18,11 @@ namespace BoTools.Service
         DateTime? _onGoingBirthday = null;
         private DiscordSocketClient _client;
         private static ulong _saloonVoiceId = 493036345686622210;
+        private static ulong _squadVoiceId = 1007423970670297178;
+        private static ulong _squadTmpVoiceId = ulong.MinValue;
         private static ulong _birthdayId = 1052530092082995201;
+        private static ulong _vocalCategoryId = 493018545089806337;
+        private bool _isSquadOn = false;
         private IRole _IRoleBirthday = null;
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -60,7 +64,32 @@ namespace BoTools.Service
                     targets.Remove(indexMe);
 
                 await AskForLive(targets);                
-            }                           
+            }
+
+            //      NewSquad PART                        
+            var guild = _client.Guilds.First();
+
+            if (arg3.VoiceChannel.Id == _squadVoiceId && !_isSquadOn)
+            {
+                _isSquadOn = true;
+
+                //New channel                
+                RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync("🎮︱Squad bis", props => props.CategoryId = _vocalCategoryId).Result;
+                _squadTmpVoiceId = newVoice.Id;
+            }
+            if(_isSquadOn)
+            {
+                if (arg2.VoiceChannel.Id == _squadTmpVoiceId || arg2.VoiceChannel.Id == _squadVoiceId) //leave
+                {
+                    //si plus personne dans les 2 --> delete new + isSquad
+                    if (guild.VoiceChannels.First(x => x.Id == _squadVoiceId).ConnectedUsers.Count == 0 && 
+                        guild.VoiceChannels.First(x => x.Name == "🎮︱Squad bis").ConnectedUsers.Count == 0)
+                    {
+                        await guild.VoiceChannels.First(x => x.Id == _squadTmpVoiceId).DeleteAsync();
+                        _isSquadOn = false;
+                    }
+                }
+            }
         }
 
         #region Client

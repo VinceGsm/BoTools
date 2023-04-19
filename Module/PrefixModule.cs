@@ -58,7 +58,7 @@ namespace BoTools.Module
                     _messageService.UnPinLastJelly(pinneds);
                     userMsg.PinAsync();
 
-                    await _jellyfinService.ClearChannel(Context.Client);
+                    //await _jellyfinService.ClearChannel(Context.Client); TEST comment
                     await _messageService.AddReactionVu(userMsg);
 
                     // Jellyfin

@@ -90,7 +90,7 @@ namespace BoTools.Service
             
             for (int i=0; i<nbEp; i++)
             {
-                var nameEvent = $"{name} #{numFirstEpisode} Streaming";
+                var nameEvent = $"{name} #{numFirstEpisode}";
                 log.Info($"CreateEventHebdoSerie : {nameEvent}");
 
                 try
@@ -102,7 +102,7 @@ namespace BoTools.Service
 
                     DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                    string description = "À voir ou à télécharger sur Jellyfin !";
+                    string description = "Event créer grâce à la commande **/event-serie-hebdo**";
                     ulong? channelId = Helper._idSaloonVoice;
                     Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventSerie.png"));
 
