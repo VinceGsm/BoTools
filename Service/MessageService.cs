@@ -69,7 +69,7 @@ namespace BoTools.Service
             //      NewSquad PART                        
             var guild = _client.Guilds.First();
 
-            if (arg3.VoiceChannel.Id == _squadVoiceId && !_isSquadOn)
+            if (arg3.VoiceChannel != null && !_isSquadOn && arg3.VoiceChannel.Id == _squadVoiceId)
             {
                 _isSquadOn = true;
 
@@ -77,7 +77,7 @@ namespace BoTools.Service
                 RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync("🎮︱Squad bis", props => props.CategoryId = _vocalCategoryId).Result;
                 _squadTmpVoiceId = newVoice.Id;
             }
-            if(_isSquadOn)
+            if(_isSquadOn && arg2.VoiceChannel != null)
             {
                 if (arg2.VoiceChannel.Id == _squadTmpVoiceId || arg2.VoiceChannel.Id == _squadVoiceId) //leave
                 {

@@ -10,10 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Policy;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace BoTools.Service
 {
