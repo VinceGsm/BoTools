@@ -39,8 +39,12 @@ namespace BoTools.Service
                 var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
                 await ClosedAllThread(opChannel);
                 CreateThreadOnePiece(nextNumOnePiece, opChannel);
-            }                
-            
+                CreateEventOnePiece(nameEvent, _serv);
+            }
+        }
+
+        private static void CreateEventOnePiece(string nameEvent, SocketGuild _serv)
+        {
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
