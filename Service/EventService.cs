@@ -21,7 +21,7 @@ namespace BoTools.Service
 
         public EventService(DiscordSocketClient client)
         {
-            _client = client;            
+            _client = client;
         }
 
         public async Task CreateNextOnePiece()
@@ -34,8 +34,12 @@ namespace BoTools.Service
             List<RestGuildEvent> events = eventsAsync.ToList();
 
             // no next OnePiece already planned
-            if (!events.Any(x => x.Name == nameEvent)) 
-                CreateThreadOnePiece(nextNumOnePiece);
+            if (!events.Any(x => x.Name == nameEvent))
+            {
+                var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
+                await ClosedAllThread(opChannel);
+                CreateThreadOnePiece(nextNumOnePiece, opChannel);
+            }                
             
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
@@ -47,11 +51,18 @@ namespace BoTools.Service
             _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
-        private Task CreateThreadOnePiece(int nextNumOnePiece)
+        private Task ClosedAllThread(ITextChannel opChannel)
         {
-            nextNumOnePiece = nextNumOnePiece - 1;
-            var opCHannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
-            opCHannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
+            var threads = opChannel.GetActiveThreadsAsync().Result.ToList();
+            foreach (var thread in threads) { thread.ModifyAsync(x => x.Archived = true).Wait(); }
+            log.Info($"ClosedAllThread OP done");
+            return Task.CompletedTask;
+        }
+
+        private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
+        {
+            nextNumOnePiece = nextNumOnePiece - 1;            
+            opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
             log.Info($"Thread OP {nextNumOnePiece} created");
             return Task.CompletedTask;
         }
