@@ -63,9 +63,12 @@ namespace BoTools.Service
 
             try
             {
+                string url = "https://www.imdb.com/title/tt0388629/episodes";
+                log.Info($"{url}");
+
                 using (HttpClient httpClient = new HttpClient())
                 {                    
-                    html = httpClient.GetStringAsync("https://www.imdb.com/title/tt0388629/episodes").Result;
+                    html = httpClient.GetStringAsync(url).Result;
                 }
                 htmlDoc.LoadHtml(html);
                 
@@ -73,7 +76,7 @@ namespace BoTools.Service
                 
                 int.TryParse(lastnode.InnerText.Substring(8, 4),out int res);                
 
-                return res +1;                
+                return (res == 0) ? 10000 : res +1;                //error = 10000
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }

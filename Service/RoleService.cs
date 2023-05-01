@@ -50,10 +50,21 @@ namespace BoTools.Service
             {                
                 await CheckRoles();
                 await NotifRoles();
+                await CleanVocal();
                 log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");
+        }
+
+        private async Task CleanVocal()
+        {
+            var squadTmpVoice = _client.Guilds.First().VoiceChannels.FirstOrDefault(x => x.Name.EndsWith("Squad bis"));
+            if (squadTmpVoice != null)
+            {
+                var squadTmpVoiceId = squadTmpVoice.Id;
+                await _client.Guilds.First().VoiceChannels.First(x => x.Id == squadTmpVoiceId).DeleteAsync();
+            }                
         }
 
         private async Task NotifRoles()

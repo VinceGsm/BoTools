@@ -269,7 +269,7 @@ namespace BoTools.Service
 
         internal async Task JellyfinNotAvailable(ISocketMessageChannel channel, MessageReference reference)
         {
-            await channel.SendMessageAsync($"La base de donnée est indisponible pour le moment. C'est pourtant écrit dans mon statut...\n " +
+            await channel.SendMessageAsync($"La base de donnée est indisponible pour le moment.\n " +
                 $"Pour rappel, /ping mets à jour mon statut", messageReference: reference);
         }
 
