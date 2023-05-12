@@ -64,12 +64,6 @@ namespace BoTools.Run
             await serviceProvider.GetRequiredService<InteractionHandler>().InitializeInteractionAsync();            
             Console.WriteLine("InitializeInteractionAsync : done");
 
-            var pCommands = serviceProvider.GetRequiredService<PrefixHandler>();
-            pCommands.AddModule<PrefixModule>();
-            await pCommands.InitializeCommandsAsync();
-            
-            Console.WriteLine("InitializeCommandsAsync: done");
-
             // When guild data has finished downloading (+state : Ready)
             _client.Ready += async () =>
             {
@@ -95,12 +89,10 @@ namespace BoTools.Run
                 .AddSingleton(new MessageService(_client))
                 .AddSingleton(new LogService(_client))
                 .AddSingleton(new RoleService(_client))
-                .AddSingleton(new EventService(_client))
-                .AddSingleton(new JellyfinService())                        
+                .AddSingleton(new EventService(_client))                          
                 .AddSingleton(x => new InteractionService(_client))
                 .AddSingleton<InteractionHandler>()
-                .AddSingleton(x => new CommandService())
-                .AddSingleton<PrefixHandler>()
+                .AddSingleton(x => new CommandService())                
                 ;
             
             return services.BuildServiceProvider();            
