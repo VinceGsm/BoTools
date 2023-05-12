@@ -76,15 +76,15 @@ namespace BoTools
             }
         }
 
-        internal static Task KillProcess(string name)
-        {
-            foreach (var p in Process.GetProcessesByName(name))
-            {
-                p.Kill();
-            }
+        //internal static Task KillProcess(string name)
+        //{
+        //    foreach (var p in Process.GetProcessesByName(name))
+        //    {
+        //        p.Kill();
+        //    }
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
         #endregion
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)

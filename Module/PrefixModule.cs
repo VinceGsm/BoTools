@@ -41,10 +41,6 @@ namespace BoTools.Module
             {
                 if (Process.GetProcessesByName("ngrok").Any()) //already in use
                 {
-                    // PLUS BESOIN #refonte
-                    //await _messageService.SendNgrokReset(Context.Channel);
-                    //await Helper.KillProcess("ngrok");
-
                     await _messageService.AddReactionAlarm(userMsg);
                     await _messageService.SendJellyfinAlreadyInUse(Context.Channel, reference);
                 }
