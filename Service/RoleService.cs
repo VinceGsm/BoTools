@@ -92,19 +92,21 @@ namespace BoTools.Service
                 if (isNew)
                 {                    
                     List<string> urls = await GetEpicGamesStoreImg();
+                    List<Embed> embeds = new List<Embed>();
+                    int cpt = 0;
 
                     string message = $"<@&{_gamingDealId}> {Helper.GetPikachuEmote()}\n" +
                         $"N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES :";                        
 
-                    Embed embed1 = new EmbedBuilder() {ImageUrl = urls[0]}
-                        .Build();
-                    Embed embed2 = new EmbedBuilder() { ImageUrl = urls[1] }
-                        .Build();
-
-                    Embed[] embeds = {embed1, embed2};
+                    foreach (var url in urls)
+                    {
+                        Embed embed = new EmbedBuilder() { ImageUrl = urls[cpt] }.Build();
+                        embeds.Add(embed);
+                        cpt++;
+                    }
 
                     if (mediaChannel != null)
-                        await mediaChannel.SendMessageAsync(text:message, embeds: embeds, isTTS: true);
+                        await mediaChannel.SendMessageAsync(text:message, embeds: embeds.ToArray(), isTTS: true);
                 }
             }
             #endregion
