@@ -36,7 +36,8 @@ namespace BoTools.Run
             Exceptions in commands will be swallowed by the gateway and logged out through the client's log method.     */
         
         private DiscordSocketClient _client;
-        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");                                       
+        //private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");                                
+        private readonly string _token = Environment.GetEnvironmentVariable("BoTools_Token");      //EDIT                                 
 
 
         public static void Main(string[] args)

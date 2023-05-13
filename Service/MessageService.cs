@@ -13,17 +13,13 @@ namespace BoTools.Service
     public class MessageService
     {
         private const long _vinceId = 312317884389130241;
-        private const long _vinceBisId = 493020872303443969;
-        Dictionary<string, DateTime> _birthDays = null;
-        DateTime? _onGoingBirthday = null;
+        private const long _vinceBisId = 493020872303443969;                
         private DiscordSocketClient _client;
         private static ulong _saloonVoiceId = 493036345686622210;
         private static ulong _squadVoiceId = 1007423970670297178;
-        private static ulong _squadTmpVoiceId = ulong.MinValue;
-        private static ulong _birthdayId = 1052530092082995201;
+        private static ulong _squadTmpVoiceId = ulong.MinValue;        
         private static ulong _vocalCategoryId = 493018545089806337;
-        private bool _isSquadOn = false;
-        private IRole _IRoleBirthday = null;
+        private bool _isSquadOn = false;        
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -32,28 +28,12 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;       
-            
-
-            if (_birthDays == null)
-                _birthDays = Helper.GetBirthDays();
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;                   
         }
 
         //in = arg2 unknown // out = arg3 unknown
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)        
-        {
-
-            //      BIRTHDAY PART
-            if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
-
-            if (_onGoingBirthday == null) //pas anniv en cours                         
-                await CheckBirthday();            
-            else
-            {
-                if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
-                    await CheckBirthday();
-            }
-            
+        {                        
             //      RequestLive PART            
             if (arg3.VoiceChannel != null && arg1.Id == _vinceBisId)//Compte Deaf IN
             {
@@ -152,16 +132,6 @@ namespace BoTools.Service
             await message.AddReactionAsync(alarm);
         }
 
-        public async Task AddReactionBirthDay(IMessage message)
-        {            
-            var bravo = Emote.Parse(Helper.GetBravoEmote());
-            // --> 🎂
-            Emoji cake = new Emoji("\uD83C\uDF82");
-
-            await message.AddReactionAsync(cake);
-            await message.AddReactionAsync(bravo);
-        }
-
         public async Task AddDoneReaction(SocketUserMessage message)
         {
             await message.RemoveAllReactionsAsync();
@@ -192,51 +162,6 @@ namespace BoTools.Service
                     }                  
                 }
             }
-        }
-
-        public async Task CleanLastMsgChannel(ulong idTargetChannel)
-        {
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, idTargetChannel);
-            IReadOnlyCollection<IMessage> lasthundredMsg = channel.GetMessagesAsync(100).FirstAsync().Result;            
-
-            foreach (var msg in lasthundredMsg)
-            {
-                await channel.DeleteMessageAsync(msg);
-            }            
-        }
-
-        public async Task CheckBirthday()
-        {
-            string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
-                        $"Vince me souffle dans l'oreille que c'est l'anniversaire de";
-
-            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
-            
-            if (_birthDays == null)
-                log.Error("list birthdays null !");
-            else
-            {
-                bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
-
-                if (isSomeoneBD)
-                {
-                    string idTagTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;                    
-
-                    string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
-                        $"{Helper.GetCoeurEmote()} sur toi";
-
-                    if (channel != null)
-                    {
-                        _onGoingBirthday = DateTime.Today;
-                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0,1)));
-                        userTarget.AddRoleAsync(_IRoleBirthday);
-
-                        var res = (IMessage)channel.SendMessageAsync(message).Result;
-                        await AddReactionBirthDay(res);
-                    }
-                    else log.Error("Can't wish HB because general was not found");
-                }
-            }            
         }
 
         internal void SendToLeader(string message)
@@ -272,72 +197,7 @@ namespace BoTools.Service
             await channel.SendMessageAsync($"La base de donnée est indisponible pour le moment.\n " +
                 $"Pour rappel, /ping mets à jour mon statut", messageReference: reference);
         }
-
-        //internal async Task SendNgrokReset(ISocketMessageChannel channel)
-        //{
-        //    await channel.SendMessageAsync($"{Helper.GetAlarmEmote()} Un nouveau lien va être généré ! {Helper.GetAlarmEmote()}\n" +
-        //        $"|| https://discord.com/channels/312966999414145034/816283362478129182/1010199767785160865 ||\n" +            
-        //        $"*En cas de soucis direct avec Jellyfin merci de contacter Vince*");
-        //}
-        #endregion
         #endregion        
-
-        #region Embed
-        /// <summary>
-        /// Message Embed with link
-        /// </summary>
-        /// <param name="userMsg"></param>
-        /// <param name="ngRockUrl"></param>
-        /// <returns></returns>
-        public EmbedBuilder MakeJellyfinMessageBuilder(SocketUserMessage userMsg, string ngRockUrl)
-        {
-            log.Info($"IMG_url: " + Helper._JellyfinImgUrl);
-            return new EmbedBuilder
-            {
-                Url = ngRockUrl,
-                Color = Color.DarkRed,
-                ImageUrl = Helper._JellyfinImgUrl,
-                ThumbnailUrl = Helper._boToolsGif,
-
-                Title = $"{Helper.GetVerifiedEmote()}︱Cliquez ici︱{Helper.GetVerifiedEmote()}",                
-                Description = $"{Helper.GetCoinEmote()}  En stream avec **Jellyfin Media Player** sur PC\n" +
-                    $"{Helper.GetCoinEmote()}  En **DL** avec Google CHrome sur PC\n" +
-                    $"{Helper.GetCoinEmote()}  ERR_NGROK = relancer **$Jellyfin** \n"+
-                    $"{Helper.GetCoinEmote()}  / à venir",
-
-                Author = new EmbedAuthorBuilder { Name = "Jellyfin requested by " + userMsg.Author.Username, IconUrl = userMsg.Author.GetAvatarUrl() },
-                Footer = GetFooterBuilder()
-            };
-        }
-
-        private EmbedFooterBuilder GetFooterBuilder()
-        {
-            return new EmbedFooterBuilder
-            {
-                IconUrl = Helper._urlAvatarVince,
-                Text = $"Powered with {Helper.GetCoeurEmoji()} by Vince"
-            };
-        }
-
-        public async Task UnPinLastJelly(List<RestMessage> pinneds)
-        {
-            try
-            {
-                var lastPin = pinneds.First() as IUserMessage;
-                if (lastPin != null)
-                {
-                    if (lastPin.Content.StartsWith('$'))
-                        await lastPin.UnpinAsync();
-                    else
-                    {
-                        var nextPin = pinneds.Skip(1).OfType<IUserMessage>().FirstOrDefault(x => x.Content.StartsWith('$'));
-                        await nextPin.UnpinAsync();
-                    }
-                }
-            }
-            catch (Exception ex) { log.Warn("UnPinLastJelly"); log.Error(ex); }                            
-        }
-
-        #endregion
+        #endregion        
     }
 }

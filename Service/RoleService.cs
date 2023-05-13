@@ -17,10 +17,14 @@ namespace BoTools.Service
     public class RoleService
     {        
         private static ulong _readTheRulesId = 847048535799234560;
+        private static ulong _birthdayId = 1052530092082995201;
         private static ulong _gamingDealId = 1092072288226115685;
 
         private bool _connexion = true;
-        private IRole _IRoleRules = null;                 
+        private IRole _IRoleBirthday = null;
+        private IRole _IRoleRules = null;             
+        Dictionary<string, DateTime> _birthDays = null;
+        DateTime? _onGoingBirthday = null;
         private List<IRole> _IRolesSeparators = new List<IRole>();        
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
 
@@ -39,7 +43,11 @@ namespace BoTools.Service
         public RoleService(DiscordSocketClient client)
         {
             _client = client;
-            _client.GuildMembersDownloaded += GuildMembersDownloaded;            
+
+            if (_birthDays == null)
+                _birthDays = Helper.GetBirthDays();
+
+            _client.GuildMembersDownloaded += GuildMembersDownloaded;                   
         }
 
         
@@ -50,11 +58,63 @@ namespace BoTools.Service
             {                
                 await CheckRoles();
                 await NotifRoles();
+                await CheckBirthdate();
                 await CleanVocal();
                 log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
             }
             log.Info("| GuildMembersDownloaded out");
+        }
+
+        private async Task CheckBirthdate()
+        {            
+            if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
+
+            if (_onGoingBirthday == null) //pas anniv en cours                         
+                await CheckBirthday();
+            else
+            {
+                if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
+                    await CheckBirthday();
+            }
+        }
+
+        public async Task CheckBirthday()
+        {
+            string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
+                        $"Vince me souffle dans l'oreille que c'est l'anniversaire de";
+
+            ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
+
+            if (_birthDays == null)
+                log.Error("list birthdays null !");
+            else
+            {
+                bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
+
+                if (isSomeoneBD)
+                {
+                    string idTagTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;
+
+                    string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
+                        $"{Helper.GetCoeurEmote()} sur toi";
+
+                    if (channel != null)
+                    {
+                        _onGoingBirthday = DateTime.Today;
+                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
+                        userTarget.AddRoleAsync(_IRoleBirthday);
+
+                        var res = (IMessage)channel.SendMessageAsync(message).Result;
+
+                        var bravo = Emote.Parse(Helper.GetBravoEmote());                        
+                        Emoji cake = new Emoji("\uD83C\uDF82");
+                        await res.AddReactionAsync(cake);
+                        await res.AddReactionAsync(bravo);
+                    }
+                    else log.Error("Can't wish HB because general was not found");
+                }
+            }
         }
 
         private async Task CleanVocal()

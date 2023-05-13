@@ -71,7 +71,7 @@ namespace BoTools.Run
         private Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
         {
             if (arg1.Id == _readRuleMsgId)
-                _roleService.RulesReactionRemoved(reaction.UserId);
+                _roleService.RulesReactionAddedAsync(reaction.UserId);
 
             return Task.CompletedTask;
         }

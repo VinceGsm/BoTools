@@ -26,7 +26,7 @@ namespace BoTools.Module
 
         [RequireRole(roleId: _idReadRulesRole)]
         [SlashCommand("ping",        // Names have to be all lowercase and match the regular expression ^[\w-]{3,32}$
-            "Mets à jour le statut de BoTools",    // Descriptions can have a max length of 100.
+            "Affiche la latence de BoTools",    // Descriptions can have a max length of 100.
             false, RunMode.Async)]     
         public async Task HandlePingInteraction()
         {
@@ -41,12 +41,6 @@ namespace BoTools.Module
             log.Info($"HandlePing IN by {user.Username}");
 
             string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
-
-            //NAS online?           
-            if (Pinger.Ping())
-                _eventService._client.SetGameAsync(name: ": $Jellyfin", streamUrl: Helper.statusLink, type: ActivityType.Streaming);
-            else
-                message += "NAS offline, retry later";
 
             await RespondAsync(message, ephemeral: true);
             log.Info("HandlePing OUT");
