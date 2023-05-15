@@ -144,7 +144,7 @@ namespace BoTools
 
         internal static Dictionary<string,DateTime> GetBirthDays()
         {
-            log.Info("GetBirthDays call");
+            log.Info("GetBirthDays call v2");
 
             CultureInfo culture = new CultureInfo("fr-FR");
             _birthsDay.Add("!786748190283792414", DateTime.ParseExact("03/01", "dd/MM", culture)); //Coco            

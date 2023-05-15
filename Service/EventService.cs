@@ -27,7 +27,7 @@ namespace BoTools.Service
         public async Task CreateNextOnePiece()
         {
             int nextNumOnePiece = GetNextNumOnePiece();
-            var nameEvent = $"One Piece {nextNumOnePiece}";
+            var nameEvent = $"One Piece {nextNumOnePiece}";            
 
             SocketGuild _serv = Helper.GetZderLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
@@ -46,7 +46,7 @@ namespace BoTools.Service
         private static void CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
-            DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21));   // 21h
+            DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2));   // 21h
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
             string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
             ulong? channelId = Helper._idSaloonVoice;
@@ -118,7 +118,7 @@ namespace BoTools.Service
                     else
                         target = Helper.GetNextWeekday(target, dayOfWeek);
 
-                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));
+                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
                     string description = "Event créer grâce à la commande **/event-serie-hebdo**";
                     ulong? channelId = Helper._idSaloonVoice;
@@ -158,7 +158,7 @@ namespace BoTools.Service
                 {                    
                     target = Helper.GetNextWeekday(target, lstDay[cptWeek]);
 
-                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour));                                                                                                    
+                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));                                                                                                    
                     if (isIrlEvent)
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.External;
