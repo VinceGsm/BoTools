@@ -78,7 +78,7 @@ namespace BoTools.Service
 
             try
             {
-                string url = "https://www.imdb.com/title/tt0388629/episodes";
+                string url = "https://trakt.tv/shows/one-piece";
                 log.Info($"{url}");
 
                 using (HttpClient httpClient = new HttpClient())
@@ -86,12 +86,12 @@ namespace BoTools.Service
                     html = httpClient.GetStringAsync(url).Result;
                 }
                 htmlDoc.LoadHtml(html);
-                
-                var lastnode = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'zero-z-index')]").ToList().Last();
-                
-                int.TryParse(lastnode.InnerText.Substring(8, 4),out int res);                
 
-                return (res == 0) ? 10000 : res +1;                //error = 10000
+                var bricolage = htmlDoc.DocumentNode.SelectNodes("//div[@class='titles']").First().InnerText.Trim().Substring(38,3);
+
+                int.TryParse(bricolage, out int res);                
+
+                return (res == 0) ? 10000 : res +1001;                //error = 10000
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
