@@ -14,8 +14,7 @@ namespace BoTools.Service
     {
         private const long _vinceId = 312317884389130241;
         private const long _vinceBisId = 493020872303443969;                
-        private DiscordSocketClient _client;
-        private static ulong _saloonVoiceId = 493036345686622210;
+        private DiscordSocketClient _client;        
         private static ulong _squadVoiceId = 1007423970670297178;
         private static ulong _squadTmpVoiceId = ulong.MinValue;        
         private static ulong _vocalCategoryId = 493018545089806337;
@@ -169,35 +168,6 @@ namespace BoTools.Service
             var leader = _client.GetUser(_vinceId);
             leader.SendMessageAsync(message);            
         }
-
-        #region Control Message
-        internal async Task CommandNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference, ulong idChannelWhereLegit)
-        {
-            await channel.SendMessageAsync($"L'utilisation de cette commande est limitée au channel <#{idChannelWhereLegit}>", messageReference: reference);
-        }
-
-        internal async Task CommandForbidden(ISocketMessageChannel channel, MessageReference reference)
-        {
-            await channel.SendMessageAsync($"L'utilisation de cette commande est interdite !", messageReference: reference);
-        }
-
-        internal async Task SendJellyfinNotAuthorizeHere(ISocketMessageChannel channel, MessageReference reference)
-        {
-            await channel.SendMessageAsync($"⚠️ Pour des raisons de sécurité l'utilisation de Jellyfin" +
-                $" est limitée au channel <#816283362478129182>", messageReference: reference);            
-        }
-
-        internal async Task SendJellyfinAlreadyInUse(ISocketMessageChannel channel, MessageReference reference)
-        {
-            await channel.SendMessageAsync($"Attention Jellyfin est déjà en cours d'utilisation ! Merci de regarder les PINS", messageReference: reference);
-        }
-
-        internal async Task JellyfinNotAvailable(ISocketMessageChannel channel, MessageReference reference)
-        {
-            await channel.SendMessageAsync($"La base de donnée est indisponible pour le moment.\n " +
-                $"Pour rappel, /ping mets à jour mon statut", messageReference: reference);
-        }
-        #endregion        
-        #endregion        
+        #endregion
     }
 }

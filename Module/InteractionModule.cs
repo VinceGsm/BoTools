@@ -1,6 +1,7 @@
 ﻿using BoTools.Service;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace BoTools.Module
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventService _eventService;        
+        private readonly EventService _eventService;                
 
         public InteractionModule(EventService eventService)
         {
-            _eventService = eventService;                     
+            _eventService = eventService;                                 
         }
 
 
@@ -222,6 +223,22 @@ namespace BoTools.Module
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleMainRolesCommand OUT");
+        }
+
+        [RequireRole(roleId: _idModoRole)]
+        [SlashCommand("msg-new-roles", "Annonce dans le général les nouveux roles", true, RunMode.Async)]        
+        public async Task HandleMsgNewRolesCommand(string roles)
+        {
+            log.Info("HandleMsgNewRolesCommand IN");            
+
+            var roleList = roles.Replace(" ","\n");
+
+            string msg = $"Salutations {Helper.GetCoinEmote()}\n" +
+                "Voici la liste des rôles fraîchement ajoutés au server :\n" + roleList;
+
+            await Context.Channel.SendMessageAsync(msg);
+
+            log.Info("HandleMsgNewRolesCommand OUT");
         }
 
         [RequireRole(roleId: _idModoRole)]
