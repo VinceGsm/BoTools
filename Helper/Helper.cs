@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BoTools
 {
@@ -118,6 +119,20 @@ namespace BoTools
             var channels = guild.Channels.ToList();            
 
             return channels;
+        }
+
+        internal static List<IThreadChannel> GetAllActiveThread(ITextChannel channel)
+        {
+            return channel.GetActiveThreadsAsync().Result.ToList();
+        }
+
+        internal static Task ClosedAllActiveThread(ITextChannel channel)
+        {
+            var threads = GetAllActiveThread(channel);
+            int cpt = threads.Count;
+            foreach (var thread in threads) { thread.ModifyAsync(x => x.Archived = true).Wait(); }
+            log.Info($"ClosedAllThread done for {cpt} in {channel.Name}");
+            return Task.CompletedTask;
         }
 
         #region Message

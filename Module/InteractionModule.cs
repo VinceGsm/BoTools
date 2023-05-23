@@ -291,11 +291,9 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode", true, RunMode.Async)]
+        [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
         public async Task HandleCreateOnePieceCommand()
         {
-            log.Info("HandleCreateOnePieceCommand IN");
-
             var user = Context.User;
 
             _eventService.CreateNextOnePiece();

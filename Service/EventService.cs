@@ -27,19 +27,25 @@ namespace BoTools.Service
         public async Task CreateNextOnePiece()
         {
             int nextNumOnePiece = GetNextNumOnePiece();
-            var nameEvent = $"One Piece {nextNumOnePiece}";            
+            var nameEvent = $"One Piece {nextNumOnePiece}";  
+            log.Debug($"CreateNextOnePiece : {nameEvent}" );
 
             SocketGuild _serv = Helper.GetZderLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();
+            var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
+            var activeThreadlst = Helper.GetAllActiveThread(opChannel);
 
-            // no next OnePiece already planned
             if (!events.Any(x => x.Name == nameEvent))
             {
-                var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
-                await ClosedAllThread(opChannel);
-                CreateThreadOnePiece(nextNumOnePiece, opChannel);
+                log.Debug("no next OnePiece already planned");                
                 CreateEventOnePiece(nameEvent, _serv);
+            }
+            if (activeThreadlst.FindAll(x => x.Name == nextNumOnePiece.ToString()).Count == 0)
+            {
+                log.Debug($"no thread = {nextNumOnePiece}");
+                await Helper.ClosedAllActiveThread(opChannel);
+                CreateThreadOnePiece(nextNumOnePiece, opChannel);             
             }
         }
 
@@ -55,18 +61,9 @@ namespace BoTools.Service
             _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
-        private Task ClosedAllThread(ITextChannel opChannel)
-        {
-            var threads = opChannel.GetActiveThreadsAsync().Result.ToList();
-            foreach (var thread in threads) { thread.ModifyAsync(x => x.Archived = true).Wait(); }
-            log.Info($"ClosedAllThread OP done");
-            return Task.CompletedTask;
-        }
-
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
-        {
-            nextNumOnePiece = nextNumOnePiece - 1;            
-            opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
+        {                     
+            opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.OneWeek);
             log.Info($"Thread OP {nextNumOnePiece} created");
             return Task.CompletedTask;
         }
@@ -150,7 +147,7 @@ namespace BoTools.Service
             
             for (int i = 0; i < nbSession; i++)
             {                
-                var nameEvent = $"{name} #{i + 1}";
+                var nameEvent = $"{name} || #{i + 1}";
                 log.Info($"CreateEventEnSerie : {nameEvent}");
 
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
