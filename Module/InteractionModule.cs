@@ -55,9 +55,9 @@ namespace BoTools.Module
 
             string description = $"{Helper.GetVerifiedEmote()} **Commands générales** {Helper.GetVerifiedEmote()}\n" +
                 $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation éternelle du server\n" +
-                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Mets à jour le statut de BoTools\n" +
+                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server host de BoTools (AWS)\n" +
                 $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +
-                $"{Helper.GetCoinEmote()} </help:1092816777626521651> : Liste les commandes du server\n\n" +
+                $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +
                 $":warning: A utiliser uniquement de les threads\n" +
                 $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104> : Appréciation personnelle de l'épisode\n" +
@@ -147,6 +147,7 @@ namespace BoTools.Module
                     urlIcon = "https://cdn.discordapp.com/attachments/617462663374438411/1011290172836552844/heart.png";
                     break;
             }
+            log.Info("urlIcon : " + urlIcon);
 
             var embedBuilder = new EmbedBuilder()
                 

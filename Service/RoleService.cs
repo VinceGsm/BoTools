@@ -53,6 +53,10 @@ namespace BoTools.Service
         
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
+            /* 
+             var dateDuJour = now ??
+             */
+
             log.Info($"| GuildMembersDownloaded IN --> firstIN={_connexion}");
             if (_connexion)
             {                
