@@ -25,6 +25,7 @@ namespace BoTools.Service
         private IRole _IRoleRules = null;             
         Dictionary<string, DateTime> _birthDays = null;
         DateTime? _onGoingBirthday = null;
+        DateTime? _lastDateTime = null;
         private List<IRole> _IRolesSeparators = new List<IRole>();        
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
 
@@ -47,22 +48,31 @@ namespace BoTools.Service
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();
 
-            _client.GuildMembersDownloaded += GuildMembersDownloaded;                   
+            if (_lastDateTime == null)            
+                _lastDateTime = DateTime.Today;
+
+            _client.GuildMembersDownloaded += GuildMembersDownloaded;            
+            _client.LatencyUpdated += LatencyUpdated;
         }
 
-        
+        private async Task LatencyUpdated(int oldLatency, int newLatency)
+        {
+            if (_lastDateTime != DateTime.Today)
+            {
+                _lastDateTime = DateTime.Today;
+                await NotifRoles();
+                await CheckBirthdate();
+            }
+        }
+
         private async Task GuildMembersDownloaded(SocketGuild arg)
         {
-            /* 
-             var dateDuJour = now ??
-             */
-
             log.Info($"| GuildMembersDownloaded IN --> firstIN={_connexion}");
             if (_connexion)
             {                
                 await CheckRoles();
-                await NotifRoles();
                 await CheckBirthdate();
+                await NotifRoles();                
                 await CleanVocal();
                 log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
@@ -139,8 +149,7 @@ namespace BoTools.Service
         private async void NotifGamingDeal()
         {
             #region Vendredi = Epic Store            
-            if (Helper.IsFridayToday())
-                {
+            if (Helper.IsFridayToday()){
                 ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
 
                 List<IReadOnlyCollection<IMessage>> batchLastMsgAsync = await mediaChannel.GetMessagesAsync(25).ToListAsync();

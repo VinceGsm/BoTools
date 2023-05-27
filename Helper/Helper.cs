@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -93,7 +92,7 @@ namespace BoTools
         }
 
         internal static IRole GetRoleById(DiscordSocketClient client, ulong id)
-        {
+        {            
             return GetZderLand(client).Roles.First(x => x.Id == id);            
         }
 
