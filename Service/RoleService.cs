@@ -20,7 +20,7 @@ namespace BoTools.Service
         private static ulong _birthdayId = 1052530092082995201;
         private static ulong _gamingDealId = 1092072288226115685;
 
-        private bool _connexion = true;
+        private bool _connexion = true;        
         private IRole _IRoleBirthday = null;
         private IRole _IRoleRules = null;             
         Dictionary<string, DateTime> _birthDays = null;
@@ -57,6 +57,7 @@ namespace BoTools.Service
 
         private async Task LatencyUpdated(int oldLatency, int newLatency)
         {
+            log.Info($"LatencyUpdated from {oldLatency} to {newLatency}ms");
             if (_lastDateTime != DateTime.Today)
             {
                 _lastDateTime = DateTime.Today;
@@ -100,9 +101,7 @@ namespace BoTools.Service
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
 
-            if (_birthDays == null)
-                log.Error("list birthdays null !");
-            else
+            if (_birthDays != null && channel != null)
             {
                 bool isSomeoneBD = _birthDays.ContainsValue(DateTime.Today);
 
@@ -113,22 +112,20 @@ namespace BoTools.Service
                     string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
                         $"{Helper.GetCoeurEmote()} sur toi";
 
-                    if (channel != null)
-                    {
-                        _onGoingBirthday = DateTime.Today;
-                        var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
-                        userTarget.AddRoleAsync(_IRoleBirthday);
+                    _onGoingBirthday = DateTime.Today;
+                    var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
+                    userTarget.AddRoleAsync(_IRoleBirthday);
 
-                        var res = (IMessage)channel.SendMessageAsync(message).Result;
+                    var res = (IMessage)channel.SendMessageAsync(message).Result;
 
-                        var bravo = Emote.Parse(Helper.GetBravoEmote());                        
-                        Emoji cake = new Emoji("\uD83C\uDF82");
-                        await res.AddReactionAsync(cake);
-                        await res.AddReactionAsync(bravo);
-                    }
-                    else log.Error("Can't wish HB because general was not found");
+                    var bravo = Emote.Parse(Helper.GetBravoEmote());
+                    Emoji cake = new Emoji("\uD83C\uDF82");
+                    await res.AddReactionAsync(cake);
+                    await res.AddReactionAsync(bravo);
                 }
             }
+            else
+                log.Error("no birthday list or channel");
         }
 
         private async Task CleanVocal()
@@ -152,17 +149,7 @@ namespace BoTools.Service
             if (Helper.IsFridayToday()){
                 ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
 
-                List<IReadOnlyCollection<IMessage>> batchLastMsgAsync = await mediaChannel.GetMessagesAsync(25).ToListAsync();
-                var lastMsgAsync = batchLastMsgAsync.FirstOrDefault();
-                bool isNew = true;
-
-                foreach (var msg in lastMsgAsync)
-                {
-                    if (msg.CreatedAt.Day == DateTime.Today.Day && msg.Author.IsBot)
-                        isNew = false;
-                }
-
-                if (isNew)
+                if (mediaChannel != null)
                 {                    
                     List<string> urls = await GetEpicGamesStoreImg();
                     List<Embed> embeds = new List<Embed>();
@@ -178,8 +165,7 @@ namespace BoTools.Service
                         cpt++;
                     }
 
-                    if (mediaChannel != null)
-                        await mediaChannel.SendMessageAsync(text:message, embeds: embeds.ToArray(), isTTS: true);
+                    await mediaChannel.SendMessageAsync(text: message, embeds: embeds.ToArray(), isTTS: true);                    
                 }
             }
             #endregion

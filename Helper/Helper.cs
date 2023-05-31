@@ -42,11 +42,11 @@ namespace BoTools
 
         private static readonly List<string> _greetings = new List<string>
         {
-            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti", "insérer une phrase cool",
+            "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti",
             "konnichi wa","'sup, b?","what's poppin'?","greetings","What's in the bag?","sup","wussup?","how ya goin?",
-            "what's the dizzle?","good morning","what's cracking?","quoi de neuf la cité ?","whazzup?","guten Tag",
+            "good morning","what's cracking?","quoi de 9 la 6 thé ?","whazzup?","guten Tag",
             "EDGAAAAAAR","good afternoon","hola","hello","coucou !","what's the dilly?","très heureux d'être là",
-            "wassap?","what's the rumpus?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
+            "wassap?","what's crackin'?","how do?","yello","what's up?","c'est moi que revoilà !",
             "on est pas pressé, mais moi oui","what's new?","what's shaking?","howzit?","good night","hola","ahoy",
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
