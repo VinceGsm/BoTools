@@ -57,7 +57,7 @@ namespace BoTools.Service
 
         private async Task LatencyUpdated(int oldLatency, int newLatency)
         {
-            log.Info($"LatencyUpdated from {oldLatency} to {newLatency}ms");
+            //log.Info($"LatencyUpdated from {oldLatency} to {newLatency}ms");
             if (_lastDateTime != DateTime.Today)
             {
                 _lastDateTime = DateTime.Today;
@@ -130,12 +130,21 @@ namespace BoTools.Service
 
         private async Task CleanVocal()
         {
-            var squadTmpVoice = _client.Guilds.First().VoiceChannels.FirstOrDefault(x => x.Name.EndsWith("Squad bis"));
+            var voiceChannels = _client.Guilds.First().VoiceChannels;
+
+            var squadTmpVoice = voiceChannels.FirstOrDefault(x => x.Name.EndsWith("Squad bis"));
             if (squadTmpVoice != null)
             {
                 var squadTmpVoiceId = squadTmpVoice.Id;
-                await _client.Guilds.First().VoiceChannels.First(x => x.Id == squadTmpVoiceId).DeleteAsync();
-            }                
+                await voiceChannels.First(x => x.Id == squadTmpVoiceId).DeleteAsync();
+            }
+
+            var reuTmpVoice = voiceChannels.FirstOrDefault(x => x.Name.EndsWith("⏱"));
+            if (reuTmpVoice != null)
+            {
+                var reuTmpVoiceId = reuTmpVoice.Id;
+                await voiceChannels.First(x => x.Id == reuTmpVoiceId).DeleteAsync();
+            }
         }
 
         private async Task NotifRoles()

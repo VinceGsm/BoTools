@@ -1,7 +1,6 @@
 ﻿using BoTools.Service;
 using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -16,12 +15,15 @@ namespace BoTools.Module
         private const ulong _idReadRulesRole = 847048535799234560;
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
+        private const ulong _idMemberRole = 322490732885835776;        
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventService _eventService;                
+        private readonly EventService _eventService; 
+        private readonly MessageService _messageService; 
 
-        public InteractionModule(EventService eventService)
+        public InteractionModule(EventService eventService, MessageService messageService)
         {
-            _eventService = eventService;                                 
+            _eventService = eventService;
+            _messageService = messageService;            
         }
 
 
@@ -294,11 +296,21 @@ namespace BoTools.Module
         [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
         public async Task HandleCreateOnePieceCommand()
         {
-            var user = Context.User;
-
             _eventService.CreateNextOnePiece();
 
+            await RespondAsync(text: "done !", ephemeral:true);
             log.Info("HandleCreateOnePieceCommand OUT");
+        }
+
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("reunion", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]
+        public async Task HandleCreateVocalReuCommand(string theme, int nbParticipant)
+        {
+            var embedBuiler = _messageService.CreateVocalReu(theme, nbParticipant);
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
+
+            log.Info("HandleCreateVocalReuCommand OUT");
         }
     }
 }

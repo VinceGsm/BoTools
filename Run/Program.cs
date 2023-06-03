@@ -50,9 +50,13 @@ namespace BoTools.Run
             // the message cache in your config settings if you plan to use the cached message entity.            
             _client = client ?? new DiscordSocketClient(
                 new DiscordSocketConfig { MessageCacheSize = 100, AlwaysDownloadUsers = true, GatewayIntents = GatewayIntents.All }
-             );                                             
+             );
+
+            #if DEBUG
+            _client.SetGameAsync(name: "/!\\DEBUG/!\\", type: ActivityType.Playing);
+            #else            
             _client.SetGameAsync(name: "/help",  type: ActivityType.Watching);
-            //_client.SetGameAsync(name: "/!\\en maintenance/!\\",  type: ActivityType.Playing);
+            #endif
         }
 
         public async Task MainAsync()

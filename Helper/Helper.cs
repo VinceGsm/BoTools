@@ -163,12 +163,12 @@ namespace BoTools
             CultureInfo culture = new CultureInfo("fr-FR");
             _birthsDay.Add("!786748190283792414", DateTime.ParseExact("03/01", "dd/MM", culture)); //Coco            
             _birthsDay.Add("!560259660578291715", DateTime.ParseExact("14/02", "dd/MM", culture)); //Babiss
-            _birthsDay.Add("!418426899786760194", DateTime.ParseExact("21/02", "dd/MM", culture)); //Jerem            
+            //_birthsDay.Add("!418426899786760194", DateTime.ParseExact("21/02", "dd/MM", culture)); //Jerem            
             _birthsDay.Add("!126259389962125312", DateTime.ParseExact("02/06", "dd/MM", culture)); //Flo
-            _birthsDay.Add("!706958493374218300", DateTime.ParseExact("03/06", "dd/MM", culture)); //Julio
+            //_birthsDay.Add("!706958493374218300", DateTime.ParseExact("03/06", "dd/MM", culture)); //Julio
             _birthsDay.Add("!511225222545014817", DateTime.ParseExact("30/06", "dd/MM", culture)); //Isma
             _birthsDay.Add("!391570155458527233", DateTime.ParseExact("06/07", "dd/MM", culture)); //Quentinus
-            _birthsDay.Add("!444958143081086986", DateTime.ParseExact("21/07", "dd/MM", culture)); //Dan
+            //_birthsDay.Add("!444958143081086986", DateTime.ParseExact("21/07", "dd/MM", culture)); //Dan
             _birthsDay.Add("!418459600959045633", DateTime.ParseExact("22/07", "dd/MM", culture)); //Wbr
             _birthsDay.Add("!421026192523526155", DateTime.ParseExact("28/07", "dd/MM", culture)); //Kiki
             _birthsDay.Add("!293029908761018368", DateTime.ParseExact("13/08", "dd/MM", culture)); //Mathis
@@ -178,7 +178,7 @@ namespace BoTools
             _birthsDay.Add("!696314945725530185", DateTime.ParseExact("05/10", "dd/MM", culture)); //Lena
             _birthsDay.Add("!558802761018376219", DateTime.ParseExact("24/10", "dd/MM", culture)); //Adrizou
             _birthsDay.Add("!409002227575947264", DateTime.ParseExact("18/11", "dd/MM", culture)); //Marwan
-            _birthsDay.Add("!709496617895460905", DateTime.ParseExact("29/11", "dd/MM", culture)); //Antonin
+            //_birthsDay.Add("!709496617895460905", DateTime.ParseExact("29/11", "dd/MM", culture)); //Antonin
             _birthsDay.Add("!270294861490421760", DateTime.ParseExact("02/12", "dd/MM", culture)); //Maxbibi     
             _birthsDay.Add("!312967790619525142", DateTime.ParseExact("03/12", "dd/MM", culture)); //Anto
             _birthsDay.Add("!143706383064367104", DateTime.ParseExact("04/12", "dd/MM", culture)); //Nico            

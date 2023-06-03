@@ -2,8 +2,6 @@
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,13 +11,13 @@ namespace BoTools.Service
     public class MessageService
     {
         private const long _vinceId = 312317884389130241;
-        private const long _vinceBisId = 493020872303443969;                
-        private DiscordSocketClient _client;        
-        private static ulong _squadVoiceId = 1007423970670297178;
-        private static ulong _squadTmpVoiceId = ulong.MinValue;        
+        private const long _vinceBisId = 493020872303443969;                        
+        private static ulong _squadVoiceId = 1007423970670297178;                
         private static ulong _vocalCategoryId = 493018545089806337;
-        private bool _isSquadOn = false;        
+        private static ulong _tmpSquadVoiceId = ulong.MinValue;
+        private static ulong _tmpReuVoiceId = ulong.MinValue;        
 
+        private DiscordSocketClient _client;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MessageService(DiscordSocketClient client)
@@ -27,51 +25,88 @@ namespace BoTools.Service
             _client = client;                                               
             _client.UserLeft += UserLeft;                                  
             _client.MessageReceived += MessageReceived;
-            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;                   
+            _client.UserVoiceStateUpdated += UserVoiceStateUpdated;       
         }
 
-        //in = arg2 unknown // out = arg3 unknown
-        private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)        
-        {                        
-            //      RequestLive PART            
-            if (arg3.VoiceChannel != null && arg1.Id == _vinceBisId)//Compte Deaf IN
+        public EmbedBuilder CreateVocalReu(string theme, int nbParticipant)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+            if (_tmpReuVoiceId != ulong.MinValue)
             {
-                List<SocketGuildUser> targets = arg3.VoiceChannel.ConnectedUsers.ToList();
-
-                SocketGuildUser indexMe = targets.FirstOrDefault(x => x.Id == _vinceBisId); 
-                if (indexMe != null)//I'm in
-                    targets.Remove(indexMe);
-
-                await AskForLive(targets);                
+                embed = new EmbedBuilder()
+                   .WithTitle("Une réunion est déjà en cours !")
+                   .WithDescription("Relancer la commande une fois qu'elle sera terminée.\n" +
+                   "En cas de problème contacter <@312317884389130241>")
+                   .WithColor(Color.Red);
             }
+            else
+            {
+                var newVoice = _client.Guilds.First()
+                    .CreateVoiceChannelAsync($"🔒︱Réunion {theme}︱⏱", props => {
+                        props.Bitrate = 128000;
+                        props.UserLimit = nbParticipant;
+                        props.CategoryId = _vocalCategoryId;
+                    }).Result;
+                _tmpReuVoiceId = newVoice.Id;
 
-            //      NewSquad PART                        
+                embed = new EmbedBuilder()
+                    .WithTitle($"{newVoice.Name} est ouvert pour {nbParticipant} participants")
+                    .WithDescription($"Il sera supprimé automatiquement par mes soins.\n" +
+                    $"Bon call !")
+                    .WithColor(Color.Green);                                
+            }
+            return embed;
+        }
+
+        #region Client        
+        private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
+        {
+            //in = arg2 unknown // out = arg3 unknown
+            string nameNewChannel = "🎮︱Squad bis";
             var guild = _client.Guilds.First();
-
-            if (arg3.VoiceChannel != null && !_isSquadOn && arg3.VoiceChannel.Id == _squadVoiceId)
+            
+            if (arg3.VoiceChannel != null) //IN
             {
-                _isSquadOn = true;
-
-                //New channel                
-                RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync("🎮︱Squad bis", props => props.CategoryId = _vocalCategoryId).Result;
-                _squadTmpVoiceId = newVoice.Id;
-            }
-            if(_isSquadOn && arg2.VoiceChannel != null)
-            {
-                if (arg2.VoiceChannel.Id == _squadTmpVoiceId || arg2.VoiceChannel.Id == _squadVoiceId) //leave
+                //New channel needed               
+                if (arg3.VoiceChannel != null && _tmpSquadVoiceId == ulong.MinValue && arg3.VoiceChannel.Id == _squadVoiceId)
                 {
-                    //si plus personne dans les 2 --> delete new + isSquad
-                    if (guild.VoiceChannels.First(x => x.Id == _squadVoiceId).ConnectedUsers.Count == 0 && 
-                        guild.VoiceChannels.First(x => x.Name == "🎮︱Squad bis").ConnectedUsers.Count == 0)
-                    {
-                        await guild.VoiceChannels.First(x => x.Id == _squadTmpVoiceId).DeleteAsync();
-                        _isSquadOn = false;
-                    }
+                    RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync(nameNewChannel, props => {
+                        props.CategoryId = _vocalCategoryId;
+                        props.UserLimit = 6;
+                        props.Bitrate = 12800;
+                    }).Result;                    
+                    _tmpSquadVoiceId = newVoice.Id;
                 }
             }
+            
+            if(arg2.VoiceChannel != null) //OUT
+            {
+                if (_tmpSquadVoiceId != ulong.MinValue)
+                {
+                    if (arg2.VoiceChannel.Id == _tmpSquadVoiceId || arg2.VoiceChannel.Id == _squadVoiceId) //leave squad
+                    {
+                        //si plus personne dans les 2 --> delete new
+                        if (guild.VoiceChannels.First(x => x.Id == _squadVoiceId).ConnectedUsers.Count == 0 &&
+                            guild.VoiceChannels.First(x => x.Name == nameNewChannel).ConnectedUsers.Count == 0)
+                        {
+                            await guild.VoiceChannels.First(x => x.Id == _tmpSquadVoiceId).DeleteAsync();
+                            _tmpSquadVoiceId = ulong.MinValue;
+                        }
+                    }
+                }
+
+                //REU
+                if(_tmpReuVoiceId != ulong.MinValue && arg2.VoiceChannel.Id == _tmpReuVoiceId) //leave reu
+                {
+                    if (guild.VoiceChannels.First(x => x.Id == _tmpReuVoiceId).ConnectedUsers.Count == 0)
+                    {
+                        await guild.VoiceChannels.First(x => x.Id == _tmpReuVoiceId).DeleteAsync();
+                        _tmpReuVoiceId = ulong.MinValue;
+                    }
+                }                
+            }                       
         }
 
-        #region Client
         /// <summary>
         /// When a User left the Guild
         /// </summary>
@@ -140,29 +175,7 @@ namespace BoTools.Service
         }
         #endregion
 
-        #region Message
-        public async Task AskForLive(List<SocketGuildUser> targets)
-        {
-            foreach (SocketGuildUser user in targets)
-            {
-                // check if the user is playing a game and not streaming
-                if (!user.IsStreaming && user.Activities.Count > 0)   
-                {
-                    if(user.Activities.FirstOrDefault().Type == ActivityType.Playing)
-                    {
-                        log.Info($"AskForLive {user.Activities.First().ToString()} to {user.Username}");
-
-                        // TODO fix ask ppl who just have emoji status
-                        await user.SendMessageAsync($"Hello {user.Username}, (sauf erreur de ma part) Vince m'envoie ici alors voici un GIF symbolisant une demande de Stream :\n" +
-                            $"https://cdn.discordapp.com/attachments/617462663374438411/1081981535688859678/live.gif");
-
-                        // wait for a short period of time before sending the next message (to avoid rate limiting)
-                        await Task.Delay(TimeSpan.FromSeconds(0.5));
-                    }                  
-                }
-            }
-        }
-
+        #region Private Message
         internal void SendToLeader(string message)
         {
             var leader = _client.GetUser(_vinceId);
