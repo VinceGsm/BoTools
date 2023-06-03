@@ -59,6 +59,7 @@ namespace BoTools.Module
                 $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation éternelle du server\n" +
                 $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server host de BoTools (AWS)\n" +
                 $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +
+                $"{Helper.GetCoinEmote()} </reunion:1114575733428338709> : Créé un vocal temporaire\n" +
                 $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +
                 $":warning: A utiliser uniquement de les threads\n" +

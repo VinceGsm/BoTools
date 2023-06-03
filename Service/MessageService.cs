@@ -51,7 +51,7 @@ namespace BoTools.Service
 
                 embed = new EmbedBuilder()
                     .WithTitle($"{newVoice.Name} est ouvert pour {nbParticipant} participants")
-                    .WithDescription($"Il sera supprimé automatiquement par mes soins.\n" +
+                    .WithDescription($"Il sera supprimé automatiquement par mes soins quand tout le monde aura quitter le vocal.\n" +
                     $"Bon call !")
                     .WithColor(Color.Green);                                
             }
