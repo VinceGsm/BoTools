@@ -2,6 +2,8 @@
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -42,7 +44,7 @@ namespace BoTools.Service
             else
             {
                 var newVoice = _client.Guilds.First()
-                    .CreateVoiceChannelAsync($"🔒︱Réunion {theme}︱⏱", props => {
+                    .CreateVoiceChannelAsync($"🔒︱{theme}︱⏱", props => {
                         props.Bitrate = 128000;
                         props.UserLimit = nbParticipant;
                         props.CategoryId = _vocalCategoryId;
@@ -56,6 +58,29 @@ namespace BoTools.Service
                     .WithColor(Color.Green);                                
             }
             return embed;
+        }
+
+        internal EmbedBuilder CreateVote(string question, List<string> options, List<string> emojis)
+        {
+            string description = string.Empty;
+            if (question.Last() != '?') question += question + '?';
+
+            for (int i=0; options.Count>i; i++)
+            {
+                description += $"{emojis[i]} : {options[i]}\n";
+            }
+            
+            var footer = new EmbedFooterBuilder
+            {
+                IconUrl = Helper.GetZderLandIconUrl(),
+                Text = $"Powered with {Helper.GetCoeurEmoji()}"
+            };
+
+            return new EmbedBuilder()
+               .WithTitle("Sondage : " + question)
+               .WithDescription(description)               
+               .WithThumbnailUrl(Helper._urlQuestionGif)
+               .WithColor(Color.Blue).WithFooter(footer);                
         }
 
         #region Client        
@@ -139,6 +164,12 @@ namespace BoTools.Service
         #endregion
 
         #region Reaction
+        internal async Task AddVoteEmoji(IMessage msg, List<Emoji> emojis)
+        {
+            foreach (var emoji in emojis) { await msg.AddReactionAsync(emoji); }
+        }
+
+
         public async Task AddReactionVu(SocketUserMessage message)
         {
             // --> 👀
@@ -181,6 +212,9 @@ namespace BoTools.Service
             var leader = _client.GetUser(_vinceId);
             leader.SendMessageAsync(message);            
         }
+
+
+
         #endregion
     }
 }

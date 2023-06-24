@@ -16,6 +16,8 @@ namespace BoTools
         public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/494958624922271745/1056847373436977162/brookByVince.gif";        
         public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/553256709439750151/1062431704914067566/KatakuriLow.gif";
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
+        public static readonly string _urlQuestionGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122152112399339581/question.gif";
+        public static readonly string _urlListGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122165956983132250/list.gif";
         public static readonly ulong _ZderLandId = 312966999414145034;        
         public static readonly ulong _idModoRole = 322489502562123778;
         public static readonly ulong _idGeneralChannel = 312966999414145034;

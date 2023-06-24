@@ -53,17 +53,19 @@ namespace BoTools.Module
         [SlashCommand("help", "Liste les commandes du server", false, RunMode.Async)]
         public async Task HandleHelpCommand()
         {
-            log.Info("HandleHelpCommand IN");
+            var user = Context.User;
+            log.Info($"HandleHelpCommand IN by {user.Username}");
 
-            string description = $"{Helper.GetVerifiedEmote()} **Commands générales** {Helper.GetVerifiedEmote()}\n" +
-                $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation éternelle du server\n" +
-                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server host de BoTools (AWS)\n" +
-                $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +
-                $"{Helper.GetCoinEmote()} </reunion:1114575733428338709> : Créé un vocal temporaire\n" +
+            string description = $"{Helper.GetVerifiedEmote()} **Utily commands** {Helper.GetVerifiedEmote()}\n" +
+                $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
+                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
+                $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
                 $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
-                $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +
-                $":warning: A utiliser uniquement de les threads\n" +
-                $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104> : Appréciation personnelle de l'épisode\n" +
+                $"{Helper.GetVerifiedEmote()} **Member commands** {Helper.GetVerifiedEmote()}\n" +                
+                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Créé un sondage dans le channel\n" +
+                $"{Helper.GetCoinEmote()} </invocation:1122135559511494666> : Créé un vocal temporaire\n\n" +
+                $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +                
+                $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper.GetCoinEmote()} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
                 $"En cas de problème contacter <@312317884389130241>";
 
@@ -71,7 +73,8 @@ namespace BoTools.Module
                 .WithTitle("Liste des commands de ZderLand :")
                 .WithDescription(description)
                 .WithColor(Color.Green)
-                .WithImageUrl(Helper.GetZderLandIconUrl());
+                .WithThumbnailUrl(Helper.GetZderLandIconUrl())
+                .WithImageUrl(Helper._urlListGif);
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleHelpCommand OUT");
@@ -210,18 +213,18 @@ namespace BoTools.Module
         [SlashCommand("roles", "Affiche la liste des rôles principaux du server", false, RunMode.Async)]        
         public async Task HandleMainRolesCommand()
         {
-            log.Info("HandleMainRolesCommand IN");
-
             var user = Context.User;
+            log.Info($"HandleMainRolesCommand IN by {user.Username}");
+            
             List<string> roles = new List<string>(){ "<@&689144324939710527>","<@&322489502562123778>", "<@&322490732885835776>",
             "<@&344912149728067584>","<@&847048535799234560>"};
 
             // We remove the everyone role and select the mention of each role.
             var roleList = string.Join("\n", roles);
 
-            var embedBuiler = new EmbedBuilder()
-                .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+            var embedBuiler = new EmbedBuilder()                
                 .WithTitle("Rôles principaux de Zderland :")
+                .WithThumbnailUrl(Helper.GetZderLandIconUrl())
                 .WithDescription(roleList)
                 .WithColor(Color.Green);                
 
@@ -304,7 +307,7 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("reunion", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]
+        [SlashCommand("invocation", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]
         public async Task HandleCreateVocalReuCommand(string theme, int nbParticipant)
         {
             var embedBuiler = _messageService.CreateVocalReu(theme, nbParticipant);
@@ -312,6 +315,28 @@ namespace BoTools.Module
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
 
             log.Info("HandleCreateVocalReuCommand OUT");
+        }
+
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("sondage", "Créé un sondage dans le channel utilisé (Mettre un . pour les opt non-utilisés)", true, RunMode.Async)]
+        public async Task HandleVoteCommand(string question, string optA, string optB, string optC, string optD, string optE)
+        {
+            //🤍blanc 💜violet 💚vert 💛jaune 🧡orange
+            List<string> emojisStr = new List<string> { "🤍", "💜", "💚", "💛", "🧡" };
+            List<Emoji> emojis = new List<Emoji> { new Emoji("\U0001f90d"), new Emoji("\U0001f49c") };
+
+            List<string> options = new List<string>(){ optA,optB};
+            if (optC != ".") { options.Add(optC); emojis.Add(new Emoji("\U0001f49A")); }
+            if (optD != ".") { options.Add(optD); emojis.Add(new Emoji("\U0001f49b")); }
+            if (optE != ".") { options.Add(optE); emojis.Add(new Emoji("\U0001f9e1")); }
+
+            var embedBuiler = _messageService.CreateVote(question, options, emojisStr);
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
+            var msg = (IMessage)Context.Channel.GetMessagesAsync(1).ToListAsync().Result.First().First();
+            await _messageService.AddVoteEmoji(msg, emojis);
+
+            log.Info("HandleVoteCommand OUT");
         }
     }
 }
