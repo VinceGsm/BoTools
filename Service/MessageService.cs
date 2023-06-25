@@ -80,7 +80,25 @@ namespace BoTools.Service
                .WithTitle("Sondage : " + question)
                .WithDescription(description)               
                .WithThumbnailUrl(Helper._urlQuestionGif)
-               .WithColor(Color.Blue).WithFooter(footer);                
+               .WithColor(Color.Blue)
+               .WithFooter(footer);                
+        }
+
+        internal EmbedBuilder CreateAntoEmbed()
+        {
+            string url = Helper.GetAntoGifUrl();
+
+            var footer = new EmbedFooterBuilder
+            {
+                IconUrl = Helper.GetZderLandIconUrl(),
+                Text = $"Provided by Anto"
+            };
+
+            return new EmbedBuilder()
+               .WithTitle("Un Anto sauvage apparait !")               
+               .WithImageUrl(url)
+               .WithColor(Color.DarkOrange)
+               .WithFooter(footer);
         }
 
         #region Client        
@@ -212,6 +230,7 @@ namespace BoTools.Service
             var leader = _client.GetUser(_vinceId);
             leader.SendMessageAsync(message);            
         }
+
 
 
 

@@ -56,14 +56,15 @@ namespace BoTools.Module
             var user = Context.User;
             log.Info($"HandleHelpCommand IN by {user.Username}");
 
-            string description = $"{Helper.GetVerifiedEmote()} **Utily commands** {Helper.GetVerifiedEmote()}\n" +
+            string description = $"{Helper.GetVerifiedEmote()} **Utility commands** {Helper.GetVerifiedEmote()}\n" +
                 $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
                 $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
                 $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
                 $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper.GetVerifiedEmote()} **Member commands** {Helper.GetVerifiedEmote()}\n" +                
-                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Créé un sondage dans le channel\n" +
-                $"{Helper.GetCoinEmote()} </invocation:1122135559511494666> : Créé un vocal temporaire\n\n" +
+                $"{Helper.GetCoinEmote()} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                
+                $"{Helper.GetCoinEmote()} </invocation:1122135559511494666> : Créé un vocal temporaire\n" +
+                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Créé un sondage dans le channel\n\n" +
                 $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +                
                 $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper.GetCoinEmote()} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
@@ -337,6 +338,17 @@ namespace BoTools.Module
             await _messageService.AddVoteEmoji(msg, emojis);
 
             log.Info("HandleVoteCommand OUT");
+        }
+
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("anto", "Invoque un Anto aléatoire", true, RunMode.Async)]
+        public async Task HandleAntoCommand()
+        {
+            var embedBuiler = _messageService.CreateAntoEmbed();
+
+            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
+
+            log.Info("HandleAntoCommand OUT");
         }
     }
 }

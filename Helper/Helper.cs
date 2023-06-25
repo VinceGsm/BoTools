@@ -216,5 +216,43 @@ namespace BoTools
             return _zderLandId;
         }
         #endregion
+
+        internal static List<string> GetAntoGifUrls()
+        {
+            return new List<string>
+            {
+                "https://media.discordapp.net/attachments/1019335397484011581/1095804934353584201/20230412_221638.gif",
+                "https://media.discordapp.net/attachments/1019335397484011581/1095801772540428328/20230412_220439.gif",
+                "https://media.discordapp.net/attachments/1019335397484011581/1034910422173749328/20221026_212417.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/826728090385514526/20210330_163927_1.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/827127343256043540/5401fx.gif",
+                "https://media.discordapp.net/attachments/784347374071578655/784378508453216266/received_1277813539285202_1.gif",
+                "https://media.discordapp.net/attachments/784347374071578655/784368520892645376/IMG_1272.gif",
+                "https://media.discordapp.net/attachments/784347374071578655/784380449883422720/received_1303873473299495_4.gif",
+                "https://media.discordapp.net/attachments/956285058824683620/971544748479373322/IMG_6609.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/738404249037439036/received_239754997016005_1.gif",
+                "https://media.discordapp.net/attachments/956285058824683620/1019000369466052698/IMG_9268.gif",
+                "https://media.discordapp.net/attachments/956285058824683620/1017185311073239091/20220907_233052.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/738400012588941392/received_745278482913700_2.gif",
+                "https://media.discordapp.net/attachments/976598205095616562/996137104570589184/11.gif",
+                "https://media.discordapp.net/attachments/976598205095616562/996137038355103804/9.gif",
+                "https://media.discordapp.net/attachments/976598205095616562/996137288910250075/5.gif",
+                "https://media.discordapp.net/attachments/956285058824683620/986717620432699392/IMG_7426.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/849173897587720212/video0_2.gif",
+                "https://media.discordapp.net/attachments/956285058824683620/986764370635817000/20220616_004904.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/738430100365901854/VID-20200730-WA0000_3.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/833638139922743327/174350169_287685479580653_8106636962674288332_n.gif",
+                "https://media.discordapp.net/attachments/713695594878599249/842071263937691648/20210422_151431_1.gif"
+            };
+        }
+
+
+        internal static string GetAntoGifUrl()
+        {
+            List<string> list = GetAntoGifUrls();
+
+            Random random = new Random();
+            return list[random.Next(list.Count)];
+        }
     }
 }
