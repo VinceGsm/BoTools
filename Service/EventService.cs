@@ -5,6 +5,7 @@ using HtmlAgilityPack;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -51,8 +52,11 @@ namespace BoTools.Service
 
         private static void CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
+            CultureInfo culture = new CultureInfo("fr-FR");            
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
             DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2));   // 21h
+            startTime = DateTimeOffset.Parse(startTime.ToString(),culture);
+
             GuildScheduledEventType type = GuildScheduledEventType.Voice;
             string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
             ulong? channelId = Helper._idSaloonVoice;
@@ -116,6 +120,8 @@ namespace BoTools.Service
                         target = Helper.GetNextWeekday(target, dayOfWeek);
 
                     DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));
+                    CultureInfo culture = new CultureInfo("fr-FR");
+                    startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
                     string description = "Event créer grâce à la commande **/event-serie-hebdo**";
                     ulong? channelId = Helper._idSaloonVoice;
@@ -155,7 +161,10 @@ namespace BoTools.Service
                 {                    
                     target = Helper.GetNextWeekday(target, lstDay[cptWeek]);
 
-                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));                                                                                                    
+                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));
+                    CultureInfo culture = new CultureInfo("fr-FR");
+                    startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
+
                     if (isIrlEvent)
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.External;
