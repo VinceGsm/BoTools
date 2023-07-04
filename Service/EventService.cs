@@ -40,17 +40,17 @@ namespace BoTools.Service
             if (!events.Any(x => x.Name == nameEvent))
             {
                 log.Debug("no next OnePiece already planned");                
-                CreateEventOnePiece(nameEvent, _serv);
+                await CreateEventOnePiece(nameEvent, _serv);
             }
             if (activeThreadlst.FindAll(x => x.Name == nextNumOnePiece.ToString()).Count == 0)
             {
                 log.Debug($"no thread = {nextNumOnePiece}");
                 await Helper.ClosedAllActiveThread(opChannel);
                 CreateThreadOnePiece(nextNumOnePiece, opChannel);             
-            }
+            };
         }
 
-        private static void CreateEventOnePiece(string nameEvent, SocketGuild _serv)
+        private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
             CultureInfo culture = new CultureInfo("fr-FR");            
             DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
@@ -62,7 +62,7 @@ namespace BoTools.Service
             ulong? channelId = Helper._idSaloonVoice;
             Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-            _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+            await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
         }
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
