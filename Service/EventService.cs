@@ -41,28 +41,32 @@ namespace BoTools.Service
             {
                 log.Debug("no next OnePiece already planned");                
                 await CreateEventOnePiece(nameEvent, _serv);
-            }
-            if (activeThreadlst.FindAll(x => x.Name == nextNumOnePiece.ToString()).Count == 0)
-            {
-                log.Debug($"no thread = {nextNumOnePiece}");
                 await Helper.ClosedAllActiveThread(opChannel);
-                CreateThreadOnePiece(nextNumOnePiece, opChannel);             
-            };
+                CreateThreadOnePiece(nextNumOnePiece, opChannel);
+            }
         }
 
         private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
-            CultureInfo culture = new CultureInfo("fr-FR");            
-            DateTime target = Helper.GetNextWeekday(DateTime.Today, DayOfWeek.Sunday);
-            DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2));   // 21h
-            startTime = DateTimeOffset.Parse(startTime.ToString(),culture);
+            try // AWS
+            {
+                CultureInfo culture = new CultureInfo("fr-FR");
+                DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);                
+                DateTime target = Helper.GetNextWeekday(today, DayOfWeek.Sunday);
+                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2));   // 21h
+                startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
 
-            GuildScheduledEventType type = GuildScheduledEventType.Voice;
-            string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
-            ulong? channelId = Helper._idSaloonVoice;
-            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
+                GuildScheduledEventType type = GuildScheduledEventType.Voice;
+                string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
+                ulong? channelId = Helper._idSaloonVoice;
+                Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-            await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
         }
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
@@ -104,8 +108,9 @@ namespace BoTools.Service
 
             SocketGuild _serv = Helper.GetZderLand(_client);
 
-            DateTime target = DateTime.Now;
-            DateTime firstTargetDay = Helper.GetNextWeekday(DateTime.Today, dayOfWeek);
+            DateTime now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);            
+            DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
+            DateTime firstTargetDay = Helper.GetNextWeekday(today, dayOfWeek);
             
             for (int i=0; i<nbEp; i++)
             {
@@ -115,11 +120,11 @@ namespace BoTools.Service
                 try
                 {
                     if (i == 0)
-                        target = firstTargetDay;
+                        now = firstTargetDay;
                     else
-                        target = Helper.GetNextWeekday(target, dayOfWeek);
+                        now = Helper.GetNextWeekday(now, dayOfWeek);
 
-                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));
+                    DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
                     CultureInfo culture = new CultureInfo("fr-FR");
                     startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
@@ -147,8 +152,8 @@ namespace BoTools.Service
 
             SocketGuild _serv = Helper.GetZderLand(_client);            
             List<DayOfWeek> lstDay = BuildOrderedEventDays(siLundi, siMardi, siMercredi, siJeudi, siVendredi, siSamedi, siDimanche);
-            
-            DateTime target = DateTime.Today;
+
+            DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
             int cptWeek = 0;
             
             for (int i = 0; i < nbSession; i++)
@@ -159,9 +164,9 @@ namespace BoTools.Service
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventEnSerie.png"));
                 try
                 {                    
-                    target = Helper.GetNextWeekday(target, lstDay[cptWeek]);
+                    today = Helper.GetNextWeekday(today, lstDay[cptWeek]);
 
-                    DateTimeOffset startTime = new DateTimeOffset(target.AddHours(hour), TimeSpan.FromHours(2));
+                    DateTimeOffset startTime = new DateTimeOffset(today.AddHours(hour), TimeSpan.FromHours(2));
                     CultureInfo culture = new CultureInfo("fr-FR");
                     startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
 

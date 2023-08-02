@@ -301,7 +301,7 @@ namespace BoTools.Module
         [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
         public async Task HandleCreateOnePieceCommand()
         {
-            await _eventService.CreateNextOnePiece();
+            _eventService.CreateNextOnePiece();
 
             await RespondAsync(text: "done !", ephemeral:true);
             log.Info("HandleCreateOnePieceCommand OUT");
