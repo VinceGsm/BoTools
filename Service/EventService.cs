@@ -49,19 +49,18 @@ namespace BoTools.Service
         private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
             try // AWS
-            {
-                CultureInfo culture = new CultureInfo("fr-FR");
+            {                
                 DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);                
                 DateTime target = Helper.GetNextWeekday(today, DayOfWeek.Sunday);
-                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2));   // 21h
-                startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
+                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2)); // 21h                
+                log.Debug(startTime);
 
                 GuildScheduledEventType type = GuildScheduledEventType.Voice;
                 string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
                 ulong? channelId = Helper._idSaloonVoice;
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-                _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
             }
             catch (Exception ex)
             {
@@ -125,8 +124,6 @@ namespace BoTools.Service
                         now = Helper.GetNextWeekday(now, dayOfWeek);
 
                     DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
-                    CultureInfo culture = new CultureInfo("fr-FR");
-                    startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
                     GuildScheduledEventType type = GuildScheduledEventType.Voice;
                     string description = "Event créer grâce à la commande **/event-serie-hebdo**";
                     ulong? channelId = Helper._idSaloonVoice;
@@ -165,10 +162,7 @@ namespace BoTools.Service
                 try
                 {                    
                     today = Helper.GetNextWeekday(today, lstDay[cptWeek]);
-
                     DateTimeOffset startTime = new DateTimeOffset(today.AddHours(hour), TimeSpan.FromHours(2));
-                    CultureInfo culture = new CultureInfo("fr-FR");
-                    startTime = DateTimeOffset.Parse(startTime.ToString(), culture);
 
                     if (isIrlEvent)
                     {
