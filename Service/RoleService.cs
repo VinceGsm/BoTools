@@ -33,8 +33,8 @@ namespace BoTools.Service
         {
             1061919166199775232, //_separatorBonusId
             1061919390607605770, //_separatoIrlId
-            1052542257737256980, //_separatorPrivilegesId
-            1052521533135917137, //_separatorAccreditationsId                        
+            1052542257737256980 //_separatorDroitsId
+            //1052521533135917137, _separatorAccreditationsId     //remove bc conflict admin rights modos
         };
 
         private DiscordSocketClient _client;
@@ -120,7 +120,9 @@ namespace BoTools.Service
 
                     var bravo = Emote.Parse(Helper.GetBravoEmote());
                     Emoji cake = new Emoji("\uD83C\uDF82");
+                    Emoji face = new Emoji("\uD83E\uDD73");
                     await res.AddReactionAsync(cake);
+                    await res.AddReactionAsync(face);
                     await res.AddReactionAsync(bravo);
                 }
             }

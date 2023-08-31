@@ -15,7 +15,8 @@ namespace BoTools.Module
         private const ulong _idReadRulesRole = 847048535799234560;
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
-        private const ulong _idMemberRole = 322490732885835776;        
+        private const ulong _idMemberRole = 322490732885835776;
+        private const ulong _idChannelMeteoForet = 1146370594871455774;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventService _eventService; 
         private readonly MessageService _messageService; 
@@ -62,9 +63,10 @@ namespace BoTools.Module
                 $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
                 $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper.GetVerifiedEmote()} **Member commands** {Helper.GetVerifiedEmote()}\n" +                
-                $"{Helper.GetCoinEmote()} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                
+                $"{Helper.GetCoinEmote()} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
                 $"{Helper.GetCoinEmote()} </invocation:1122135559511494666> : Créé un vocal temporaire\n" +
-                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Créé un sondage dans le channel\n\n" +
+                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Sondage dans le channel\n" +
+                $"{Helper.GetCoinEmote()} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n\n" +
                 $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +                
                 $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper.GetCoinEmote()} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
@@ -349,6 +351,17 @@ namespace BoTools.Module
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
 
             log.Info("HandleAntoCommand OUT");
+        }
+
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("meteo_foret", "Estimation de feu de forêt en France pour aujourd'hui et demain", true, RunMode.Async)]
+        public async Task HandleMeteoForetCommand()
+        {
+            RespondAsync(text: $"La suite par ici : <#{_idChannelMeteoForet}>", ephemeral: true);
+
+            await _messageService.SendMeteoForetEmbed(_idChannelMeteoForet);            
+
+            log.Info("HandleMeteoForetCommand OUT");
         }
     }
 }

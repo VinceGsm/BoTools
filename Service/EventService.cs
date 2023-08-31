@@ -35,7 +35,7 @@ namespace BoTools.Service
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();
             var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
-            var activeThreadlst = Helper.GetAllActiveThread(opChannel);
+            var activeThreadlst = Helper.GetAllActiveThread(opChannel);            
 
             if (!events.Any(x => x.Name == nameEvent))
             {
@@ -56,7 +56,7 @@ namespace BoTools.Service
                 log.Debug(startTime);
 
                 GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                string description = "Monkey D. Luffy a décidé de devenir le roi des pirates. **Venez suivre son aventure avec nous !**";
+                string description = "**Venez suivre** l'aventure de **Monkey D. Luffy** futur Roi des pirates !**";
                 ulong? channelId = Helper._idSaloonVoice;
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
@@ -168,7 +168,7 @@ namespace BoTools.Service
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.External;
                         var endTime = startTime.AddHours(2);
-                        string description = "Event qui fait prendre l'air, c'est bon ça !";                        
+                        string description = "Event qui fait prendre l'air !";                        
 
                         _serv.CreateEventAsync(nameEvent, startTime: startTime, endTime: endTime, type: type, description: description, coverImage: coverImage);
                     }

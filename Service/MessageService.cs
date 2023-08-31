@@ -1,12 +1,24 @@
-﻿using Discord;
+﻿using BoTools.Model;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
+using System.Security.Policy;
+using System.Net;
+using System.IO;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using static System.Collections.Specialized.BitVector32;
 
 namespace BoTools.Service
 {
@@ -230,10 +242,66 @@ namespace BoTools.Service
             var leader = _client.GetUser(_vinceId);
             leader.SendMessageAsync(message);            
         }
-
-
-
-
         #endregion
+
+        internal async Task SendMeteoForetEmbed(ulong idChannel)
+        {
+            string msg = "Voici la carte indiquant le niveau de danger de feu par département pour aujourd'hui et demain :\n";
+            string path = await GetMeteoForetImg();
+
+            var channel = Helper.GetSocketMessageChannel(_client, idChannel);
+            if (path != string.Empty)
+            {
+                FileAttachment attachment = new FileAttachment(path);
+                await channel.SendFileAsync(attachment: attachment, text: msg);
+                File.Delete(path);
+            }                
+            else
+                await channel.SendMessageAsync("Error while getting IMGs from MeteoFrance.");
+
+        }
+
+        private async Task<string> GetMeteoForetImg()
+        {
+            string path = string.Empty;
+            var pngPath = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"meteoForet.png");
+            if (File.Exists(pngPath)) { File.Delete(pngPath); }
+
+            try
+            {
+                string baseUrl = "https://meteofrance.com";
+                string url = "https://meteofrance.com/meteo-des-forets";
+
+                var driver = new ChromeDriver();
+                driver.Navigate().GoToUrl(url);
+
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+
+                var popOut = driver.FindElement(By.ClassName("didomi-continue-without-agreeing"));
+                popOut.Click();
+
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+
+                var png = driver.FindElement(By.Id("forest-map"));
+                
+                Actions actions = new Actions(driver);
+                actions.MoveToElement(png);                
+                actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
+                actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
+                actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
+                actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
+
+                path = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"meteoForet.png");
+
+                var elementScreenshot = (png as ITakesScreenshot).GetScreenshot();
+                elementScreenshot.SaveAsFile(path);
+
+                driver.Quit();                
+            }
+            catch (Exception ex)
+            { log.Error(ex.Message); return string.Empty; }
+            
+            return path;
+        }        
     }
 }
