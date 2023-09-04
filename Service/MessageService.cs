@@ -267,20 +267,20 @@ namespace BoTools.Service
             var pngPath = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"meteoForet.png");
             if (File.Exists(pngPath)) { File.Delete(pngPath); }
 
+            var driver = new ChromeDriver();
             try
             {
                 string baseUrl = "https://meteofrance.com";
                 string url = "https://meteofrance.com/meteo-des-forets";
-
-                var driver = new ChromeDriver();
+                
                 driver.Navigate().GoToUrl(url);
 
-                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
                 var popOut = driver.FindElement(By.ClassName("didomi-continue-without-agreeing"));
                 popOut.Click();
 
-                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
                 var png = driver.FindElement(By.Id("forest-map"));
                 
@@ -290,6 +290,7 @@ namespace BoTools.Service
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
                 path = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"meteoForet.png");
 
@@ -299,8 +300,13 @@ namespace BoTools.Service
                 driver.Quit();                
             }
             catch (Exception ex)
-            { log.Error(ex.Message); return string.Empty; }
-            
+            { 
+                log.Error(ex.Message);
+                driver.Quit(); 
+                return string.Empty; 
+            }
+
+            driver.Quit();
             return path;
         }        
     }

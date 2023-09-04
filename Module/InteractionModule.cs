@@ -303,9 +303,9 @@ namespace BoTools.Module
         [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
         public async Task HandleCreateOnePieceCommand()
         {
+            RespondAsync(text: "I'm on it captain !", ephemeral: true);
             await _eventService.CreateNextOnePiece();
-
-            await RespondAsync(text: "done !", ephemeral:true);
+            
             log.Info("HandleCreateOnePieceCommand OUT");
         }
 
@@ -357,7 +357,7 @@ namespace BoTools.Module
         [SlashCommand("meteo_foret", "Estimation de feu de forêt en France pour aujourd'hui et demain", true, RunMode.Async)]
         public async Task HandleMeteoForetCommand()
         {
-            RespondAsync(text: $"La suite par ici : <#{_idChannelMeteoForet}>", ephemeral: true);
+            RespondAsync(text: $"La suite dans quelques temps dans <#{_idChannelMeteoForet}>", ephemeral: true);
 
             await _messageService.SendMeteoForetEmbed(_idChannelMeteoForet);            
 
