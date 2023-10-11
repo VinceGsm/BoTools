@@ -1,24 +1,16 @@
-﻿using BoTools.Model;
-using Discord;
+﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using System.Security.Policy;
-using System.Net;
-using System.IO;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
-using static System.Collections.Specialized.BitVector32;
 
 namespace BoTools.Service
 {
@@ -75,7 +67,8 @@ namespace BoTools.Service
         internal EmbedBuilder CreateVote(string question, List<string> options, List<string> emojis)
         {
             string description = string.Empty;
-            if (question.Last() != '?') question += question + '?';
+            if (question.Last() != '?')
+                question = question + '?';
 
             for (int i=0; options.Count>i; i++)
             {
@@ -128,7 +121,7 @@ namespace BoTools.Service
                     RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync(nameNewChannel, props => {
                         props.CategoryId = _vocalCategoryId;
                         props.UserLimit = 6;
-                        props.Bitrate = 12800;
+                        props.Bitrate = 128000;
                     }).Result;                    
                     _tmpSquadVoiceId = newVoice.Id;
                 }

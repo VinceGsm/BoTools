@@ -357,9 +357,14 @@ namespace BoTools.Module
         [SlashCommand("meteo_foret", "Estimation de feu de forêt en France pour aujourd'hui et demain", true, RunMode.Async)]
         public async Task HandleMeteoForetCommand()
         {
-            RespondAsync(text: $"La suite dans quelques temps dans <#{_idChannelMeteoForet}>", ephemeral: true);
+            if (DateTime.Now.Month >= 6 && DateTime.Now.Month <= 9) //Juin à Septembre (inclut)
+            {
+                RespondAsync(text: $"La suite dans quelques temps dans <#{_idChannelMeteoForet}>", ephemeral: true);
 
-            await _messageService.SendMeteoForetEmbed(_idChannelMeteoForet);            
+                await _messageService.SendMeteoForetEmbed(_idChannelMeteoForet);
+            }
+            else
+                RespondAsync(text: $"Cette fonctionnalité n'est disponible qu'entre Juin et Septembre.", ephemeral: true);
 
             log.Info("HandleMeteoForetCommand OUT");
         }

@@ -5,7 +5,6 @@ using HtmlAgilityPack;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -56,7 +55,8 @@ namespace BoTools.Service
                 log.Debug(startTime);
 
                 GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                string description = "**Venez suivre** l'aventure de **Monkey D. Luffy**, futur Roi des pirates !";
+                string description = "**Venez suivre** l'aventure de **Monkey D. Luffy**, futur Roi des pirates !\n" +
+                    "\"Motomeru naraba dokomademo\"";
                 ulong? channelId = Helper._idSaloonVoice;
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
