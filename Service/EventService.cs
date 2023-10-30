@@ -51,7 +51,7 @@ namespace BoTools.Service
             {                
                 DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);                
                 DateTime target = Helper.GetNextWeekday(today, DayOfWeek.Sunday);
-                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(2)); // 21h                
+                DateTimeOffset startTime = new DateTimeOffset(target.AddHours(21), TimeSpan.FromHours(1)); // 21h (+1 Hiver / +2 Ete)                
                 log.Debug(startTime);
 
                 GuildScheduledEventType type = GuildScheduledEventType.Voice;
