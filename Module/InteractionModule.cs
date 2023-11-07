@@ -368,5 +368,30 @@ namespace BoTools.Module
 
             log.Info("HandleMeteoForetCommand OUT");
         }
+
+
+        //[RequireRole(roleId: _idMemberRole)]
+        //[SlashCommand("dall-e", "Ask Dall-E (in english) for an image [1 IMG/minute]")]
+        //public async Task HandleDallE(string query)
+        //{
+        //    log.Info("HandleDalle IN");
+
+        //    var embedBuilder = await _messageService.QueryDalle(query);
+        //    await RespondAsync(embed: embedBuilder.Build(), ephemeral: false);
+
+        //    log.Info("HandleDalle OUT");
+        //}
+
+        //[RequireRole(roleId: _idMemberRole)]
+        //[SlashCommand("chat-gpt", "Ask Chat-GPT (in english) for an image [1 request/minute]")]
+        //public async Task HandleChatGpt(string query)
+        //{
+        //    log.Info("HandleChatGpt IN");
+
+        //    var embedBuilder = await _messageService.QueryChatGpt(query);
+        //    await RespondAsync(embed: embedBuilder.Build(), ephemeral: false);
+
+        //    log.Info("HandleChatGpt OUT");
+        //}
     }
 }

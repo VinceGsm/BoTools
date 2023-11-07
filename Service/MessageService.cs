@@ -11,6 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using OpenAI_API;
+using System.Security.Policy;
+using OpenAI_API.Chat;
+using OpenAI_API.Models;
 
 namespace BoTools.Service
 {
@@ -25,6 +29,7 @@ namespace BoTools.Service
 
         private DiscordSocketClient _client;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly string _tokenOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token");
 
         public MessageService(DiscordSocketClient client)
         {
@@ -237,6 +242,7 @@ namespace BoTools.Service
         }
         #endregion
 
+        #region Meteo
         internal async Task SendMeteoForetEmbed(ulong idChannel)
         {
             string msg = "Voici la carte indiquant le niveau de danger de feu par département pour aujourd'hui et demain :\n";
@@ -248,7 +254,7 @@ namespace BoTools.Service
                 FileAttachment attachment = new FileAttachment(path);
                 await channel.SendFileAsync(attachment: attachment, text: msg);
                 File.Delete(path);
-            }                
+            }
             else
                 await channel.SendMessageAsync("Error while getting IMGs from MeteoFrance.");
 
@@ -265,7 +271,7 @@ namespace BoTools.Service
             {
                 string baseUrl = "https://meteofrance.com";
                 string url = "https://meteofrance.com/meteo-des-forets";
-                
+
                 driver.Navigate().GoToUrl(url);
 
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
@@ -276,9 +282,9 @@ namespace BoTools.Service
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
 
                 var png = driver.FindElement(By.Id("forest-map"));
-                
+
                 Actions actions = new Actions(driver);
-                actions.MoveToElement(png);                
+                actions.MoveToElement(png);
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
                 actions.ContextClick(png).SendKeys(Keys.ArrowDown).Perform();
@@ -290,17 +296,98 @@ namespace BoTools.Service
                 var elementScreenshot = (png as ITakesScreenshot).GetScreenshot();
                 elementScreenshot.SaveAsFile(path);
 
-                driver.Quit();                
+                driver.Quit();
             }
             catch (Exception ex)
-            { 
+            {
                 log.Error(ex.Message);
-                driver.Quit(); 
-                return string.Empty; 
+                driver.Quit();
+                return string.Empty;
             }
 
             driver.Quit();
             return path;
-        }        
+        }
+        #endregion
+
+
+        #region OpenAI
+        //DALL-E
+        internal async Task<EmbedBuilder> QueryDalle(string query)
+        {
+            var api = new OpenAIAPI(_tokenOpenAI);
+
+            try
+            {
+                var imgGen = await api.ImageGenerations.CreateImageAsync(query);
+
+                var footer = new EmbedFooterBuilder
+                {
+                    IconUrl = Helper.GetZderLandIconUrl(),
+                    Text = $"Provided by OpenAI & Vince"
+                };
+
+                return new EmbedBuilder()
+                   .WithTitle(query)
+                   .WithImageUrl("https://cdn.discordapp.com/attachments/617462663374438411/1106597286630391890/bob.gif")
+                   .WithColor(Color.Blue)
+                   .WithFooter(footer);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+
+                return new EmbedBuilder()
+                   .WithTitle("CRITICAL ERROR")
+                   .WithDescription(ex.Message)
+                   .WithColor(Color.Red);                
+            }            
+        }
+
+        internal async Task<EmbedBuilder> QueryChatGpt(string query)
+        {
+            var api = new OpenAIAPI(_tokenOpenAI);
+
+            try
+            {
+                var models = await api.Models.GetModelsAsync();
+
+                ChatRequest args = new ChatRequest
+                {
+                    MaxTokens = 9999,
+                    Model = models.First(x => x.ModelID == "gpt-3.5-turbo-16k")
+                };
+
+                var chat = api.Chat.CreateConversation(args);
+
+                chat.AppendUserInput(query);
+                string response = await chat.GetResponseFromChatbotAsync();
+
+                var footer = new EmbedFooterBuilder
+                {
+                    IconUrl = Helper.GetZderLandIconUrl(),
+                    Text = $"Provided by OpenAI & Vince"
+                };
+
+                return new EmbedBuilder()
+                   .WithTitle(query)  
+                   .WithDescription(response)
+                   .WithColor(Color.Green)
+                   .WithFooter(footer);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+
+                return new EmbedBuilder()
+                   .WithTitle("CRITICAL ERROR")
+                   .WithDescription(ex.Message)
+                   .WithColor(Color.Red);
+            }
+        }
+
+
+        //CHATGPT
+        #endregion
     }
 }
