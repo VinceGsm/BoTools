@@ -161,7 +161,7 @@ namespace BoTools.Module
             var embedBuilder = new EmbedBuilder()
                 
                 .WithTitle($"Feedback : {nameFeedback.Remove(0, 3)}")
-                .WithDescription($"{feedback}")
+                //.WithDescription($"{feedback}")
                 .WithColor(Color.DarkBlue)
                 .WithImageUrl(urlIcon);
 
