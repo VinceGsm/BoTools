@@ -64,9 +64,16 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </invocation:1122135559511494666> : Créé un vocal temporaire\n" +
+                $"{Helper._coinEmote} </vocal:1171800145776627773> : Créé un vocal temporaire\n" +
                 $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
-                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n\n" +
+                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n" +
+
+                $"{Helper._coinEmote} </> : météo à venir \n\n" +
+                $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
+                $"{Helper._coinEmote} </dall-e-2:1171827578995228894> Génération d'image avec la v2 \n" +
+                $"{Helper._coinEmote} </dall-e-3:1171827578995228895> Génération d'image avec la v3 \n" +
+                $"{Helper._coinEmote} </:>  \n\n" +
+
                 $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
@@ -76,7 +83,7 @@ namespace BoTools.Module
                 .WithTitle("Liste des commands de ZderLand :")
                 .WithDescription(description)
                 .WithColor(Color.Green)
-                .WithThumbnailUrl(Helper.GetZderLandIconUrl())
+                .WithThumbnailUrl(Helper._zderLandIconUrl)
                 .WithImageUrl(Helper._urlListGif);
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
@@ -217,9 +224,9 @@ namespace BoTools.Module
         public async Task HandleMainRolesCommand()
         {
             var user = Context.User;
-            log.Info($"HandleMainRolesCommand IN by {user.Username}");
-            
-            List<string> roles = new List<string>(){ "<@&689144324939710527>","<@&322489502562123778>", "<@&322490732885835776>",
+            log.Info($"HandleMainRolesCommand IN by {user.Username}"); 
+
+            List<string> roles = new List<string>(){ "<@&322489502562123778>", "<@&322490732885835776>",
             "<@&344912149728067584>","<@&847048535799234560>"};
 
             // We remove the everyone role and select the mention of each role.
@@ -227,7 +234,7 @@ namespace BoTools.Module
 
             var embedBuiler = new EmbedBuilder()                
                 .WithTitle("Rôles principaux de Zderland :")
-                .WithThumbnailUrl(Helper.GetZderLandIconUrl())
+                .WithThumbnailUrl(Helper._zderLandIconUrl)
                 .WithDescription(roleList)
                 .WithColor(Color.Green);                
 
@@ -310,7 +317,7 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("invocation", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]
+        [SlashCommand("vocal", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]
         public async Task HandleCreateVocalReuCommand(string theme, int nbParticipant)
         {
             var embedBuiler = _messageService.CreateVocalReu(theme, nbParticipant);
@@ -383,8 +390,8 @@ namespace BoTools.Module
         //}
 
         [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("dall-e", "Ask Dall-E for an image [ENGLISH]")]
-        public async Task HandleDallE(string query)
+        [SlashCommand("dall-e-2", "Ask Dall-E-2 for an image [ENGLISH]")]        
+        public async Task HandleDallE2(string query)
         {
             log.Info("HandleDalle IN");
 
@@ -402,12 +409,44 @@ namespace BoTools.Module
                     await RespondAsync(text: "Le temps qu'OpenAI réponde a ta demande tu peux supprimer ce message, " +
                         "il est invisble pour les autres ^^", ephemeral: true);
 
-                    await _messageService.QueryDalle2(userToken, query, Context.User);                    
+                    await _messageService.QueryDallE(2,userToken, query, Context.User);                    
                 }
                 else
                 {
                     await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
-                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact Vince pour la modique somme de 0€");
+                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact <@312317884389130241> pour la modique somme de 0€", ephemeral: true);
+                }
+            }
+
+            log.Info("HandleDalle OUT");
+        }
+
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("dall-e-3", "Ask Dall-E-3 for an image [ENGLISH]")]
+        public async Task HandleDallE3(string query)
+        {
+            log.Info("HandleDalle IN");
+
+            if (Context.Channel.Id != 1171768483810390027)
+            {
+                await RespondAsync(text: "Merci d'utiliser cette commande dans <#1171768483810390027> avec une query respectant " +
+                    "la [politique d'usage](https://openai.com/policies/usage-policies)", ephemeral: true);
+            }
+            else
+            {
+                string userToken = Helper.GetOpenAIToken(Context.User.Id);
+
+                if (!string.IsNullOrEmpty(userToken))
+                {
+                    await RespondAsync(text: "Le temps qu'OpenAI réponde a ta demande tu peux supprimer ce message, " +
+                        "il est invisble pour les autres ^^", ephemeral: true);
+
+                    await _messageService.QueryDallE(3, userToken, query, Context.User);
+                }
+                else
+                {
+                    await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
+                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact <@312317884389130241> pour la modique somme de 0€", ephemeral:true);
                 }
             }
 

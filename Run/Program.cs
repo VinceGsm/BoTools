@@ -70,7 +70,7 @@ namespace BoTools.Run
             // When guild data has finished downloading (+state : Ready)
             _client.Ready += async () =>
             {
-                await sCommands.RegisterCommandsToGuildAsync(UInt64.Parse(Helper.GetZderLandId()));
+                await sCommands.RegisterCommandsToGuildAsync(UInt64.Parse(Helper._zderLandId));
                 await _client.DownloadUsersAsync(_client.Guilds); // DL all user
             };
 

@@ -1,11 +1,9 @@
 ﻿using Discord;
-using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
-using OpenAI_API;
-using OpenAI_API.Chat;
-using OpenAI_API.Images;
+using OpenAiNg;
+using OpenAiNg.Images;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
@@ -36,6 +34,8 @@ namespace BoTools.Service
 
         public EmbedBuilder CreateVocalReu(string theme, int nbParticipant)
         {
+            if (nbParticipant > 99) nbParticipant = 99;
+
             EmbedBuilder embed = new EmbedBuilder();
             if (_tmpReuVoiceId != ulong.MinValue)
             {
@@ -77,7 +77,7 @@ namespace BoTools.Service
             
             var footer = new EmbedFooterBuilder
             {
-                IconUrl = Helper.GetZderLandIconUrl(),
+                IconUrl = Helper._zderLandIconUrl,
                 Text = $"Powered with {Helper._coeurEmoji}"
             };
 
@@ -95,7 +95,7 @@ namespace BoTools.Service
 
             var footer = new EmbedFooterBuilder
             {
-                IconUrl = Helper.GetZderLandIconUrl(),
+                IconUrl = Helper._zderLandIconUrl,
                 Text = $"Provided by Anto"
             };
 
@@ -308,10 +308,10 @@ namespace BoTools.Service
 
         #region OpenAI
         //DALL-E
-        internal async Task QueryDalle2(string token, string query, SocketUser user)
+        internal async Task QueryDallE(int version, string token, string query, SocketUser user)
         {
             EmbedBuilder resEmbed;
-            var api = new OpenAIAPI(token);
+            var api = new OpenAiApi(token);
 
             try
             {
@@ -324,7 +324,7 @@ namespace BoTools.Service
                 };
 
                 resEmbed = new EmbedBuilder()
-                   .WithTitle(query)
+                   .WithTitle("[V2] "+query)
                    .WithImageUrl(imgGen.Data[0].Url)      
                    .WithColor(Color.Blue)
                    .WithFooter(footer);
@@ -342,49 +342,54 @@ namespace BoTools.Service
             var channel = Helper.GetSocketMessageChannel(_client, 1171768483810390027);
             await channel.SendMessageAsync(embed: resEmbed.Build());
         }
+        internal Task QueryDallE3(string userToken, string query, SocketUser user)
+        {
+            throw new NotImplementedException();
+        }
 
         //CHATGPT
-        internal async Task<EmbedBuilder> QueryChatGpt(string token, string query)
-        {
-            var api = new OpenAIAPI(token);
+        //internal async Task<EmbedBuilder> QueryChatGpt(string token, string query)
+        //{        
+        //    var api = new OpenAIAPI(token);
 
-            try
-            {
-                var models = await api.Models.GetModelsAsync();
 
-                ChatRequest args = new ChatRequest
-                {
-                    MaxTokens = 9999,
-                    Model = models.First(x => x.ModelID == "gpt-3.5-turbo-16k")
-                };
+        //    try
+        //    {
+        //        var models = await api.Models.GetModelsAsync();
 
-                var chat = api.Chat.CreateConversation(args);
+        //        ChatRequest args = new ChatRequest
+        //        {
+        //            MaxTokens = 9999,
+        //            Model = models.First(x => x.ModelID == "gpt-3.5-turbo-16k")
+        //        };
 
-                chat.AppendUserInput(query);
-                string response = await chat.GetResponseFromChatbotAsync();
+        //        var chat = api.Chat.CreateConversation(args);
 
-                var footer = new EmbedFooterBuilder
-                {
-                    IconUrl = Helper.GetZderLandIconUrl(),
-                    Text = $"Provided by OpenAI & Vince"
-                };
+        //        chat.AppendUserInput(query);
+        //        string response = await chat.GetResponseFromChatbotAsync();
 
-                return new EmbedBuilder()
-                   .WithTitle(query)  
-                   .WithDescription(response)
-                   .WithColor(Color.Green)
-                   .WithFooter(footer);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.Message);
+        //        var footer = new EmbedFooterBuilder
+        //        {
+        //            IconUrl = Helper._zderLandIconUrl,
+        //            Text = $"Provided by OpenAI & Vince"
+        //        };
 
-                return new EmbedBuilder()
-                   .WithTitle("CRITICAL ERROR")
-                   .WithDescription(ex.Message)
-                   .WithColor(Color.Red);
-            }
-        }        
+        //        return new EmbedBuilder()
+        //           .WithTitle(query)  
+        //           .WithDescription(response)
+        //           .WithColor(Color.Green)
+        //           .WithFooter(footer);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error(ex.Message);
+
+        //        return new EmbedBuilder()
+        //           .WithTitle("CRITICAL ERROR")
+        //           .WithDescription(ex.Message)
+        //           .WithColor(Color.Red);
+        //    }
+        //}
         #endregion
     }
 }

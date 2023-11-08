@@ -57,11 +57,11 @@ namespace BoTools
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
         };
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
-        private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
-        private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token"); //Vince's Token
+        private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
 
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
@@ -192,15 +192,6 @@ namespace BoTools
             _birthsDay.Add("!173837924599726080", DateTime.ParseExact("09/12", "dd/MM", culture)); //Paul
             _birthsDay.Add("!355731040913850398", DateTime.ParseExact("23/12", "dd/MM", culture)); //Majid            
             return _birthsDay;            
-        }
-
-        internal static string GetZderLandIconUrl()
-        {
-            return _zderLandIconUrl;
-        }
-        internal static string GetZderLandId()
-        {
-            return _zderLandId;
         }
 
         internal static List<string> GetAntoGifUrls()
