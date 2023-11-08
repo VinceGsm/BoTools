@@ -1,5 +1,4 @@
-﻿using BoTools.Module;
-using BoTools.Service;
+﻿using BoTools.Service;
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;

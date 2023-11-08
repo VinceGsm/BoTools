@@ -16,7 +16,7 @@ namespace BoTools.Module
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
         private const ulong _idMemberRole = 322490732885835776;
-        private const ulong _idChannelMeteoForet = 1146370594871455774;
+        private const ulong _idThreadMeteo = 1171455087193882664;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventService _eventService; 
         private readonly MessageService _messageService; 
@@ -57,19 +57,19 @@ namespace BoTools.Module
             var user = Context.User;
             log.Info($"HandleHelpCommand IN by {user.Username}");
 
-            string description = $"{Helper.GetVerifiedEmote()} **Utility commands** {Helper.GetVerifiedEmote()}\n" +
-                $"{Helper.GetCoinEmote()} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
-                $"{Helper.GetCoinEmote()} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
-                $"{Helper.GetCoinEmote()} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
-                $"{Helper.GetCoinEmote()} </help:1092834240363778161> : Liste les commandes du server\n\n" +
-                $"{Helper.GetVerifiedEmote()} **Member commands** {Helper.GetVerifiedEmote()}\n" +                
-                $"{Helper.GetCoinEmote()} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper.GetCoinEmote()} </invocation:1122135559511494666> : Créé un vocal temporaire\n" +
-                $"{Helper.GetCoinEmote()} </sondage:1122135559511494667> : Sondage dans le channel\n" +
-                $"{Helper.GetCoinEmote()} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n\n" +
-                $"{Helper.GetVerifiedEmote()} **OnePiece commands** {Helper.GetVerifiedEmote()}\n" +                
-                $"{Helper.GetCoinEmote()} </feedback_one-piece:1009959955081728104>\n" +
-                $"{Helper.GetCoinEmote()} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
+            string description = $"{Helper._verifiedEmote} **Utility commands** {Helper._verifiedEmote}\n" +
+                $"{Helper._coinEmote} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
+                $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
+                $"{Helper._coinEmote} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
+                $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
+                $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
+                $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
+                $"{Helper._coinEmote} </invocation:1122135559511494666> : Créé un vocal temporaire\n" +
+                $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
+                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n\n" +
+                $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
+                $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
+                $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
                 $"En cas de problème contacter <@312317884389130241>";
 
             var embedBuiler = new EmbedBuilder()
@@ -243,7 +243,7 @@ namespace BoTools.Module
 
             var roleList = roles.Replace(" ","\n");
 
-            string msg = $"Salutations {Helper.GetCoinEmote()}\n" +
+            string msg = $"Salutations {Helper._coinEmote}\n" +
                 "Voici la liste des rôles fraîchement ajoutés au server :\n" + roleList;
 
             await Context.Channel.SendMessageAsync(msg);
@@ -359,9 +359,9 @@ namespace BoTools.Module
         {
             if (DateTime.Now.Month >= 6 && DateTime.Now.Month <= 9) //Juin à Septembre (inclut)
             {
-                RespondAsync(text: $"La suite dans quelques temps dans <#{_idChannelMeteoForet}>", ephemeral: true);
+                RespondAsync(text: $"La suite dans quelques temps dans <#{_idThreadMeteo}>", ephemeral: true);
 
-                await _messageService.SendMeteoForetEmbed(_idChannelMeteoForet);
+                await _messageService.SendMeteoForetEmbed(_idThreadMeteo);
             }
             else
                 RespondAsync(text: $"Cette fonctionnalité n'est disponible qu'entre Juin et Septembre.", ephemeral: true);
@@ -369,21 +369,53 @@ namespace BoTools.Module
             log.Info("HandleMeteoForetCommand OUT");
         }
 
-
         //[RequireRole(roleId: _idMemberRole)]
-        //[SlashCommand("dall-e", "Ask Dall-E (in english) for an image [1 IMG/minute]")]
-        //public async Task HandleDallE(string query)
+        //[SlashCommand("meteo", "xxxxxxxxxxxxxxxxxxxxx", true, RunMode.Async)]
+        //public async Task HandleMeteoCommand()
         //{
-        //    log.Info("HandleDalle IN");
+        //    RespondAsync(text: $"La suite dans quelques temps dans <#{_idThreadMeteo}>", ephemeral: true);
 
-        //    var embedBuilder = await _messageService.QueryDalle(query);
-        //    await RespondAsync(embed: embedBuilder.Build(), ephemeral: false);
+        ////http://api.openweathermap.org/geo/1.0/direct?q=Champs-sur-Marne,250&limit=1&appid=f60c0d515bf73b5e186a677832e222f7
 
-        //    log.Info("HandleDalle OUT");
+        //    await _messageService.SendMeteoForetEmbed(_idThreadMeteo);
+
+        //    log.Info("HandleMeteoForetCommand OUT");
         //}
 
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("dall-e", "Ask Dall-E for an image [ENGLISH]")]
+        public async Task HandleDallE(string query)
+        {
+            log.Info("HandleDalle IN");
+
+            if (Context.Channel.Id != 1171768483810390027)
+            {
+                await RespondAsync(text: "Merci d'utiliser cette commande dans <#1171768483810390027> avec une query respectant " +
+                    "la [politique d'usage](https://openai.com/policies/usage-policies)", ephemeral:true);
+            }
+            else
+            {
+                string userToken = Helper.GetOpenAIToken(Context.User.Id);
+
+                if (!string.IsNullOrEmpty(userToken))
+                {
+                    await RespondAsync(text: "Le temps qu'OpenAI réponde a ta demande tu peux supprimer ce message, " +
+                        "il est invisble pour les autres ^^", ephemeral: true);
+
+                    await _messageService.QueryDalle2(userToken, query, Context.User);                    
+                }
+                else
+                {
+                    await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
+                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact Vince pour la modique somme de 0€");
+                }
+            }
+
+            log.Info("HandleDalle OUT");
+        }
+
         //[RequireRole(roleId: _idMemberRole)]
-        //[SlashCommand("chat-gpt", "Ask Chat-GPT (in english) for an image [1 request/minute]")]
+        //[SlashCommand("chat-gpt", "Ask GPT-3.5 anything [ENGLISH]")]
         //public async Task HandleChatGpt(string query)
         //{
         //    log.Info("HandleChatGpt IN");

@@ -18,29 +18,32 @@ namespace BoTools
         public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
         public static readonly string _urlQuestionGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122152112399339581/question.gif";
         public static readonly string _urlListGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122165956983132250/list.gif";
-        public static readonly ulong _ZderLandId = 312966999414145034;        
+        public static readonly ulong _vinceId = 312317884389130241;
+        public static readonly ulong _vinceBisId = 493020872303443969;
+        public static readonly ulong _squadVoiceId = 1007423970670297178;
+        public static readonly ulong _vocalCategoryId = 493018545089806337;
         public static readonly ulong _idModoRole = 322489502562123778;
-        public static readonly ulong _idGeneralChannel = 312966999414145034;
+        public static readonly ulong _idGeneralChannel = 312966999414145034; 
         public static readonly ulong _idJellyfinChannel = 816283362478129182;        
         public static readonly ulong _idOnePieceChannel = 553256709439750151;
         public static readonly ulong _idSaloonVoice = 493036345686622210;
-        private static readonly ulong _idModoChannel = 539151743213240331;
+        public static readonly ulong _idModoChannel = 539151743213240331;
                   
-        private static readonly string _coinEmote = "<a:Coin:637802593413758978>";
-        private static readonly string _doneEmote = "<a:check:626017543340949515>";
-        private static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
-        private static readonly string _alarmEmote = "<a:alert:637645061764415488>";
-        private static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
-        private static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
-        private static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
-        private static readonly string _verifiedEmote = "<a:verified:773622374926778380>";                
-        private static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
-        private static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
-        private static readonly string _pepeMdrEmote = "<a:pepeMDR:912738745105674292>";
-        private static readonly string _heheEmote = "<a:hehe:773622227064979547>";
-        private static readonly string _coeurEmoji = "\u2764";        
-        private static readonly string _tvEmoji = "\uD83D\uDCFA";
-        private static readonly string _dlEmoji = "<:DL:894171464167747604>";
+        public static readonly string _coinEmote = "<a:Coin:637802593413758978>";
+        public static readonly string _doneEmote = "<a:check:626017543340949515>";
+        public static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
+        public static readonly string _alarmEmote = "<a:alert:637645061764415488>";
+        public static readonly string _coeurEmote = "<a:coeur:830788906793828382>";
+        public static readonly string _bravoEmote = "<a:bravo:626017180731047977>";
+        public static readonly string _luffyEmote = "<a:luffy:863101041498259457>";
+        public static readonly string _verifiedEmote = "<a:verified:773622374926778380>";                
+        public static readonly string _pikachuEmote = "<a:hiPikachu:637802627345678339>";
+        public static readonly string _pepeSmokeEmote = "<a:pepeSmoke:830799658354737178>";  
+        public static readonly string _pepeMdrEmote = "<a:pepeMDR:912738745105674292>";
+        public static readonly string _heheEmote = "<a:hehe:773622227064979547>";
+        public static readonly string _coeurEmoji = "\u2764";        
+        public static readonly string _tvEmoji = "\uD83D\uDCFA";
+        public static readonly string _dlEmoji = "<:DL:894171464167747604>";
 
         private static readonly List<string> _greetings = new List<string>
         {
@@ -53,11 +56,13 @@ namespace BoTools
             "aloha","how's it hanging?","howsyamomanem?","how goes it?","good evening","yo","how's it going?",
             "ça dit quoi les filles ?", "Ah ! Toujours là ce bon vieux Denis","what's cooking?", "invocation !"
         };
-
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
+        private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
+        private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token"); //Vince's Token
+
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
         {
@@ -189,24 +194,6 @@ namespace BoTools
             return _birthsDay;            
         }
 
-
-        #region Get Emoji/Emote
-        public static string GetCoinEmote() { return _coinEmote; }
-        public static string GetCoeurEmote() { return _coeurEmote; }
-        public static string GetVerifiedEmote() { return _verifiedEmote; }
-        public static string GetPikachuEmote() { return _pikachuEmote; }
-        public static string GetAlarmEmote() { return _alarmEmote; }
-        public static string GetBravoEmote() { return _bravoEmote; }        
-        public static string GetArrowEmote() { return _arrowEmote; }
-        public static string GetDoneEmote() { return _doneEmote; }
-        public static string GetPepeSmokeEmote() { return _pepeSmokeEmote; }
-        public static string GetPepeMdrEmote() { return _pepeMdrEmote; }
-        public static string GetHeheEmote() { return _heheEmote; } 
-        public static string GetLuffyEmote() { return _luffyEmote; }
-        public static string GetCoeurEmoji() { return _coeurEmoji; }
-        public static string GetTvEmoji() { return _tvEmoji; }
-        public static string GetDlEmoji() { return _dlEmoji; }
-
         internal static string GetZderLandIconUrl()
         {
             return _zderLandIconUrl;
@@ -215,7 +202,6 @@ namespace BoTools
         {
             return _zderLandId;
         }
-        #endregion
 
         internal static List<string> GetAntoGifUrls()
         {
@@ -253,6 +239,23 @@ namespace BoTools
 
             Random random = new Random();
             return list[random.Next(list.Count)];
+        }
+
+
+        internal static string GetOpenAIToken(ulong idUser)
+        {
+            if (_tokensOpenAI.Count == 0)
+                FillDicoTokens();
+
+            _tokensOpenAI.TryGetValue(idUser, out var token);
+
+            return token;
+        }
+
+        private static void FillDicoTokens()
+        {
+            _tokensOpenAI.Add(_vinceId, _tokenVinceOpenAI);
+            _tokensOpenAI.Add(_vinceBisId, _tokenVinceOpenAI);
         }
     }
 }

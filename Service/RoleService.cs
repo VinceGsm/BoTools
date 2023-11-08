@@ -96,7 +96,7 @@ namespace BoTools.Service
 
         public async Task CheckBirthday()
         {
-            string msgStart = $"@here {Helper.GetPikachuEmote()} \n" +
+            string msgStart = $"@here {Helper._pikachuEmote} \n" +
                         $"Vince me souffle dans l'oreille que c'est l'anniversaire de";
 
             ISocketMessageChannel channel = Helper.GetSocketMessageChannel(_client, Helper._idGeneralChannel);
@@ -110,7 +110,7 @@ namespace BoTools.Service
                     string idTagTarget = _birthDays.First(x => x.Value == DateTime.Today).Key;
 
                     string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
-                        $"{Helper.GetCoeurEmote()} sur toi";
+                        $"{Helper._coeurEmote} sur toi";
 
                     _onGoingBirthday = DateTime.Today;
                     var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
@@ -118,7 +118,7 @@ namespace BoTools.Service
 
                     var res = (IMessage)channel.SendMessageAsync(message).Result;
 
-                    var bravo = Emote.Parse(Helper.GetBravoEmote());
+                    var bravo = Emote.Parse(Helper._bravoEmote);
                     Emoji cake = new Emoji("\uD83C\uDF82");
                     Emoji face = new Emoji("\uD83E\uDD73");
                     await res.AddReactionAsync(cake);
@@ -166,7 +166,7 @@ namespace BoTools.Service
                     List<Embed> embeds = new List<Embed>();
                     int cpt = 0;
 
-                    string message = $"<@&{_gamingDealId}> {Helper.GetPikachuEmote()}\n" +
+                    string message = $"<@&{_gamingDealId}> {Helper._verifiedEmote}\n" +
                         $"N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES :";                        
 
                     foreach (var url in urls)
