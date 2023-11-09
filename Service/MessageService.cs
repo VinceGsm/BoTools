@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -252,6 +254,7 @@ namespace BoTools.Service
             {
                 FileAttachment attachment = new FileAttachment(path);
                 await channel.SendFileAsync(attachment: attachment, text: msg);
+                attachment.Dispose();
                 File.Delete(path);
             }
             else
@@ -312,16 +315,11 @@ namespace BoTools.Service
 
         #region OpenAI
         //DALL-E
-        internal async Task QueryDallE(int version, string token, string prompt, bool HD, SocketUser user)
+        internal async Task QueryDallE(int version, string token, string prompt, bool HD, SocketInteractionContext context)
         {
             EmbedBuilder resEmbed;
-            string versioningTitle = (HD) ? $"V{version} HD" : $"V{version}";            
-
-            var footer = new EmbedFooterBuilder
-            {
-                IconUrl = user.GetAvatarUrl(),
-                Text = $"Ask by {user.Username}, Provided by OpenAI & Vince"
-            };
+            string versioningTitle = (HD) ? $"V{version} HD" : $"V{version}";
+            string text = $"<@{context.User.Id}> asked **{prompt}**";
 
             try
             {
@@ -347,13 +345,28 @@ namespace BoTools.Service
                         Model = OpenAiNg.Models.Model.Dalle3,
                         Quality = (HD) ? ImageQuality.Hd : ImageQuality.Standard
                     });
-                }                
+                }
+                // can't stay in embed bc the url expire in 2hours... (Gadamn I pay for this!)
+                //resEmbed = new EmbedBuilder()                 
+                //   .WithTitle($"[{versioningTitle}] " + prompt)
+                //   .WithImageUrl(imgGen.Data[0].Url)      
+                //   .WithColor(Color.Blue)
+                //   .WithFooter(footer);
+                
+                string localFilePath = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"{context.User.Username}{DateTime.Now.Ticks}.png");
 
-                resEmbed = new EmbedBuilder()
-                   .WithTitle($"[{versioningTitle}] " + prompt)
-                   .WithImageUrl(imgGen.Data[0].Url)      
-                   .WithColor(Color.Blue)
-                   .WithFooter(footer);
+                using (WebClient webClient = new WebClient())
+                {
+                    try
+                    {
+                        webClient.DownloadFile(imgGen.Data[0].Url, localFilePath);                        
+                    }
+                    catch (Exception ex) { log.Error(ex); }
+                }
+                FileAttachment file = new FileAttachment(localFilePath);                
+                await context.Channel.SendFileAsync(attachment: file, text: text);
+                file.Dispose();
+                File.Delete(localFilePath);
             }
             catch (Exception ex)
             {
@@ -364,9 +377,6 @@ namespace BoTools.Service
                    .WithDescription(ex.Message)
                    .WithColor(Color.Red);                
             }
-
-            var channel = Helper.GetSocketMessageChannel(_client, 1171768483810390027);
-            await channel.SendMessageAsync(embed: resEmbed.Build());
         }
 
         //CHATGPT

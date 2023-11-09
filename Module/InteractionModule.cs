@@ -404,8 +404,8 @@ namespace BoTools.Module
 
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    await RespondAsync(text: "Wait and see *(if my code blow up or not)*", ephemeral: true);
-                    await _messageService.QueryDallE(2, userToken, prompt, false, Context.User);                    
+                    await RespondAsync(text: "Laisse moi 15sec le temps d'aller télécharger ton image chez l'cousin Dall-E", ephemeral: true);
+                    await _messageService.QueryDallE(2, userToken, prompt, false, Context);                    
                 }
                 else
                 {
@@ -434,8 +434,8 @@ namespace BoTools.Module
 
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    await RespondAsync(text: "Wait and see *(if my code blow up or not)*", ephemeral: true);
-                    await _messageService.QueryDallE(3, userToken, prompt, HD, Context.User);
+                    await RespondAsync(text: "Laisse moi 15sec le temps d'aller télécharger ton image chez l'cousin Dall-E", ephemeral: true);
+                    await _messageService.QueryDallE(3, userToken, prompt, HD, Context);
                 }
                 else
                 {
