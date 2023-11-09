@@ -3,6 +3,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
 using OpenAiNg;
+using OpenAiNg.Models;
 using OpenAiNg.Images;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -238,6 +239,9 @@ namespace BoTools.Service
         #endregion
 
         #region Meteo
+
+
+
         internal async Task SendMeteoForetEmbed(ulong idChannel)
         {
             string msg = "Voici la carte indiquant le niveau de danger de feu par département pour aujourd'hui et demain :\n";
@@ -251,7 +255,7 @@ namespace BoTools.Service
                 File.Delete(path);
             }
             else
-                await channel.SendMessageAsync("Error while getting IMGs from MeteoFrance.");
+                await channel.SendMessageAsync("**Error** while getting IMGs from MeteoFrance.");
 
         }
 
@@ -308,23 +312,45 @@ namespace BoTools.Service
 
         #region OpenAI
         //DALL-E
-        internal async Task QueryDallE(int version, string token, string query, SocketUser user)
+        internal async Task QueryDallE(int version, string token, string prompt, bool HD, SocketUser user)
         {
             EmbedBuilder resEmbed;
-            var api = new OpenAiApi(token);
+            string versioningTitle = (HD) ? $"V{version} HD" : $"V{version}";            
+
+            var footer = new EmbedFooterBuilder
+            {
+                IconUrl = user.GetAvatarUrl(),
+                Text = $"Ask by {user.Username}, Provided by OpenAI & Vince"
+            };
 
             try
             {
-                ImageResult imgGen = await api.ImageGenerations.CreateImageAsync(query);                
+                var api = new OpenAiApi(token);
+                ImageResult imgGen = null;
 
-                var footer = new EmbedFooterBuilder
+                if (version == 2) //v2
                 {
-                    IconUrl = user.GetAvatarUrl(),
-                    Text = $"Ask by {user.Username}, Provided by OpenAI & Vince"
-                };
+                    // thanks to lofcz (OpenAiNg) on GitHub
+                    imgGen = await api.ImageGenerations.CreateImageAsync(new ImageGenerationRequest
+                    {
+                        Prompt = prompt,                        
+                        Size = ImageSize._1024,
+                        Model = OpenAiNg.Models.Model.Dalle2
+                    });
+                }
+                else // v3
+                {
+                    imgGen = await api.ImageGenerations.CreateImageAsync(new ImageGenerationRequest
+                    {
+                        Prompt = prompt,                        
+                        Size = ImageSize._1024,
+                        Model = OpenAiNg.Models.Model.Dalle3,
+                        Quality = (HD) ? ImageQuality.Hd : ImageQuality.Standard
+                    });
+                }                
 
                 resEmbed = new EmbedBuilder()
-                   .WithTitle("[V2] "+query)
+                   .WithTitle($"[{versioningTitle}] " + prompt)
                    .WithImageUrl(imgGen.Data[0].Url)      
                    .WithColor(Color.Blue)
                    .WithFooter(footer);
@@ -341,10 +367,6 @@ namespace BoTools.Service
 
             var channel = Helper.GetSocketMessageChannel(_client, 1171768483810390027);
             await channel.SendMessageAsync(embed: resEmbed.Build());
-        }
-        internal Task QueryDallE3(string userToken, string query, SocketUser user)
-        {
-            throw new NotImplementedException();
         }
 
         //CHATGPT

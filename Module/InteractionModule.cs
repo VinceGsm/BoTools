@@ -391,7 +391,7 @@ namespace BoTools.Module
 
         [RequireRole(roleId: _idMemberRole)]
         [SlashCommand("dall-e-2", "Ask Dall-E-2 for an image [ENGLISH]")]        
-        public async Task HandleDallE2(string query)
+        public async Task HandleDallE2(string prompt)
         {
             log.Info("HandleDalle IN");
 
@@ -406,10 +406,8 @@ namespace BoTools.Module
 
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    await RespondAsync(text: "Le temps qu'OpenAI réponde a ta demande tu peux supprimer ce message, " +
-                        "il est invisble pour les autres ^^", ephemeral: true);
-
-                    await _messageService.QueryDallE(2,userToken, query, Context.User);                    
+                    await RespondAsync(text: "Wait and see *(if my code blow up or not)*", ephemeral: true);
+                    await _messageService.QueryDallE(2, userToken, prompt, false, Context.User);                    
                 }
                 else
                 {
@@ -423,7 +421,7 @@ namespace BoTools.Module
 
         [RequireRole(roleId: _idMemberRole)]
         [SlashCommand("dall-e-3", "Ask Dall-E-3 for an image [ENGLISH]")]
-        public async Task HandleDallE3(string query)
+        public async Task HandleDallE3(string prompt, bool HD)
         {
             log.Info("HandleDalle IN");
 
@@ -438,10 +436,8 @@ namespace BoTools.Module
 
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    await RespondAsync(text: "Le temps qu'OpenAI réponde a ta demande tu peux supprimer ce message, " +
-                        "il est invisble pour les autres ^^", ephemeral: true);
-
-                    await _messageService.QueryDallE(3, userToken, query, Context.User);
+                    await RespondAsync(text: "Wait and see *(if my code blow up or not)*", ephemeral: true);
+                    await _messageService.QueryDallE(3, userToken, prompt, HD, Context.User);
                 }
                 else
                 {
