@@ -3,7 +3,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
 using OpenAiNg;
-using OpenAiNg.Models;
+using OpenAiNg.Chat;
 using OpenAiNg.Images;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -370,48 +370,51 @@ namespace BoTools.Service
         }
 
         //CHATGPT
-        //internal async Task<EmbedBuilder> QueryChatGpt(string token, string query)
-        //{        
-        //    var api = new OpenAIAPI(token);
+        internal async Task QueryChatGpt(string token, string query, SocketUser user)
+        {
+            EmbedBuilder resEmbed;
 
+            var footer = new EmbedFooterBuilder
+            {
+                IconUrl = Helper._zderLandIconUrl,
+                Text = $"Provided by OpenAI & Vince"
+            };
 
-        //    try
-        //    {
-        //        var models = await api.Models.GetModelsAsync();
+            try
+            {
+                var api = new OpenAiApi(token);
+                var models = await api.Models.GetModelsAsync();
 
-        //        ChatRequest args = new ChatRequest
-        //        {
-        //            MaxTokens = 9999,
-        //            Model = models.First(x => x.ModelID == "gpt-3.5-turbo-16k")
-        //        };
+                ChatRequest args = new ChatRequest
+                {
+                    //MaxTokens = 4096,
+                    Model = models.First(x => x.ModelID == "gpt-3.5-turbo-16k")
+                };
 
-        //        var chat = api.Chat.CreateConversation(args);
+                var chat = api.Chat.CreateConversation(args);
 
-        //        chat.AppendUserInput(query);
-        //        string response = await chat.GetResponseFromChatbotAsync();
+                chat.AppendUserInput(query);
+                string response = await chat.GetResponseFromChatbotAsync();
 
-        //        var footer = new EmbedFooterBuilder
-        //        {
-        //            IconUrl = Helper._zderLandIconUrl,
-        //            Text = $"Provided by OpenAI & Vince"
-        //        };
+                resEmbed = new EmbedBuilder()
+                   .WithTitle($"{user.Username} asked : "+query)
+                   .WithDescription(response)
+                   .WithColor(Color.Green)
+                   .WithFooter(footer);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
 
-        //        return new EmbedBuilder()
-        //           .WithTitle(query)  
-        //           .WithDescription(response)
-        //           .WithColor(Color.Green)
-        //           .WithFooter(footer);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        log.Error(ex.Message);
+                resEmbed = new EmbedBuilder()
+                   .WithTitle("CRITICAL ERROR")
+                   .WithDescription(ex.Message)
+                   .WithColor(Color.Red);
+            }
 
-        //        return new EmbedBuilder()
-        //           .WithTitle("CRITICAL ERROR")
-        //           .WithDescription(ex.Message)
-        //           .WithColor(Color.Red);
-        //    }
-        //}
+            var channel = Helper.GetSocketMessageChannel(_client, 1171768653012803634);
+            await channel.SendMessageAsync(embed: resEmbed.Build());
+        }
         #endregion
     }
 }

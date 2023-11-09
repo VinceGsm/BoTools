@@ -64,16 +64,14 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </vocal:1171800145776627773> : Créé un vocal temporaire\n" +
+                $"{Helper._coinEmote} </vocal:1172100530995220480> : Créé un vocal temporaire\n" +
                 $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
                 $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n" +
-
                 $"{Helper._coinEmote} </> : météo à venir \n\n" +
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
-                $"{Helper._coinEmote} </dall-e-2:1171827578995228894> Génération d'image avec la v2 \n" +
-                $"{Helper._coinEmote} </dall-e-3:1171827578995228895> Génération d'image avec la v3 \n" +
-                $"{Helper._coinEmote} </:>  \n\n" +
-
+                $"{Helper._coinEmote} </dall-e-2:1172100530995220481> Génération d'image avec la v2 \n" +
+                $"{Helper._coinEmote} </dall-e-3:1172100530995220482> Génération d'image avec la v3 \n" +
+                $"{Helper._coinEmote} </chat-gpt:1172120227258040362> Assistant basé sur le 3.5_Turbo-16K \n\n" +
                 $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
@@ -449,16 +447,34 @@ namespace BoTools.Module
             log.Info("HandleDalle OUT");
         }
 
-        //[RequireRole(roleId: _idMemberRole)]
-        //[SlashCommand("chat-gpt", "Ask GPT-3.5 anything [ENGLISH]")]
-        //public async Task HandleChatGpt(string query)
-        //{
-        //    log.Info("HandleChatGpt IN");
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("chat-gpt", "Ask GPT-3.5_Turbo anything [ENGLISH]")]
+        public async Task HandleChatGpt(string prompt)
+        {
+            log.Info("HandleChatGpt IN");
 
-        //    var embedBuilder = await _messageService.QueryChatGpt(query);
-        //    await RespondAsync(embed: embedBuilder.Build(), ephemeral: false);
+            if (Context.Channel.Id != 1171768653012803634)
+            {
+                await RespondAsync(text: "Merci d'utiliser cette commande dans <#1171768653012803634> avec une query respectant " +
+                    "la [politique d'usage](https://openai.com/policies/usage-policies)", ephemeral: true);
+            }
+            else
+            {
+                string userToken = Helper.GetOpenAIToken(Context.User.Id);
 
-        //    log.Info("HandleChatGpt OUT");
-        //}
+                if (!string.IsNullOrEmpty(userToken))
+                {
+                    await RespondAsync(text: "En attente de réponse du collègue GPT-3.5_Turbo", ephemeral: true);
+                    await _messageService.QueryChatGpt(userToken, prompt, Context.User);
+                }
+                else
+                {
+                    await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
+                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact <@312317884389130241> pour la modique somme de 0€", ephemeral: true);
+                }
+            }                        
+
+            log.Info("HandleChatGpt OUT");
+        }
     }
 }
