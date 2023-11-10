@@ -28,7 +28,9 @@ namespace BoTools
         public static readonly ulong _idOnePieceChannel = 553256709439750151;
         public static readonly ulong _idSaloonVoice = 493036345686622210;
         public static readonly ulong _idModoChannel = 539151743213240331;
-                  
+        public static readonly ulong _idThreadMeteo = 1171768369926651905;
+
+
         public static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         public static readonly string _doneEmote = "<a:check:626017543340949515>";
         public static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
@@ -60,6 +62,7 @@ namespace BoTools
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
+
         private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
         private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
 

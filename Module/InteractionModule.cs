@@ -16,7 +16,6 @@ namespace BoTools.Module
         private const ulong _idOpRole = 552134779210825739;
         private const ulong _idModoRole = 322489502562123778;
         private const ulong _idMemberRole = 322490732885835776;
-        private const ulong _idThreadMeteo = 1171455087193882664;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventService _eventService; 
         private readonly MessageService _messageService; 
@@ -64,14 +63,14 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </vocal:1172100530995220480> : Créé un vocal temporaire\n" +
+                $"{Helper._coinEmote} </vocal:1172474545714757723> : Créé un vocal temporaire\n" +
                 $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
                 $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n" +
-                $"{Helper._coinEmote} </> : météo à venir \n\n" +
+                $"{Helper._coinEmote} </meteo_france:1172519149327613975> : Météo d'une ville en direct\n\n" +
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
-                $"{Helper._coinEmote} </dall-e-2:1172100530995220481> Génération d'image avec la v2 \n" +
-                $"{Helper._coinEmote} </dall-e-3:1172100530995220482> Génération d'image avec la v3 \n" +
-                $"{Helper._coinEmote} </chat-gpt:1172120227258040362> Assistant basé sur le 3.5_Turbo-16K \n\n" +
+                $"{Helper._coinEmote} </dall-e-2:1172474545714757724> Génération d'image avec la v2\n" +
+                $"{Helper._coinEmote} </dall-e-3:1172474545714757725> Génération d'image avec la v3\n" +
+                $"{Helper._coinEmote} </chat-gpt:1172474545714757726> Assistant basé sur la  v3.5\n\n" +
                 $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
@@ -362,11 +361,13 @@ namespace BoTools.Module
         [SlashCommand("meteo_foret", "Estimation de feu de forêt en France pour aujourd'hui et demain", true, RunMode.Async)]
         public async Task HandleMeteoForetCommand()
         {
+            log.Info("HandleMeteoForetCommand IN");
+
             if (DateTime.Now.Month >= 6 && DateTime.Now.Month <= 9) //Juin à Septembre (inclut)
             {
-                RespondAsync(text: $"La suite dans quelques temps dans <#{_idThreadMeteo}>", ephemeral: true);
+                RespondAsync(text: $"La suite dans quelques temps dans <#{Helper._idThreadMeteo}>", ephemeral: true);
 
-                await _messageService.SendMeteoForetEmbed(_idThreadMeteo);
+                await _messageService.SendMeteoForetEmbed();
             }
             else
                 RespondAsync(text: $"Cette fonctionnalité n'est disponible qu'entre Juin et Septembre.", ephemeral: true);
@@ -374,18 +375,18 @@ namespace BoTools.Module
             log.Info("HandleMeteoForetCommand OUT");
         }
 
-        //[RequireRole(roleId: _idMemberRole)]
-        //[SlashCommand("meteo", "xxxxxxxxxxxxxxxxxxxxx", true, RunMode.Async)]
-        //public async Task HandleMeteoCommand()
-        //{
-        //    RespondAsync(text: $"La suite dans quelques temps dans <#{_idThreadMeteo}>", ephemeral: true);
+        [RequireRole(roleId: _idMemberRole)]
+        [SlashCommand("meteo_france", "Météo d'une ville en direct", true, RunMode.Async)]
+        public async Task HandleMeteoCommand(string ville)
+        {
+            log.Info("HandleMeteoCommand IN");
 
-        ////http://api.openweathermap.org/geo/1.0/direct?q=Champs-sur-Marne,250&limit=1&appid=f60c0d515bf73b5e186a677832e222f7
+            RespondAsync(text: $"La suite dans quelques temps dans <#{Helper._idThreadMeteo}>", ephemeral: true);            
 
-        //    await _messageService.SendMeteoForetEmbed(_idThreadMeteo);
+            await _messageService.SendMeteoEmbed(ville);
 
-        //    log.Info("HandleMeteoForetCommand OUT");
-        //}
+            log.Info("HandleMeteoCommand OUT");
+        }
 
         [RequireRole(roleId: _idMemberRole)]
         [SlashCommand("dall-e-2", "Ask Dall-E-2 for an image [ENGLISH]")]        

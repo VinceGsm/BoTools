@@ -1,8 +1,10 @@
-﻿using Discord;
+﻿using BoTools.Model;
+using Discord;
 using Discord.Interactions;
 using Discord.Rest;
 using Discord.WebSocket;
 using log4net;
+using Newtonsoft.Json;
 using OpenAiNg;
 using OpenAiNg.Chat;
 using OpenAiNg.Images;
@@ -14,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -22,7 +25,8 @@ namespace BoTools.Service
     public class MessageService
     {
         private static ulong _tmpSquadVoiceId = ulong.MinValue;
-        private static ulong _tmpReuVoiceId = ulong.MinValue;        
+        private static ulong _tmpReuVoiceId = ulong.MinValue;     
+        private static string _meteoToken = Environment.GetEnvironmentVariable("Meteo_Token");
 
         private DiscordSocketClient _client;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -241,15 +245,121 @@ namespace BoTools.Service
         #endregion
 
         #region Meteo
+        internal async Task SendMeteoEmbed(string ville)
+        {
+            EmbedBuilder resEmbed;
+
+            var footer = new EmbedFooterBuilder
+            {
+                IconUrl = Helper._zderLandIconUrl,
+                Text = $"Provided by OpenWeatherMap & Vince"
+            };
+            
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string apiGeoLoc = $"http://api.openweathermap.org/geo/1.0/direct?q={ville},250&limit=1&appid={_meteoToken}";                    
+                    HttpResponseMessage response = await client.GetAsync(apiGeoLoc);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        List<GeoLoc> geoLoc = JsonConvert.DeserializeObject<List<GeoLoc>>(responseBody);
+
+                        string apiWeather = $"https://api.openweathermap.org/data/2.5/weather?" +
+                            $"lat={geoLoc[0].Lat}&lon={geoLoc[0].Lon}&appid={_meteoToken}&units=metric&lang=fr";    
+                        response = await client.GetAsync(apiWeather);
+
+                        if (response.IsSuccessStatusCode) //SUCCESS
+                        {
+                            responseBody = await response.Content.ReadAsStringAsync();
+                            OpenWeather openWeather = JsonConvert.DeserializeObject<OpenWeather>(responseBody);
+
+                            string emo = "";                            
+                            switch (openWeather.Weather[0].Icon.Substring(0, 2))
+                            {
+                                case "01":
+                                    emo = "☀️";
+                                    break;
+                                case "02":
+                                    emo = "🌤";
+                                    break;
+                                case "09":
+                                    emo = "🌧";
+                                    break;
+                                case "10":
+                                    emo = "🌦";
+                                    break;
+                                case "11":
+                                    emo = "⛈";
+                                    break;
+                                case "13":
+                                    emo = "❄️";
+                                    break;
+                                case "50":
+                                    emo = "🌫";
+                                    break;
+                                default:
+                                    emo = "☁️";
+                                    break;
+                            }
+
+                            string title = $"{emo} {char.ToUpper(openWeather.Weather[0].Description[0]) + openWeather.Weather[0].Description.Substring(1)}" +
+                                $" sur {openWeather.Name}";
+
+                            string description = $"Température = {Math.Round(openWeather.Main.Temp, 1)}°C\n" +
+                                $"Ressenti = {Math.Round(openWeather.Main.Feels_Like, 1)}°C\n" +
+                                $"Pression = {openWeather.Main.Pressure} hPa\n" +
+                                $"Humidité = {openWeather.Main.Humidity}%";
+
+                            resEmbed = new EmbedBuilder()
+                               .WithTitle(title)
+                               .WithDescription(description)
+                               .WithImageUrl($"https://openweathermap.org/img/wn/{openWeather.Weather[0].Icon}@4x.png")
+                               .WithColor(Color.Gold)
+                               .WithFooter(footer);
+                        }
+                        else
+                        {
+                            log.Error($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                            resEmbed = new EmbedBuilder()
+                               .WithTitle("ERROR WEATHER API")
+                               .WithDescription(response.ReasonPhrase)
+                               .WithColor(Color.Red);
+                        }
+                    }
+                    else
+                    {
+                        log.Error($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                        resEmbed = new EmbedBuilder()
+                           .WithTitle("ERROR GEOLOC")
+                           .WithDescription(response.ReasonPhrase)
+                           .WithColor(Color.Red);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex.Message);
+
+                    resEmbed = new EmbedBuilder()
+                       .WithTitle("FATAL ERROR")
+                       .WithDescription(ex.Message)
+                       .WithColor(Color.Red);
+                }
+            }            
+
+            var channel = Helper.GetSocketMessageChannel(_client, 1171768369926651905);
+            await channel.SendMessageAsync(embed: resEmbed.Build());
+        }
 
 
-
-        internal async Task SendMeteoForetEmbed(ulong idChannel)
+        internal async Task SendMeteoForetEmbed()
         {
             string msg = "Voici la carte indiquant le niveau de danger de feu par département pour aujourd'hui et demain :\n";
             string path = await GetMeteoForetImg();
 
-            var channel = Helper.GetSocketMessageChannel(_client, idChannel);
+            var channel = Helper.GetSocketMessageChannel(_client, Helper._idThreadMeteo);
             if (path != string.Empty)
             {
                 FileAttachment attachment = new FileAttachment(path);
@@ -345,14 +455,7 @@ namespace BoTools.Service
                         Model = OpenAiNg.Models.Model.Dalle3,
                         Quality = (HD) ? ImageQuality.Hd : ImageQuality.Standard
                     });
-                }
-                // can't stay in embed bc the url expire in 2hours... (Gadamn I pay for this!)
-                //resEmbed = new EmbedBuilder()                 
-                //   .WithTitle($"[{versioningTitle}] " + prompt)
-                //   .WithImageUrl(imgGen.Data[0].Url)      
-                //   .WithColor(Color.Blue)
-                //   .WithFooter(footer);
-                
+                }                
                 string localFilePath = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"{context.User.Username}{DateTime.Now.Ticks}.png");
 
                 using (WebClient webClient = new WebClient())
@@ -426,5 +529,6 @@ namespace BoTools.Service
             await channel.SendMessageAsync(embed: resEmbed.Build());
         }
         #endregion
+
     }
 }

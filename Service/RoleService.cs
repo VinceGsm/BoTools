@@ -157,7 +157,8 @@ namespace BoTools.Service
         private async void NotifGamingDeal()
         {
             #region Vendredi = Epic Store            
-            if (Helper.IsFridayToday()){
+            if (Helper.IsFridayToday())
+            {
                 ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
 
                 if (mediaChannel != null)
@@ -166,7 +167,7 @@ namespace BoTools.Service
                     List<Embed> embeds = new List<Embed>();
                     int cpt = 0;
 
-                    string message = $"<@&{_gamingDealId}> {Helper._verifiedEmote}\n" +
+                    string message = $"<@&{_gamingDealId}> {Helper._pikachuEmote}\n" +
                         $"N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES :";                        
 
                     foreach (var url in urls)
