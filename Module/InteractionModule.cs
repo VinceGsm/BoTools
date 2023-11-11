@@ -40,13 +40,21 @@ namespace BoTools.Module
             //    if (command.Name.Contains("main"))
             //        command.DeleteAsync();
             //}
-            var user = Context.User;
-            log.Info($"HandlePing IN by {user.Username}");
+            try
+            {
+                var user = Context.User;
+                log.Info($"HandlePing IN by {user.Username}");
 
-            string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
+                string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
 
-            await RespondAsync(message, ephemeral: true);
-            log.Info("HandlePing OUT");
+                await RespondAsync(message, ephemeral: true);
+                log.Info("HandlePing OUT");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+
         }
 
         [RequireRole(roleId: _idReadRulesRole)]
@@ -63,14 +71,14 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </vocal:1172474545714757723> : Créé un vocal temporaire\n" +
+                $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n" +
                 $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
                 $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n" +
-                $"{Helper._coinEmote} </meteo_france:1172519149327613975> : Météo d'une ville en direct\n\n" +
+                $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n\n" +
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
-                $"{Helper._coinEmote} </dall-e-2:1172474545714757724> Génération d'image avec la v2\n" +
-                $"{Helper._coinEmote} </dall-e-3:1172474545714757725> Génération d'image avec la v3\n" +
-                $"{Helper._coinEmote} </chat-gpt:1172474545714757726> Assistant basé sur la  v3.5\n\n" +
+                $"{Helper._coinEmote} </dall-e-2:1172818585907904545> Génération d'image avec la v2\n" +
+                $"{Helper._coinEmote} </dall-e-3:1172818585907904546> Génération d'image avec la v3\n" +
+                $"{Helper._coinEmote} </chat-gpt:1172818585907904547> Assistant basé sur la  v3.5\n\n" +
                 $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
                 $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                

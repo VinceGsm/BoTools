@@ -30,7 +30,6 @@ namespace BoTools
         public static readonly ulong _idModoChannel = 539151743213240331;
         public static readonly ulong _idThreadMeteo = 1171768369926651905;
 
-
         public static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         public static readonly string _doneEmote = "<a:check:626017543340949515>";
         public static readonly string _arrowEmote = "<a:arrow:830799574947463229>";
@@ -65,6 +64,7 @@ namespace BoTools
 
         private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
         private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
+        private static readonly string _tokenAntoOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Anto");
 
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
@@ -250,6 +250,7 @@ namespace BoTools
         {
             _tokensOpenAI.Add(_vinceId, _tokenVinceOpenAI);
             _tokensOpenAI.Add(_vinceBisId, _tokenVinceOpenAI);
+            _tokensOpenAI.Add(312967790619525142, _tokenAntoOpenAI);
         }
     }
 }
