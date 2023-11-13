@@ -429,7 +429,7 @@ namespace BoTools.Service
         {
             EmbedBuilder resEmbed;
             string versioningTitle = (HD) ? $"V{version} HD" : $"V{version}";
-            string text = $"<@{context.User.Id}> asked **{prompt}**";
+            string text = $"[{versioningTitle}] <@{context.User.Id}> asked **{prompt}**";
 
             try
             {
@@ -464,7 +464,15 @@ namespace BoTools.Service
                     {
                         webClient.DownloadFile(imgGen.Data[0].Url, localFilePath);                        
                     }
-                    catch (Exception ex) { log.Error(ex); }
+                    catch (Exception ex) 
+                    { 
+                        log.Error(ex);
+                        resEmbed = new EmbedBuilder()
+                            .WithTitle("CRITICAL ERROR")
+                            .WithDescription(ex.Message)
+                            .WithColor(Color.Red);
+                        context.Channel.SendMessageAsync(embed: resEmbed.Build());
+                    }
                 }
                 FileAttachment file = new FileAttachment(localFilePath);                
                 await context.Channel.SendFileAsync(attachment: file, text: text);
@@ -474,11 +482,11 @@ namespace BoTools.Service
             catch (Exception ex)
             {
                 log.Error(ex.Message);
-
                 resEmbed = new EmbedBuilder()
                    .WithTitle("CRITICAL ERROR")
                    .WithDescription(ex.Message)
                    .WithColor(Color.Red);                
+                context.Channel.SendMessageAsync(embed: resEmbed.Build());
             }
         }
 
