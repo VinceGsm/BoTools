@@ -19,6 +19,9 @@ namespace BoTools
         public static readonly string _urlQuestionGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122152112399339581/question.gif";
         public static readonly string _urlListGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122165956983132250/list.gif";
         public static readonly ulong _vinceId = 312317884389130241;
+        public static readonly ulong _antoId = 312967790619525142;
+        public static readonly ulong _orelId = 270295016797241344;
+        public static readonly ulong _floId = 126259389962125312;
         public static readonly ulong _vinceBisId = 493020872303443969;
         public static readonly ulong _squadVoiceId = 1007423970670297178;
         public static readonly ulong _vocalCategoryId = 493018545089806337;
@@ -257,11 +260,11 @@ namespace BoTools
         {
             _tokensOpenAI.Add(_vinceId, _tokenVinceOpenAI);
             _tokensOpenAI.Add(_vinceBisId, _tokenVinceOpenAI);
-            _tokensOpenAI.Add(312967790619525142, _tokenAntoOpenAI);
-            _tokensOpenAI.Add(270295016797241344, _tokenOrelOpenAI);
+            _tokensOpenAI.Add(_antoId, _tokenAntoOpenAI);
+            _tokensOpenAI.Add(_orelId, _tokenOrelOpenAI);
             _tokensOpenAI.Add(558802761018376219, _tokenAdriOpenAI);
             _tokensOpenAI.Add(786748190283792414, _tokenCocoOpenAI);
-            _tokensOpenAI.Add(126259389962125312, _tokenFloOpenAI);
+            _tokensOpenAI.Add(_floId, _tokenFloOpenAI);
             _tokensOpenAI.Add(511225222545014817, _tokenIsmaOpenAI);
             _tokensOpenAI.Add(270294861490421760, _tokenMaxOpenAI);
             _tokensOpenAI.Add(318827498630545418, _tokenOmarowOpenAI);

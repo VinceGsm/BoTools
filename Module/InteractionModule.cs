@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Interactions;
 using log4net;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,22 +67,23 @@ namespace BoTools.Module
 
             string description = $"{Helper._verifiedEmote} **Utility commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
+                $"{Helper._coinEmote} </pin:1176116484246872064> : Pin un message par ID\n" +
                 $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
-                $"{Helper._coinEmote} </roles:1069907898999767072> : Affiche la liste des rôles principaux du server\n" +                
+                $"{Helper._coinEmote} </roles:1069907898999767072> : Affiche la liste des rôles principaux\n" +
+                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt\n" +
+                $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n" +
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
                 $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n" +
-                $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n" +
-                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt en France\n" +
-                $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n\n" +
+                $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n\n" +
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </dall-e-2:1172818585907904545> Génération d'image avec la v2\n" +
                 $"{Helper._coinEmote} </dall-e-3:1172818585907904546> Génération d'image avec la v3\n" +
                 $"{Helper._coinEmote} </chat-gpt:1172818585907904547> Assistant basé sur la  v3.5\n\n" +
                 $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
-                $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104>\n" +
-                $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071>\n\n" +                
+                $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104> Feedback de kiffeur\n" +
+                $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071> Feedback custom\n\n" +                
                 $"En cas de problème contacter <@312317884389130241>";
 
             var embedBuiler = new EmbedBuilder()
@@ -93,6 +95,19 @@ namespace BoTools.Module
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
             log.Info("HandleHelpCommand OUT");
+        }
+
+
+        [RequireRole(roleId: _idReadRulesRole)]
+        [SlashCommand("pin", "Pin un message par ID", false, RunMode.Async)]
+        public async Task HandlePinCommand(string messageId)
+        {
+            log.Info($"HandlePinCommand IN : {Context.User.Username}");
+
+            RespondAsync(text: "Bien reçu !", ephemeral: true);
+            await _messageService.Pin(Context.Channel, ulong.Parse(messageId));
+            
+            log.Info("HandlePinCommand OUT");
         }
 
         [RequireRole(roleId: _idReadRulesRole)]
@@ -248,22 +263,6 @@ namespace BoTools.Module
         }
 
         [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("msg-new-roles", "Annonce dans le général les nouveux roles", true, RunMode.Async)]        
-        public async Task HandleMsgNewRolesCommand(string roles)
-        {
-            log.Info("HandleMsgNewRolesCommand IN");            
-
-            var roleList = roles.Replace(" ","\n");
-
-            string msg = $"Salutations {Helper._coinEmote}\n" +
-                "Voici la liste des rôles fraîchement ajoutés au server :\n" + roleList;
-
-            await Context.Channel.SendMessageAsync(msg);
-
-            log.Info("HandleMsgNewRolesCommand OUT");
-        }
-
-        [RequireRole(roleId: _idModoRole)]
         [SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", true, RunMode.Async)] 
         public async Task HandleEventSeriesHebdoCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
         {
@@ -313,10 +312,10 @@ namespace BoTools.Module
 
         [RequireRole(roleId: _idModoRole)]
         [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
-        public async Task HandleCreateOnePieceCommand()
+        public async Task HandleCreateOnePieceCommand(bool notif)
         {
             RespondAsync(text: "I'm on it captain !", ephemeral: true);
-            await _eventService.CreateNextOnePiece();
+            await _eventService.CreateNextOnePiece(notif);
             
             log.Info("HandleCreateOnePieceCommand OUT");
         }
@@ -365,7 +364,7 @@ namespace BoTools.Module
             log.Info("HandleAntoCommand OUT");
         }
 
-        [RequireRole(roleId: _idMemberRole)]
+        [RequireRole(roleId: _idReadRulesRole)]
         [SlashCommand("meteo_foret", "Estimation de feu de forêt en France pour aujourd'hui et demain", true, RunMode.Async)]
         public async Task HandleMeteoForetCommand()
         {
@@ -383,7 +382,7 @@ namespace BoTools.Module
             log.Info("HandleMeteoForetCommand OUT");
         }
 
-        [RequireRole(roleId: _idMemberRole)]
+        [RequireRole(roleId: _idReadRulesRole)]
         [SlashCommand("meteo_france", "Météo d'une ville en direct", true, RunMode.Async)]
         public async Task HandleMeteoCommand(string ville)
         {

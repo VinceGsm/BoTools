@@ -458,26 +458,27 @@ namespace BoTools.Service
                 }                
                 string localFilePath = Path.Combine(Environment.CurrentDirectory, @"PNG\", $"{context.User.Username}{DateTime.Now.Ticks}.png");
 
-                using (WebClient webClient = new WebClient())
+                try
                 {
-                    try
+                    using (WebClient webClient = new WebClient())
                     {
-                        webClient.DownloadFile(imgGen.Data[0].Url, localFilePath);                        
-                    }
-                    catch (Exception ex) 
-                    { 
-                        log.Error(ex);
-                        resEmbed = new EmbedBuilder()
-                            .WithTitle("CRITICAL ERROR")
-                            .WithDescription(ex.Message)
-                            .WithColor(Color.Red);
-                        context.Channel.SendMessageAsync(embed: resEmbed.Build());
-                    }
+                        webClient.DownloadFile(imgGen.Data[0].Url, localFilePath);
+                        FileAttachment file = new FileAttachment(localFilePath);
+                        await context.Channel.SendFileAsync(attachment: file, text: text);
+                        file.Dispose();
+                        File.Delete(localFilePath);
+                    }                        
                 }
-                FileAttachment file = new FileAttachment(localFilePath);                
-                await context.Channel.SendFileAsync(attachment: file, text: text);
-                file.Dispose();
-                File.Delete(localFilePath);
+                catch (Exception ex) 
+                { 
+                    log.Error(ex);
+                    resEmbed = new EmbedBuilder()
+                        .WithTitle("CRITICAL ERROR")
+                        .WithDescription(ex.Message)
+                        .WithColor(Color.Red);
+                    context.Channel.SendMessageAsync(embed: resEmbed.Build());
+                }
+
             }
             catch (Exception ex)
             {
@@ -538,5 +539,11 @@ namespace BoTools.Service
         }
         #endregion
 
+
+        public async Task Pin(ISocketMessageChannel channel, ulong messageId)
+        {
+            var refMsg = await channel.GetMessageAsync(messageId) as IUserMessage;
+            if (refMsg != null) { await refMsg.PinAsync(); }            
+        }
     }
 }

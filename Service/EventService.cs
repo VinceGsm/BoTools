@@ -24,7 +24,7 @@ namespace BoTools.Service
             _client = client;
         }
 
-        public async Task CreateNextOnePiece()
+        public async Task CreateNextOnePiece(bool notif)
         {
             int nextNumOnePiece = GetNextNumOnePiece();
             var nameEvent = $"One Piece {nextNumOnePiece}";  
@@ -39,13 +39,13 @@ namespace BoTools.Service
             if (!events.Any(x => x.Name == nameEvent))
             {
                 log.Debug("no next OnePiece already planned");                
-                await CreateEventOnePiece(nameEvent, _serv);
+                await CreateEventOnePiece(nameEvent, _serv, notif);
                 await Helper.ClosedAllActiveThread(opChannel);
                 CreateThreadOnePiece(nextNumOnePiece, opChannel);
             }
         }
 
-        private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv)
+        private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv, bool notif)
         {
             try // AWS
             {                
@@ -60,11 +60,31 @@ namespace BoTools.Service
                 ulong? channelId = Helper._idSaloonVoice;
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-                await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                var creation = await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+
+                if (notif) { await DirectMessageOnePiece(creation.Id); }
             }
             catch (Exception ex)
             {
                 log.Error(ex);
+            }
+        }
+
+        private async Task DirectMessageOnePiece(ulong idEvent)
+        {
+            string msgOnePiece = $"{Helper._pikachuEmote}\n" +
+                $"Un nouvel event One Piece vient d'être créé, clique sur la cloche pour être notifié lorsqu'il commencera {Helper._luffyEmote}\n" +
+                $"|| Message envoyé automatiquement une fois par semaine (En cas de problème contacter <@312317884389130241>) ||" +
+                $"https://discord.com/events/312966999414145034/{idEvent}";
+            List<SocketUser> users = new List<SocketUser>();
+            //users.Add(_client.GetUser(Helper._vinceId));
+            //users.Add(_client.GetUser(Helper._vinceBisId));
+            users.Add(_client.GetUser(Helper._antoId));
+            users.Add(_client.GetUser(Helper._orelId));
+            users.Add(_client.GetUser(Helper._floId));
+            foreach (SocketUser user in users)
+            {
+                await user.SendMessageAsync(msgOnePiece);
             }
         }
 
