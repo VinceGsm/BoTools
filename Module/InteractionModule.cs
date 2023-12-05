@@ -69,9 +69,9 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
                 $"{Helper._coinEmote} </pin:1176116484246872064> : Pin un message par ID\n" +
                 $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
-                $"{Helper._coinEmote} </roles:1069907898999767072> : Affiche la liste des rôles principaux\n" +
-                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt\n" +
+                $"{Helper._coinEmote} </roles:1069907898999767072> : Liste les rôles principaux\n" +
                 $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n" +
+                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt\n" +                
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
@@ -310,15 +310,16 @@ namespace BoTools.Module
             log.Info("HandleEventSeriesCommand OUT");
         }
 
-        [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
-        public async Task HandleCreateOnePieceCommand(bool notif)
-        {
-            RespondAsync(text: "I'm on it captain !", ephemeral: true);
-            await _eventService.CreateNextOnePiece(notif);
+        // NOTE : see if auto is relevant
+        //[RequireRole(roleId: _idModoRole)]
+        //[SlashCommand("create-onepiece", "Créé thread + event du prochain épisode si manquant", true, RunMode.Async)]
+        //public async Task HandleCreateOnePieceCommand(bool notif)
+        //{
+        //    RespondAsync(text: "I'm on it captain !", ephemeral: true);
+        //    await _eventService.CreateNextOnePiece(notif);
             
-            log.Info("HandleCreateOnePieceCommand OUT");
-        }
+        //    log.Info("HandleCreateOnePieceCommand OUT");
+        //}
 
         [RequireRole(roleId: _idMemberRole)]
         [SlashCommand("vocal", "Créé un vocal temporaire pour le nombre de participant souhaité", true, RunMode.Async)]

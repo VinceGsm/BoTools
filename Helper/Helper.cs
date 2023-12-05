@@ -64,6 +64,7 @@ namespace BoTools
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
+        public static readonly bool _notifOnePiece = bool.Parse(Environment.GetEnvironmentVariable("NotifOnePiece"));
 
         private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
         private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
@@ -165,7 +166,7 @@ namespace BoTools
         }
         #endregion
 
-        internal static bool IsSundayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Sunday; }
+        internal static bool IsThursdayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Thursday; }
         internal static bool IsFridayToday() { return DateTime.Now.DayOfWeek == DayOfWeek.Friday; }
 
         internal static DateTime GetNextWeekday(DateTime start, DayOfWeek day)

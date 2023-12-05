@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -32,18 +31,18 @@ namespace BoTools.Service
         public static readonly List<ulong> _roleSeparatorIds = new List<ulong>
         {
             1061919166199775232, //_separatorBonusId
-            1061919390607605770, //_separatoIrlId
-            1052542257737256980 //_separatorDroitsId
-            //1052521533135917137, _separatorAccreditationsId     //remove bc conflict admin rights modos
+            1052542257737256980 //_separatorSecondaireId
         };
 
         private DiscordSocketClient _client;
+        private EventService _eventService;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public RoleService(DiscordSocketClient client)
+        public RoleService(DiscordSocketClient client, EventService eventService)
         {
             _client = client;
+            _eventService = eventService;
 
             if (_birthDays == null)
                 _birthDays = Helper.GetBirthDays();
@@ -71,7 +70,7 @@ namespace BoTools.Service
             log.Info($"| GuildMembersDownloaded IN --> firstIN={_connexion}");
             if (_connexion)
             {                
-                await CheckRoles();
+                await SetupRoles();
                 await CheckBirthdate();
                 await NotifRoles();                
                 await CleanVocal();
@@ -152,6 +151,9 @@ namespace BoTools.Service
         private async Task NotifRoles()
         {
             NotifGamingDeal();
+
+            if(Helper.IsThursdayToday())
+                await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
         }
 
         private async void NotifGamingDeal()
@@ -218,7 +220,7 @@ namespace BoTools.Service
             return res;
         }
 
-        public async Task CheckRoles()
+        public async Task SetupRoles()
         {
             log.Info($"CheckRoles IN");
             if (_IRoleRules == null) _IRoleRules = Helper.GetRoleById(_client, _readTheRulesId);
@@ -229,53 +231,51 @@ namespace BoTools.Service
                 _allUsers.RemoveAll(x => x.IsBot);
             }
 
-            await CheckRules();
-
             if (_IRolesSeparators.Count == 0)
-                FillRoles();            
+                FillSeparatorRoles();            
 
             log.Info($"CheckRoles OUT");
         }
 
-        private void FillRoles()
+        private void FillSeparatorRoles()
         {
             _IRolesSeparators = Helper.GetIRolesFromServer(_client, _roleSeparatorIds).ToList();           
         }
 
-        private async Task CheckRules()
-        {
-            log.Info($"CheckRules IN");
+        //private async Task CheckRules()
+        //{
+        //    log.Info($"CheckRules IN");
 
-            var chrono = new Stopwatch();
-            chrono.Start();
+        //    var chrono = new Stopwatch();
+        //    chrono.Start();
 
-            var channelRules = Helper.GetSocketMessageChannel(_client, 846694705177165864); //rôles
-            IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
-            IMessage msg = iMsg.First();
+        //    var channelRules = Helper.GetSocketMessageChannel(_client, 846694705177165864); //rôles
+        //    IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
+        //    IMessage msg = iMsg.First();
 
-            List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
+        //    List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
 
-            foreach (var userLst in reactListUsers)
-            {
-                var okUserslist = userLst.ToList();
+        //    foreach (var userLst in reactListUsers)
+        //    {
+        //        var okUserslist = userLst.ToList();
 
-                foreach (var okUser in okUserslist)
-                {
-                    if (okUser.Id != 493020872303443969) // compte qui met les reaction 
-                    {
-                        var subject = _allUsers.First(x => x.Id == okUser.Id);                        
+        //        foreach (var okUser in okUserslist)
+        //        {
+        //            if (okUser.Id != 493020872303443969) // compte qui met les reaction 
+        //            {
+        //                var subject = _allUsers.First(x => x.Id == okUser.Id);                        
                         
-                        if (!subject.Roles.Contains(_IRoleRules))
-                            await subject.AddRoleAsync(_IRoleRules);
+        //                if (!subject.Roles.Contains(_IRoleRules))
+        //                    await subject.AddRoleAsync(_IRoleRules);
                         
-                        log.Info($"CheckRules done for {subject.Username}");
-                    }
-                }
-            }
+        //                log.Info($"CheckRules done for {subject.Username}");
+        //            }
+        //        }
+        //    }
 
-            chrono.Stop();
-            log.Info($"CheckRules OUT in {chrono.ElapsedMilliseconds}ms");
-        }
+        //    chrono.Stop();
+        //    log.Info($"CheckRules OUT in {chrono.ElapsedMilliseconds}ms");
+        //}
 
         public async Task UpdateListUser()
         {
