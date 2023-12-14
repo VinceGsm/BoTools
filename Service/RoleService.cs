@@ -24,15 +24,8 @@ namespace BoTools.Service
         private IRole _IRoleRules = null;             
         Dictionary<string, DateTime> _birthDays = null;
         DateTime? _onGoingBirthday = null;
-        DateTime? _lastDateTime = null;
-        private List<IRole> _IRolesSeparators = new List<IRole>();        
+        DateTime? _lastDateTime = null;             
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
-
-        public static readonly List<ulong> _roleSeparatorIds = new List<ulong>
-        {
-            1061919166199775232, //_separatorBonusId
-            1052542257737256980 //_separatorSecondaireId
-        };
 
         private DiscordSocketClient _client;
         private EventService _eventService;
@@ -152,8 +145,8 @@ namespace BoTools.Service
         {
             NotifGamingDeal();
 
-            if(Helper.IsThursdayToday())
-                await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
+            //if(Helper.IsThursdayToday())
+            //    await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
         }
 
         private async void NotifGamingDeal()
@@ -229,53 +222,10 @@ namespace BoTools.Service
             {
                 _allUsers = Helper.GetZderLand(_client).Users.ToList();
                 _allUsers.RemoveAll(x => x.IsBot);
-            }
-
-            if (_IRolesSeparators.Count == 0)
-                FillSeparatorRoles();            
+            }          
 
             log.Info($"CheckRoles OUT");
         }
-
-        private void FillSeparatorRoles()
-        {
-            _IRolesSeparators = Helper.GetIRolesFromServer(_client, _roleSeparatorIds).ToList();           
-        }
-
-        //private async Task CheckRules()
-        //{
-        //    log.Info($"CheckRules IN");
-
-        //    var chrono = new Stopwatch();
-        //    chrono.Start();
-
-        //    var channelRules = Helper.GetSocketMessageChannel(_client, 846694705177165864); //rôles
-        //    IReadOnlyCollection<IMessage> iMsg = channelRules.GetMessagesAsync(1).FirstAsync().Result;
-        //    IMessage msg = iMsg.First();
-
-        //    List<IReadOnlyCollection<IUser>> reactListUsers = msg.GetReactionUsersAsync(msg.Reactions.FirstOrDefault().Key, 1000).ToListAsync().Result;
-
-        //    foreach (var userLst in reactListUsers)
-        //    {
-        //        var okUserslist = userLst.ToList();
-
-        //        foreach (var okUser in okUserslist)
-        //        {
-        //            if (okUser.Id != 493020872303443969) // compte qui met les reaction 
-        //            {
-        //                var subject = _allUsers.First(x => x.Id == okUser.Id);                        
-                        
-        //                if (!subject.Roles.Contains(_IRoleRules))
-        //                    await subject.AddRoleAsync(_IRoleRules);
-                        
-        //                log.Info($"CheckRules done for {subject.Username}");
-        //            }
-        //        }
-        //    }
-
-        //    chrono.Stop();
-        //    log.Info($"CheckRules OUT in {chrono.ElapsedMilliseconds}ms");
-        //}
 
         public async Task UpdateListUser()
         {
@@ -300,8 +250,8 @@ namespace BoTools.Service
             var subject = _allUsers.First(x => x.Id == userId);
             await subject.AddRoleAsync(_IRoleRules);
 
-            foreach(IRole separatorRole in _IRolesSeparators)
-                await subject.AddRoleAsync(separatorRole);
+            var leader = _client.GetUser(Helper._vinceId);
+            await leader.SendMessageAsync($"<@{userId}> read the ZderLand's Rules !");
         }
         #endregion
     }

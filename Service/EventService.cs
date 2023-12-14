@@ -78,7 +78,7 @@ namespace BoTools.Service
                 $"https://discord.com/events/312966999414145034/{idEvent}";
             List<SocketUser> users = new List<SocketUser>();
             //users.Add(_client.GetUser(Helper._vinceId));
-            //users.Add(_client.GetUser(Helper._vinceBisId));
+            users.Add(_client.GetUser(Helper._vinceBisId));
             users.Add(_client.GetUser(Helper._antoId));
             users.Add(_client.GetUser(Helper._orelId));
             users.Add(_client.GetUser(Helper._floId));

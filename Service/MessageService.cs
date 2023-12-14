@@ -185,7 +185,8 @@ namespace BoTools.Service
             if (arg.Source == MessageSource.User && arg.Channel.Name.StartsWith('@'))
             {
                 string message = $"<@{arg.Author.Id}> *says* : " + arg.Content ;
-                SendToLeader(message);
+                var leader = _client.GetUser(Helper._vinceId);
+                leader.SendMessageAsync(message);
                 AddReactionRobot((SocketUserMessage)arg);
             }
                 
@@ -233,14 +234,6 @@ namespace BoTools.Service
 
             var check = Emote.Parse(Helper._doneEmote);
             await message.AddReactionAsync(check);
-        }
-        #endregion
-
-        #region Private Message
-        internal void SendToLeader(string message)
-        {
-            var leader = _client.GetUser(Helper._vinceId);
-            leader.SendMessageAsync(message);            
         }
         #endregion
 
