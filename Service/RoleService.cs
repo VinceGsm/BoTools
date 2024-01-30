@@ -143,11 +143,11 @@ namespace BoTools.Service
         private async void NotifGamingDeal()
         {
             #region Vendredi = Epic Store            
-            if (Helper.IsFridayToday())
+            if (Helper.IsFridayToday())            
             {
-                ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 1200228737006960650);
+                ISocketMessageChannel gamingDealsThread = Helper.GetSocketMessageChannel(_client, Helper._idThreadGamingDeals);
 
-                if (mediaChannel != null)
+                if (gamingDealsThread != null)
                 {                    
                     List<string> urls = await GetEpicGamesStoreImg();
                     List<Embed> embeds = new List<Embed>();
@@ -163,7 +163,7 @@ namespace BoTools.Service
                         cpt++;
                     }
 
-                    await mediaChannel.SendMessageAsync(text: message, embeds: embeds.ToArray(), isTTS: true);                    
+                    await gamingDealsThread.SendMessageAsync(text: message, embeds: embeds.ToArray(), isTTS: true);                    
                 }
             }
             #endregion

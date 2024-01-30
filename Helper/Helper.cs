@@ -32,6 +32,7 @@ namespace BoTools
         public static readonly ulong _idSaloonVoice = 493036345686622210;
         public static readonly ulong _idModoChannel = 539151743213240331;
         public static readonly ulong _idThreadMeteo = 1171768369926651905;
+        public static readonly ulong _idThreadGamingDeals = 1201912866458828830;
 
         public static readonly string _coinEmote = "<a:Coin:637802593413758978>";
         public static readonly string _doneEmote = "<a:check:626017543340949515>";

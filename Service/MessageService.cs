@@ -342,7 +342,7 @@ namespace BoTools.Service
                 }
             }            
 
-            var channel = Helper.GetSocketMessageChannel(_client, 1171768369926651905);
+            var channel = Helper.GetSocketMessageChannel(_client, Helper._idThreadMeteo);
             await channel.SendMessageAsync(embed: resEmbed.Build());
         }
 
