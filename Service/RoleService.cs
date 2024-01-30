@@ -22,8 +22,7 @@ namespace BoTools.Service
         private bool _connexion = true;        
         private IRole _IRoleBirthday = null;
         private IRole _IRoleRules = null;             
-        Dictionary<string, DateTime> _birthDays = null;
-        DateTime? _onGoingBirthday = null;
+        Dictionary<string, DateTime> _birthDays = null;        
         DateTime? _lastDateTime = null;             
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
 
@@ -48,8 +47,7 @@ namespace BoTools.Service
         }
 
         private async Task LatencyUpdated(int oldLatency, int newLatency)
-        {
-            //log.Info($"LatencyUpdated from {oldLatency} to {newLatency}ms");
+        {            
             if (_lastDateTime != DateTime.Today)
             {
                 _lastDateTime = DateTime.Today;
@@ -65,7 +63,7 @@ namespace BoTools.Service
             {                
                 await SetupRoles();
                 await CheckBirthdate();
-                await NotifRoles();                
+                await NotifRoles();             
                 await CleanVocal();
                 log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
@@ -76,14 +74,8 @@ namespace BoTools.Service
         private async Task CheckBirthdate()
         {            
             if (_IRoleBirthday == null) _IRoleBirthday = Helper.GetRoleById(_client, _birthdayId);
-
-            if (_onGoingBirthday == null) //pas anniv en cours                         
-                await CheckBirthday();
-            else
-            {
-                if (_onGoingBirthday != DateTime.Today) //anniv en cours != ajd ?
-                    await CheckBirthday();
-            }
+                       
+            await CheckBirthday();
         }
 
         public async Task CheckBirthday()
@@ -103,8 +95,7 @@ namespace BoTools.Service
 
                     string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
                         $"{Helper._coeurEmote} sur toi";
-
-                    _onGoingBirthday = DateTime.Today;
+                    
                     var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
                     userTarget.AddRoleAsync(_IRoleBirthday);
 
@@ -145,8 +136,8 @@ namespace BoTools.Service
         {
             NotifGamingDeal();
 
-            //if(Helper.IsThursdayToday())
-            //    await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
+            if(Helper.IsThursdayToday())
+                await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
         }
 
         private async void NotifGamingDeal()
@@ -154,7 +145,7 @@ namespace BoTools.Service
             #region Vendredi = Epic Store            
             if (Helper.IsFridayToday())
             {
-                ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 494958624922271745);
+                ISocketMessageChannel mediaChannel = Helper.GetSocketMessageChannel(_client, 1200228737006960650);
 
                 if (mediaChannel != null)
                 {                    
@@ -163,7 +154,7 @@ namespace BoTools.Service
                     int cpt = 0;
 
                     string message = $"<@&{_gamingDealId}> {Helper._pikachuEmote}\n" +
-                        $"N'oublier pas de recup les jeux gratuits de la semaine sur le store EPIC GAMES :";                        
+                        $"N'oublier pas de recup le.s jeu.x gratuit.s de la semaine sur le store **EPIC GAMES** :";                        
 
                     foreach (var url in urls)
                     {

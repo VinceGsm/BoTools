@@ -190,7 +190,7 @@ namespace BoTools
             _birthsDay.Add("!511225222545014817", DateTime.ParseExact("30/06", "dd/MM", culture)); //Isma
             _birthsDay.Add("!391570155458527233", DateTime.ParseExact("06/07", "dd/MM", culture)); //Quentinus
             //_birthsDay.Add("!444958143081086986", DateTime.ParseExact("21/07", "dd/MM", culture)); //Dan
-            //_birthsDay.Add("!418459600959045633", DateTime.ParseExact("22/07", "dd/MM", culture)); //Wbr
+            _birthsDay.Add("!418459600959045633", DateTime.ParseExact("22/07", "dd/MM", culture)); //Wbr
             //_birthsDay.Add("!421026192523526155", DateTime.ParseExact("28/07", "dd/MM", culture)); //Kiki
             //_birthsDay.Add("!293029908761018368", DateTime.ParseExact("13/08", "dd/MM", culture)); //Mathis
             _birthsDay.Add("!270295016797241344", DateTime.ParseExact("14/09", "dd/MM", culture)); //Orel

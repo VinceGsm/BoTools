@@ -21,28 +21,29 @@ namespace BoTools.Service
 
         public EventService(DiscordSocketClient client)
         {
-            _client = client;
+            _client = client;            
         }
 
         public async Task CreateNextOnePiece(bool notif)
         {
             int nextNumOnePiece = GetNextNumOnePiece();
             var nameEvent = $"One Piece {nextNumOnePiece}";  
-            log.Debug($"CreateNextOnePiece : {nameEvent}" );
+            log.Debug($"CreateNextOnePiece : {nextNumOnePiece}" );
 
             SocketGuild _serv = Helper.GetZderLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
-            List<RestGuildEvent> events = eventsAsync.ToList();
-            var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
-            var activeThreadlst = Helper.GetAllActiveThread(opChannel);            
-
+            List<RestGuildEvent> events = eventsAsync.ToList();            
             if (!events.Any(x => x.Name == nameEvent))
             {
-                log.Debug("no next OnePiece already planned");                
-                await CreateEventOnePiece(nameEvent, _serv, notif);
-                await Helper.ClosedAllActiveThread(opChannel);
-                CreateThreadOnePiece(nextNumOnePiece, opChannel);
+                //log.Debug("no next OnePiece already planned");                
+                //await CreateEventOnePiece(nameEvent, _serv, notif);
             }
+
+            //Thread
+            var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
+            var activeThreadlst = Helper.GetAllActiveThread(opChannel);
+            await Helper.ClosedAllActiveThread(opChannel);
+            CreateThreadOnePiece(nextNumOnePiece, opChannel);
         }
 
         private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv, bool notif)
@@ -62,7 +63,7 @@ namespace BoTools.Service
 
                 var creation = await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
 
-                if (notif) { await DirectMessageOnePiece(creation.Id); }
+                //if (notif) { await DirectMessageOnePiece(creation.Id); }
             }
             catch (Exception ex)
             {
@@ -76,8 +77,8 @@ namespace BoTools.Service
                 $"Un nouvel event One Piece vient d'être créé, clique sur la cloche pour être notifié lorsqu'il commencera {Helper._luffyEmote}\n" +
                 $"|| Message envoyé automatiquement une fois par semaine (En cas de problème contacter <@312317884389130241>) ||" +
                 $"https://discord.com/events/312966999414145034/{idEvent}";
-            List<SocketUser> users = new List<SocketUser>();
-            //users.Add(_client.GetUser(Helper._vinceId));
+            
+            List<SocketUser> users = new List<SocketUser>();            
             users.Add(_client.GetUser(Helper._vinceBisId));
             users.Add(_client.GetUser(Helper._antoId));
             users.Add(_client.GetUser(Helper._orelId));
@@ -90,7 +91,7 @@ namespace BoTools.Service
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
         {                     
-            opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.OneWeek);
+            opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
             log.Info($"Thread OP {nextNumOnePiece} created");
             return Task.CompletedTask;
         }
@@ -115,7 +116,7 @@ namespace BoTools.Service
 
                 int.TryParse(bricolage, out int res);                
 
-                return (res == 0) ? 10000 : res +1001;                //error = 10000
+                return (res == 0) ? 10000 : res +1002;                //error = 10000
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
