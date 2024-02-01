@@ -116,7 +116,7 @@ namespace BoTools.Service
 
                 int.TryParse(bricolage, out int res);                
 
-                return (res == 0) ? 10000 : res +1002;                //error = 10000
+                return (res == 0) ? 10000 : res +1001;                //error = 10000
             }
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
