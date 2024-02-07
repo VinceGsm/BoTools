@@ -336,8 +336,8 @@ namespace BoTools.Service
                     log.Error(ex.Message);
 
                     resEmbed = new EmbedBuilder()
-                       .WithTitle("FATAL ERROR")
-                       .WithDescription(ex.Message)
+                       .WithTitle("ERROR")
+                       .WithDescription($"Ensure proper spelling.\nDebugLog : \n{ex.Message}")
                        .WithColor(Color.Red);
                 }
             }            
