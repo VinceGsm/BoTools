@@ -114,12 +114,12 @@ namespace BoTools.Service
         }
 
         #region Client        
+        //in = arg2 unknown // out = arg3 unknown
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
         {
-            //in = arg2 unknown // out = arg3 unknown
-            string nameNewChannel = "🎮︱Squad bis";
             var guild = _client.Guilds.First();
-            
+
+            string nameNewChannel = "🎮︱Squad bis";            
             if (arg3.VoiceChannel != null) //IN
             {
                 //New channel needed               
@@ -129,12 +129,12 @@ namespace BoTools.Service
                         props.CategoryId = Helper._vocalCategoryId;
                         props.UserLimit = 6;
                         props.Bitrate = 128000;
-                    }).Result;                    
+                    }).Result;
                     _tmpSquadVoiceId = newVoice.Id;
                 }
             }
-            
-            if(arg2.VoiceChannel != null) //OUT
+
+            if (arg2.VoiceChannel != null) //OUT
             {
                 if (_tmpSquadVoiceId != ulong.MinValue)
                 {
@@ -151,15 +151,16 @@ namespace BoTools.Service
                 }
 
                 //REU
-                if(_tmpReuVoiceId != ulong.MinValue && arg2.VoiceChannel.Id == _tmpReuVoiceId) //leave reu
+                if (_tmpReuVoiceId != ulong.MinValue && arg2.VoiceChannel.Id == _tmpReuVoiceId) //leave reu
                 {
                     if (guild.VoiceChannels.First(x => x.Id == _tmpReuVoiceId).ConnectedUsers.Count == 0)
                     {
                         await guild.VoiceChannels.First(x => x.Id == _tmpReuVoiceId).DeleteAsync();
                         _tmpReuVoiceId = ulong.MinValue;
                     }
-                }                
-            }                       
+                }
+            }            
+
         }
 
         /// <summary>
