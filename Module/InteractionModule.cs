@@ -74,8 +74,7 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
                 $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n" +
-                $"{Helper._coinEmote} </sondage:1122135559511494667> : Sondage dans le channel\n\n" +
+                $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n" +                
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </dall-e-2:1172818585907904545> Génération d'image avec la v2\n" +
                 $"{Helper._coinEmote} </dall-e-3:1172818585907904546> Génération d'image avec la v3\n" +
@@ -331,27 +330,28 @@ namespace BoTools.Module
             log.Info("HandleCreateVocalReuCommand OUT");
         }
 
-        [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("sondage", "Créé un sondage dans le channel utilisé (Mettre un . pour les opt non-utilisés)", true, RunMode.Async)]
-        public async Task HandleVoteCommand(string question, string optA, string optB, string optC, string optD, string optE)
-        {
-            //🤍blanc 💜violet 💚vert 💛jaune 🧡orange
-            List<string> emojisStr = new List<string> { "🤍", "💜", "💚", "💛", "🧡" };
-            List<Emoji> emojis = new List<Emoji> { new Emoji("\U0001f90d"), new Emoji("\U0001f49c") };
+        // NOTE : Polls are now available directly in Discord
+        //[RequireRole(roleId: _idMemberRole)]
+        //[SlashCommand("sondage", "Créé un sondage dans le channel utilisé (Mettre un . pour les opt non-utilisés)", true, RunMode.Async)]
+        //public async Task HandleVoteCommand(string question, string optA, string optB, string optC, string optD, string optE)
+        //{
+        //    //🤍blanc 💜violet 💚vert 💛jaune 🧡orange
+        //    List<string> emojisStr = new List<string> { "🤍", "💜", "💚", "💛", "🧡" };
+        //    List<Emoji> emojis = new List<Emoji> { new Emoji("\U0001f90d"), new Emoji("\U0001f49c") };
 
-            List<string> options = new List<string>(){ optA,optB};
-            if (optC != ".") { options.Add(optC); emojis.Add(new Emoji("\U0001f49A")); }
-            if (optD != ".") { options.Add(optD); emojis.Add(new Emoji("\U0001f49b")); }
-            if (optE != ".") { options.Add(optE); emojis.Add(new Emoji("\U0001f9e1")); }
+        //    List<string> options = new List<string>(){ optA,optB};
+        //    if (optC != ".") { options.Add(optC); emojis.Add(new Emoji("\U0001f49A")); }
+        //    if (optD != ".") { options.Add(optD); emojis.Add(new Emoji("\U0001f49b")); }
+        //    if (optE != ".") { options.Add(optE); emojis.Add(new Emoji("\U0001f9e1")); }
 
-            var embedBuiler = _messageService.CreateVote(question, options, emojisStr);
+        //    var embedBuiler = _messageService.CreateVote(question, options, emojisStr);
 
-            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
-            var msg = (IMessage)Context.Channel.GetMessagesAsync(1).ToListAsync().Result.First().First();
-            await _messageService.AddVoteEmoji(msg, emojis);
+        //    await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
+        //    var msg = (IMessage)Context.Channel.GetMessagesAsync(1).ToListAsync().Result.First().First();
+        //    await _messageService.AddVoteEmoji(msg, emojis);
 
-            log.Info("HandleVoteCommand OUT");
-        }
+        //    log.Info("HandleVoteCommand OUT");
+        //}
 
         [RequireRole(roleId: _idMemberRole)]
         [SlashCommand("anto", "Invoque un Anto aléatoire", true, RunMode.Async)]

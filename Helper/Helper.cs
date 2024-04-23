@@ -199,7 +199,7 @@ namespace BoTools
             _birthsDay.Add("!318827498630545418", DateTime.ParseExact("30/09", "dd/MM", culture)); //Louis
             //_birthsDay.Add("!696314945725530185", DateTime.ParseExact("05/10", "dd/MM", culture)); //Lena
             _birthsDay.Add("!558802761018376219", DateTime.ParseExact("24/10", "dd/MM", culture)); //Adrizou
-            //_birthsDay.Add("!409002227575947264", DateTime.ParseExact("18/11", "dd/MM", culture)); //Marwan
+            _birthsDay.Add("!409002227575947264", DateTime.ParseExact("18/11", "dd/MM", culture)); //Marwan
             //_birthsDay.Add("!709496617895460905", DateTime.ParseExact("29/11", "dd/MM", culture)); //Antonin
             _birthsDay.Add("!270294861490421760", DateTime.ParseExact("02/12", "dd/MM", culture)); //Maxbibi     
             _birthsDay.Add("!312967790619525142", DateTime.ParseExact("03/12", "dd/MM", culture)); //Anto

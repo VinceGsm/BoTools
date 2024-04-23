@@ -24,6 +24,8 @@ namespace BoTools.Service
 {
     public class MessageService
     {
+        private static ulong _taverneVoiceId = 491725893245599746;
+        private static ulong _saloonVoiceId = 493036345686622210;
         private static ulong _tmpSquadVoiceId = ulong.MinValue;
         private static ulong _tmpReuVoiceId = ulong.MinValue;     
         private static string _meteoToken = Environment.GetEnvironmentVariable("Meteo_Token");
@@ -70,31 +72,31 @@ namespace BoTools.Service
             }
             return embed;
         }
+        
+        //internal EmbedBuilder CreateVote(string question, List<string> options, List<string> emojis)
+        //{
+        //    string description = string.Empty;
+        //    if (question.Last() != '?')
+        //        question = question + '?';
 
-        internal EmbedBuilder CreateVote(string question, List<string> options, List<string> emojis)
-        {
-            string description = string.Empty;
-            if (question.Last() != '?')
-                question = question + '?';
-
-            for (int i=0; options.Count>i; i++)
-            {
-                description += $"{emojis[i]} : {options[i]}\n";
-            }
+        //    for (int i=0; options.Count>i; i++)
+        //    {
+        //        description += $"{emojis[i]} : {options[i]}\n";
+        //    }
             
-            var footer = new EmbedFooterBuilder
-            {
-                IconUrl = Helper._zderLandIconUrl,
-                Text = $"Powered with {Helper._coeurEmoji}"
-            };
+        //    var footer = new EmbedFooterBuilder
+        //    {
+        //        IconUrl = Helper._zderLandIconUrl,
+        //        Text = $"Powered with {Helper._coeurEmoji}"
+        //    };
 
-            return new EmbedBuilder()
-               .WithTitle("Sondage : " + question)
-               .WithDescription(description)               
-               .WithThumbnailUrl(Helper._urlQuestionGif)
-               .WithColor(Color.Blue)
-               .WithFooter(footer);                
-        }
+        //    return new EmbedBuilder()
+        //       .WithTitle("Sondage : " + question)
+        //       .WithDescription(description)               
+        //       .WithThumbnailUrl(Helper._urlQuestionGif)
+        //       .WithColor(Color.Blue)
+        //       .WithFooter(footer);                
+        //}
 
         internal EmbedBuilder CreateAntoEmbed()
         {
@@ -114,7 +116,7 @@ namespace BoTools.Service
         }
 
         #region Client        
-        //in = arg2 unknown // out = arg3 unknown
+        //IN = arg2 unknown // OUT = arg3 unknown
         private async Task UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
         {
             var guild = _client.Guilds.First();
@@ -122,8 +124,8 @@ namespace BoTools.Service
             string nameNewChannel = "🎮︱Squad bis";            
             if (arg3.VoiceChannel != null) //IN
             {
-                //New channel needed               
-                if (arg3.VoiceChannel != null && _tmpSquadVoiceId == ulong.MinValue && arg3.VoiceChannel.Id == Helper._squadVoiceId)
+                //New channel needed ?               
+                if (_tmpSquadVoiceId == ulong.MinValue && arg3.VoiceChannel.Id == Helper._squadVoiceId)
                 {
                     RestVoiceChannel newVoice = guild.CreateVoiceChannelAsync(nameNewChannel, props => {
                         props.CategoryId = Helper._vocalCategoryId;
@@ -172,7 +174,7 @@ namespace BoTools.Service
         private async Task UserLeft(SocketGuild arg1, SocketUser guildUser)
         {
             log.Warn($"{guildUser.Username} left");                                                     
-            string message = $"<@{guildUser.Id}> left Zderland !";
+            string message = $"<@{guildUser.Id}> ({guildUser.Username}) left Zderland !";
             
             var modoChannel = Helper.GetSocketMessageChannelModo(_client);
 
