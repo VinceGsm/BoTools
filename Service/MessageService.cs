@@ -340,7 +340,7 @@ namespace BoTools.Service
 
                     resEmbed = new EmbedBuilder()
                        .WithTitle("ERROR")
-                       .WithDescription($"Ensure proper spelling.\nDebugLog : \n{ex.Message}")
+                       .WithDescription($"Ensure proper spelling ({ville}).\n**DebugLog :** \n{ex.Message}")
                        .WithColor(Color.Red);
                 }
             }            

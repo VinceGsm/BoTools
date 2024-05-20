@@ -137,7 +137,7 @@ namespace BoTools.Service
             NotifGamingDeal();
 
             if(Helper.IsThursdayToday())
-                await _eventService.CreateNextOnePiece(Helper._notifOnePiece);
+                await _eventService.CreateNextOnePiece(Helper._notifOnePiece); 
         }
 
         private async void NotifGamingDeal()
