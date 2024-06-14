@@ -51,7 +51,7 @@ namespace BoTools.Service
             if (_lastDateTime != DateTime.Today)
             {
                 _lastDateTime = DateTime.Today;
-                await NotifRoles();
+                await Notif();
                 await CheckBirthdate();
             }
         }
@@ -63,7 +63,7 @@ namespace BoTools.Service
             {                
                 await SetupRoles();
                 await CheckBirthdate();
-                await NotifRoles();             
+                await Notif();             
                 await CleanVocal();
                 log.Debug($"Latency : {_client.Latency} ms");
                 _connexion = false;
@@ -132,12 +132,12 @@ namespace BoTools.Service
             }
         }
 
-        private async Task NotifRoles()
+        private async Task Notif()
         {
             NotifGamingDeal();
 
             if(Helper.IsThursdayToday())
-                await _eventService.CreateNextOnePiece(Helper._notifOnePiece); 
+                await _eventService.CreateNextOnePiece(); 
         }
 
         private async void NotifGamingDeal()
@@ -148,13 +148,13 @@ namespace BoTools.Service
                 ISocketMessageChannel gamingDealsThread = Helper.GetSocketMessageChannel(_client, Helper._idThreadGamingDeals);
 
                 if (gamingDealsThread != null)
-                {                    
+                {
                     List<string> urls = await GetEpicGamesStoreImg();
                     List<Embed> embeds = new List<Embed>();
                     int cpt = 0;
 
                     string message = $"<@&{_gamingDealId}> {Helper._pikachuEmote}\n" +
-                        $"N'oublier pas de recup le.s jeu.x gratuit.s de la semaine sur le store **EPIC GAMES** :";                        
+                        $"N'oublier pas de recup le.s jeu.x gratuit.s de la semaine sur le store **EPIC GAMES** :";
 
                     foreach (var url in urls)
                     {
@@ -163,8 +163,10 @@ namespace BoTools.Service
                         cpt++;
                     }
 
-                    await gamingDealsThread.SendMessageAsync(text: message, embeds: embeds.ToArray(), isTTS: true);                    
+                    await gamingDealsThread.SendMessageAsync(text: message, embeds: embeds.ToArray(), isTTS: true);
                 }
+                else
+                    log.Error("[NotifGamingDeal] No gamingDealsThread");
             }
             #endregion
         }

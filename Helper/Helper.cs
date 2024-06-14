@@ -11,12 +11,8 @@ using System.Threading.Tasks;
 namespace BoTools
 {
     public static class Helper
-    {
-        public static readonly string statusLink = "https://www.twitch.tv/vince_zder";
+    {        
         public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/494958624922271745/1056847373436977162/brookByVince.gif";        
-        public static readonly string _boToolsGif = "https://cdn.discordapp.com/attachments/553256709439750151/1062431704914067566/KatakuriLow.gif";
-        public static readonly string _urlAvatarVince = "https://cdn.discordapp.com/attachments/617462663374438411/846821971114983474/luffy.gif";
-        public static readonly string _urlQuestionGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122152112399339581/question.gif";
         public static readonly string _urlListGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122165956983132250/list.gif";
         public static readonly ulong _vinceId = 312317884389130241;
         public static readonly ulong _antoId = 312967790619525142;
@@ -50,6 +46,9 @@ namespace BoTools
         public static readonly string _tvEmoji = "\uD83D\uDCFA";
         public static readonly string _dlEmoji = "<:DL:894171464167747604>";
 
+        private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
+        private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
+
         private static readonly List<string> _greetings = new List<string>
         {
             "good day","salutations","hey","oh les bg !","petites cailles bonjour","ciao a tutti",
@@ -65,18 +64,6 @@ namespace BoTools
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
-        public static readonly bool _notifOnePiece = bool.Parse(Environment.GetEnvironmentVariable("NotifOnePiece"));
-
-        private static Dictionary<ulong, string> _tokensOpenAI = new Dictionary<ulong, string>();
-        private static readonly string _tokenVinceOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Vince");
-        private static readonly string _tokenAntoOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Anto");
-        private static readonly string _tokenOrelOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Orel");
-        private static readonly string _tokenAdriOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Adri");
-        private static readonly string _tokenCocoOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Coco");
-        private static readonly string _tokenFloOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Flo");
-        private static readonly string _tokenIsmaOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Isma");
-        private static readonly string _tokenMaxOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Max");
-        private static readonly string _tokenOmarowOpenAI = Environment.GetEnvironmentVariable("OpenAI_Token_Omarow");
 
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
@@ -101,14 +88,14 @@ namespace BoTools
             return channel;
         }
 
+        
+
         internal static IEnumerable<IRole> GetIRolesFromServer(DiscordSocketClient client, List<ulong> rolesId)
-        {
+        { 
             List<IRole> res = new List<IRole>();
 
-            foreach (ulong id in rolesId)
-            {
-                res.Add(GetZderLand(client).GetRole(id));
-            }
+            foreach (ulong id in rolesId)            
+                res.Add(GetZderLand(client).GetRole(id));            
 
             return res;
         }
@@ -183,34 +170,35 @@ namespace BoTools
             log.Info("GetBirthDays call v2");
 
             CultureInfo culture = new CultureInfo("fr-FR");
+
             _birthsDay.Add("!786748190283792414", DateTime.ParseExact("03/01", "dd/MM", culture)); //Coco            
-            //_birthsDay.Add("!560259660578291715", DateTime.ParseExact("14/02", "dd/MM", culture)); //Babiss
-            //_birthsDay.Add("!418426899786760194", DateTime.ParseExact("21/02", "dd/MM", culture)); //Jerem            
+            _birthsDay.Add("!560259660578291715", DateTime.ParseExact("14/02", "dd/MM", culture)); //Babiss
+            _birthsDay.Add("!418426899786760194", DateTime.ParseExact("21/02", "dd/MM", culture)); //Jerem     
             _birthsDay.Add("!126259389962125312", DateTime.ParseExact("02/06", "dd/MM", culture)); //Flo
             //_birthsDay.Add("!706958493374218300", DateTime.ParseExact("03/06", "dd/MM", culture)); //Julio
             _birthsDay.Add("!511225222545014817", DateTime.ParseExact("30/06", "dd/MM", culture)); //Isma
             _birthsDay.Add("!391570155458527233", DateTime.ParseExact("06/07", "dd/MM", culture)); //Quentinus
             //_birthsDay.Add("!444958143081086986", DateTime.ParseExact("21/07", "dd/MM", culture)); //Dan
             _birthsDay.Add("!418459600959045633", DateTime.ParseExact("22/07", "dd/MM", culture)); //Wbr
-            //_birthsDay.Add("!421026192523526155", DateTime.ParseExact("28/07", "dd/MM", culture)); //Kiki
+            _birthsDay.Add("!421026192523526155", DateTime.ParseExact("28/07", "dd/MM", culture)); //Kiki
             //_birthsDay.Add("!293029908761018368", DateTime.ParseExact("13/08", "dd/MM", culture)); //Mathis
             _birthsDay.Add("!270295016797241344", DateTime.ParseExact("14/09", "dd/MM", culture)); //Orel
             _birthsDay.Add("!869869706344034314", DateTime.ParseExact("27/09", "dd/MM", culture)); //Niros
             _birthsDay.Add("!318827498630545418", DateTime.ParseExact("30/09", "dd/MM", culture)); //Louis
-            //_birthsDay.Add("!696314945725530185", DateTime.ParseExact("05/10", "dd/MM", culture)); //Lena
+            _birthsDay.Add("!696314945725530185", DateTime.ParseExact("05/10", "dd/MM", culture)); //Lena
             _birthsDay.Add("!558802761018376219", DateTime.ParseExact("24/10", "dd/MM", culture)); //Adrizou
             _birthsDay.Add("!409002227575947264", DateTime.ParseExact("18/11", "dd/MM", culture)); //Marwan
             //_birthsDay.Add("!709496617895460905", DateTime.ParseExact("29/11", "dd/MM", culture)); //Antonin
             _birthsDay.Add("!270294861490421760", DateTime.ParseExact("02/12", "dd/MM", culture)); //Maxbibi     
             _birthsDay.Add("!312967790619525142", DateTime.ParseExact("03/12", "dd/MM", culture)); //Anto
-            //_birthsDay.Add("!143706383064367104", DateTime.ParseExact("04/12", "dd/MM", culture)); //Nico            
+            _birthsDay.Add("!143706383064367104", DateTime.ParseExact("04/12", "dd/MM", culture)); //Nico            
             _birthsDay.Add("!173837924599726080", DateTime.ParseExact("09/12", "dd/MM", culture)); //Paul
-            //_birthsDay.Add("!355731040913850398", DateTime.ParseExact("23/12", "dd/MM", culture)); //Majid            
+            _birthsDay.Add("!355731040913850398", DateTime.ParseExact("23/12", "dd/MM", culture)); //Majid            
             return _birthsDay;            
         }
 
         internal static List<string> GetAntoGifUrls()
-        {
+        {            
             return new List<string>
             {
                 "https://media.discordapp.net/attachments/1019335397484011581/1095804934353584201/20230412_221638.gif",
@@ -236,8 +224,9 @@ namespace BoTools
                 "https://media.discordapp.net/attachments/713695594878599249/833638139922743327/174350169_287685479580653_8106636962674288332_n.gif",
                 "https://media.discordapp.net/attachments/713695594878599249/842071263937691648/20210422_151431_1.gif"
             };
-        }
 
+
+        }
 
         internal static string GetAntoGifUrl()
         {
@@ -262,14 +251,14 @@ namespace BoTools
         {
             _tokensOpenAI.Add(_vinceId, _tokenVinceOpenAI);
             _tokensOpenAI.Add(_vinceBisId, _tokenVinceOpenAI);
-            _tokensOpenAI.Add(_antoId, _tokenAntoOpenAI);
-            _tokensOpenAI.Add(_orelId, _tokenOrelOpenAI);
-            _tokensOpenAI.Add(558802761018376219, _tokenAdriOpenAI);
-            _tokensOpenAI.Add(786748190283792414, _tokenCocoOpenAI);
-            _tokensOpenAI.Add(_floId, _tokenFloOpenAI);
-            _tokensOpenAI.Add(511225222545014817, _tokenIsmaOpenAI);
-            _tokensOpenAI.Add(270294861490421760, _tokenMaxOpenAI);
-            _tokensOpenAI.Add(318827498630545418, _tokenOmarowOpenAI);
+            //_tokensOpenAI.Add(_antoId, _tokenAntoOpenAI);
+            //_tokensOpenAI.Add(_orelId, _tokenOrelOpenAI);
+            //_tokensOpenAI.Add(558802761018376219, _tokenAdriOpenAI);
+            //_tokensOpenAI.Add(786748190283792414, _tokenCocoOpenAI);
+            //_tokensOpenAI.Add(_floId, _tokenFloOpenAI);
+            //_tokensOpenAI.Add(511225222545014817, _tokenIsmaOpenAI);
+            //_tokensOpenAI.Add(270294861490421760, _tokenMaxOpenAI);
+            //_tokensOpenAI.Add(318827498630545418, _tokenOmarowOpenAI);
         }
     }
 }

@@ -33,13 +33,13 @@ namespace BoTools.Module
             false, RunMode.Async)]     
         public async Task HandlePingInteraction()
         {
-            //var toto = _eventService._client.GetGlobalApplicationCommandsAsync();
-            //var test = toto.Result;
-            //foreach (var command in test) //delete /command
-            //{
-            //    if (command.Name.Contains("main"))
-            //        command.DeleteAsync();
-            //}
+            /*var toto = _eventService._client.GetGlobalApplicationCommandsAsync();
+            var test = toto.Result;
+            foreach (var command in test) //delete /command
+            {
+                if (command.Name.Contains("main"))
+                    command.DeleteAsync();
+            }*/
             try
             {
                 var user = Context.User;
@@ -68,20 +68,20 @@ namespace BoTools.Module
                 $"{Helper._coinEmote} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
                 $"{Helper._coinEmote} </pin:1176116484246872064> : Pin un message par ID\n" +
                 $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
-                $"{Helper._coinEmote} </roles:1069907898999767072> : Liste les rôles principaux\n" +
-                $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n" +
-                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt\n" +                
+                $"{Helper._coinEmote} </roles:1069907898999767072> : Liste les rôles principaux\n" +                                
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
-                $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto aléatoire\n" +                                
-                $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n" +                
+                $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto.gif aléatoire\n" +                                
+                $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n\n" +                
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </dall-e-2:1172818585907904545> Génération d'image avec la v2\n" +
-                $"{Helper._coinEmote} </dall-e-3:1172818585907904546> Génération d'image avec la v3\n" +
-                $"{Helper._coinEmote} </chat-gpt:1172818585907904547> Assistant basé sur la  v3.5\n\n" +
-                $"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
-                $"{Helper._coinEmote} </feedback_one-piece:1009959955081728104> Feedback de kiffeur\n" +
-                $"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071> Feedback custom\n\n" +                
+                $"{Helper._coinEmote} </dall-e-3:1172818585907904546> Génération d'image avec la v3\n\n" +
+                //$"{Helper._verifiedEmote} **OnePiece commands** {Helper._verifiedEmote}\n" +                
+                //$"{Helper._coinEmote} </feedback_one-piece:1009959955081728104> Feedback de kiffeur\n" +
+                //$"{Helper._coinEmote} </feedback_one-piece-lite:1069907898999767071> Feedback custom\n\n" +
+                $"{Helper._verifiedEmote} **Meteo commands** {Helper._verifiedEmote}\n" +
+                $"{Helper._coinEmote} </meteo_france:1172818585907904544> : Météo en direct\n" +
+                $"{Helper._coinEmote} </meteo_foret:1146378274709180457> : Estimation de feu de forêt\n\n" +
                 $"En cas de problème contacter <@312317884389130241>";
 
             var embedBuiler = new EmbedBuilder()
@@ -260,29 +260,29 @@ namespace BoTools.Module
             log.Info("HandleMainRolesCommand OUT");
         }
 
-        [RequireRole(roleId: _idModoRole)]
-        [SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", true, RunMode.Async)] 
-        public async Task HandleEventSeriesHebdoCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
-        {
-            log.Info("HandleEventSeriesHebdoCommand IN");
+        //[RequireRole(roleId: _idModoRole)]
+        //[SlashCommand("event-serie-hebdo", "Créé tout les events pour des episodes hebdo", true, RunMode.Async)] 
+        //public async Task HandleEventSeriesHebdoCommand(string name, int numFirstEpisode, int numLastEpisode, DayOfWeek dayOfWeek, Double hour)
+        //{
+        //    log.Info("HandleEventSeriesHebdoCommand IN");
 
-            var user = Context.User;
-            string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";               
+        //    var user = Context.User;
+        //    string msg = "N'oubliez pas de cliqué sur la cloche de l'event afin d'être notifié lorsqu'il commence !";               
 
-            int nbEp = numLastEpisode - numFirstEpisode +1;
+        //    int nbEp = numLastEpisode - numFirstEpisode +1;
 
-            var embedBuiler = new EmbedBuilder()
-                .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
-                .WithTitle($"Création de {nbEp} events {name} en cours...")
-                .WithDescription(msg)
-                .WithColor(Color.Green);                          
+        //    var embedBuiler = new EmbedBuilder()
+        //        .WithAuthor(user.Username, user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl())
+        //        .WithTitle($"Création de {nbEp} events {name} en cours...")
+        //        .WithDescription(msg)
+        //        .WithColor(Color.Green);                          
 
-            await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
+        //    await RespondAsync(embed: embedBuiler.Build(), ephemeral: false);
 
-            _eventService.CreateEventHebdoSerie(name, numFirstEpisode, nbEp, dayOfWeek, hour);
+        //    _eventService.CreateEventHebdoSerie(name, numFirstEpisode, nbEp, dayOfWeek, hour);
 
-            log.Info("HandleEventSeriesHebdoCommand OUT");
-        }
+        //    log.Info("HandleEventSeriesHebdoCommand OUT");
+        //}
 
         [RequireRole(roleId: _idModoRole)]
         [SlashCommand("event-enserie", "Créé X event : selectionner les jours où auront lieu cet event", true, RunMode.Async)]
@@ -354,7 +354,7 @@ namespace BoTools.Module
         //}
 
         [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("anto", "Invoque un Anto aléatoire", true, RunMode.Async)]
+        [SlashCommand("anto", "Invoque un Anto.gif aléatoire", true, RunMode.Async)]
         public async Task HandleAntoCommand()
         {
             var embedBuiler = _messageService.CreateAntoEmbed();
@@ -455,34 +455,34 @@ namespace BoTools.Module
             log.Info("HandleDalle OUT");
         }
 
-        [RequireRole(roleId: _idMemberRole)]
-        [SlashCommand("chat-gpt", "Ask GPT-3.5_Turbo anything [ENGLISH]")]
-        public async Task HandleChatGpt(string prompt)
-        {
-            log.Info("HandleChatGpt IN");
+        //[RequireRole(roleId: _idMemberRole)]
+        //[SlashCommand("chat-gpt", "Ask GPT-3.5_Turbo anything [ENGLISH]")]
+        //public async Task HandleChatGpt(string prompt)
+        //{
+        //    log.Info("HandleChatGpt IN");
 
-            if (Context.Channel.Id != 1171768653012803634)
-            {
-                await RespondAsync(text: "Merci d'utiliser cette commande dans <#1171768653012803634> avec une query respectant " +
-                    "la [politique d'usage](https://openai.com/policies/usage-policies)", ephemeral: true);
-            }
-            else
-            {
-                string userToken = Helper.GetOpenAIToken(Context.User.Id);
+        //    if (Context.Channel.Id != 1171768653012803634)
+        //    {
+        //        await RespondAsync(text: "Merci d'utiliser cette commande dans <#1171768653012803634> avec une query respectant " +
+        //            "la [politique d'usage](https://openai.com/policies/usage-policies)", ephemeral: true);
+        //    }
+        //    else
+        //    {
+        //        string userToken = Helper.GetOpenAIToken(Context.User.Id);
 
-                if (!string.IsNullOrEmpty(userToken))
-                {
-                    await RespondAsync(text: "En attente de réponse du collègue GPT-3.5_Turbo", ephemeral: true);
-                    await _messageService.QueryChatGpt(userToken, prompt, Context.User);
-                }
-                else
-                {
-                    await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
-                        "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact <@312317884389130241> pour la modique somme de 0€", ephemeral: true);
-                }
-            }                        
+        //        if (!string.IsNullOrEmpty(userToken))
+        //        {
+        //            await RespondAsync(text: "En attente de réponse du collègue GPT-3.5_Turbo", ephemeral: true);
+        //            await _messageService.QueryChatGpt(userToken, prompt, Context.User);
+        //        }
+        //        else
+        //        {
+        //            await RespondAsync(text: "Mes circuits ne détectent aucune token API_OpenAI pour ce compte Discord.\n" +
+        //                "Votre premier token généré est gratuit et vous donne 5$ d'utilisation. Intéressé? Contact <@312317884389130241> pour la modique somme de 0€", ephemeral: true);
+        //        }
+        //    }                        
 
-            log.Info("HandleChatGpt OUT");
-        }
+        //    log.Info("HandleChatGpt OUT");
+        //}
     }
 }

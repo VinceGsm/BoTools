@@ -72,31 +72,6 @@ namespace BoTools.Service
             }
             return embed;
         }
-        
-        //internal EmbedBuilder CreateVote(string question, List<string> options, List<string> emojis)
-        //{
-        //    string description = string.Empty;
-        //    if (question.Last() != '?')
-        //        question = question + '?';
-
-        //    for (int i=0; options.Count>i; i++)
-        //    {
-        //        description += $"{emojis[i]} : {options[i]}\n";
-        //    }
-            
-        //    var footer = new EmbedFooterBuilder
-        //    {
-        //        IconUrl = Helper._zderLandIconUrl,
-        //        Text = $"Powered with {Helper._coeurEmoji}"
-        //    };
-
-        //    return new EmbedBuilder()
-        //       .WithTitle("Sondage : " + question)
-        //       .WithDescription(description)               
-        //       .WithThumbnailUrl(Helper._urlQuestionGif)
-        //       .WithColor(Color.Blue)
-        //       .WithFooter(footer);                
-        //}
 
         internal EmbedBuilder CreateAntoEmbed()
         {

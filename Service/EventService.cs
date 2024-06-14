@@ -24,7 +24,7 @@ namespace BoTools.Service
             _client = client;            
         }
 
-        public async Task CreateNextOnePiece(bool notif)
+        public async Task CreateNextOnePiece()
         {
             int nextNumOnePiece = GetNextNumOnePiece();
             var nameEvent = $"One Piece {nextNumOnePiece}";  
@@ -35,8 +35,8 @@ namespace BoTools.Service
             List<RestGuildEvent> events = eventsAsync.ToList();            
             if (!events.Any(x => x.Name == nameEvent))
             {
-                //log.Debug("no next OnePiece already planned");                
-                //await CreateEventOnePiece(nameEvent, _serv, notif);
+                log.Debug("no next OnePiece already planned");                
+                //await CreateEventOnePiece(nameEvent, _serv);
             }
 
             //Thread
@@ -46,7 +46,7 @@ namespace BoTools.Service
             CreateThreadOnePiece(nextNumOnePiece, opChannel);
         }
 
-        private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv, bool notif)
+        /*private async Task CreateEventOnePiece(string nameEvent, SocketGuild _serv)
         {
             try // AWS
             {                
@@ -61,9 +61,7 @@ namespace BoTools.Service
                 ulong? channelId = Helper._idSaloonVoice;
                 Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "Onepiece.png"));
 
-                var creation = await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
-
-                //if (notif) { await DirectMessageOnePiece(creation.Id); }
+                var creation = await _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);                
             }
             catch (Exception ex)
             {
@@ -87,7 +85,7 @@ namespace BoTools.Service
             {
                 await user.SendMessageAsync(msgOnePiece);
             }
-        }
+        }*/
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
         {                     
@@ -122,46 +120,47 @@ namespace BoTools.Service
             { log.Error(ex.Message); return 0; }
         }
 
-        public async void CreateEventHebdoSerie(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
-        {
-            log.Info("CreateEventHebdoSerie IN");
+        //  IMPLEMENTED BY DISCORD
+        //public async void CreateEventHebdoSerie(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
+        //{
+        //    log.Info("CreateEventHebdoSerie IN");
 
-            SocketGuild _serv = Helper.GetZderLand(_client);
+        //    SocketGuild _serv = Helper.GetZderLand(_client);
 
-            DateTime now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);            
-            DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
-            DateTime firstTargetDay = Helper.GetNextWeekday(today, dayOfWeek);
+        //    DateTime now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);            
+        //    DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
+        //    DateTime firstTargetDay = Helper.GetNextWeekday(today, dayOfWeek);
             
-            for (int i=0; i<nbEp; i++)
-            {
-                var nameEvent = $"{name} #{numFirstEpisode}";
-                log.Info($"CreateEventHebdoSerie : {nameEvent}");
+        //    for (int i=0; i<nbEp; i++)
+        //    {
+        //        var nameEvent = $"{name} #{numFirstEpisode}";
+        //        log.Info($"CreateEventHebdoSerie : {nameEvent}");
 
-                try
-                {
-                    if (i == 0)
-                        now = firstTargetDay;
-                    else
-                        now = Helper.GetNextWeekday(now, dayOfWeek);
+        //        try
+        //        {
+        //            if (i == 0)
+        //                now = firstTargetDay;
+        //            else
+        //                now = Helper.GetNextWeekday(now, dayOfWeek);
 
-                    DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
-                    GuildScheduledEventType type = GuildScheduledEventType.Voice;
-                    string description = "Event créer grâce à la commande **/event-serie-hebdo**";
-                    ulong? channelId = Helper._idSaloonVoice;
-                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventSerie.png"));
+        //            DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
+        //            GuildScheduledEventType type = GuildScheduledEventType.Voice;
+        //            string description = "Event créer grâce à la commande **/event-serie-hebdo**";
+        //            ulong? channelId = Helper._idSaloonVoice;
+        //            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventSerie.png"));
 
-                    _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
-                }
-                catch(Exception ex)
-                {
-                    log.Error(ex.InnerException.Message);
-                }
+        //            _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+        //        }
+        //        catch(Exception ex)
+        //        {
+        //            log.Error(ex.InnerException.Message);
+        //        }
 
-                numFirstEpisode++;                
-            }
+        //        numFirstEpisode++;                
+        //    }
 
-            log.Info("CreateEventHebdoSerie OUT");            
-        }
+        //    log.Info("CreateEventHebdoSerie OUT");            
+        //}
 
         public async void CreateEventEnSerie(string name, double hour, int nbSession, bool isIrlEvent,
             DayOfWeek? siLundi, DayOfWeek? siMardi, DayOfWeek? siMercredi, DayOfWeek? siJeudi, DayOfWeek? siVendredi, DayOfWeek? siSamedi, DayOfWeek? siDimanche)
