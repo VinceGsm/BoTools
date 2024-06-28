@@ -96,7 +96,7 @@ namespace BoTools.Service
                     string message = msgStart + $" <@{idTagTarget}> aujourd'hui !\n" +
                         $"{Helper._coeurEmote} sur toi";
                     
-                    var userTarget = Helper.GetZderLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
+                    var userTarget = Helper.GetZLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
                     userTarget.AddRoleAsync(_IRoleBirthday);
 
                     var res = (IMessage)channel.SendMessageAsync(message).Result;
@@ -213,7 +213,7 @@ namespace BoTools.Service
 
             if (_allUsers.Count == 0)
             {
-                _allUsers = Helper.GetZderLand(_client).Users.ToList();
+                _allUsers = Helper.GetZLand(_client).Users.ToList();
                 _allUsers.RemoveAll(x => x.IsBot);
             }          
 
@@ -224,7 +224,7 @@ namespace BoTools.Service
         {
             await _client.DownloadUsersAsync(_client.Guilds); // DL all user
 
-            _allUsers = Helper.GetZderLand(_client).Users.ToList();
+            _allUsers = Helper.GetZLand(_client).Users.ToList();
             _allUsers.RemoveAll(x => x.IsBot);
         }        
 

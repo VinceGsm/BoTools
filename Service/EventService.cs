@@ -30,7 +30,7 @@ namespace BoTools.Service
             var nameEvent = $"One Piece {nextNumOnePiece}";  
             log.Debug($"CreateNextOnePiece : {nextNumOnePiece}" );
 
-            SocketGuild _serv = Helper.GetZderLand(_client);            
+            SocketGuild _serv = Helper.GetZLand(_client);            
             var eventsAsync = await _serv.GetEventsAsync();
             List<RestGuildEvent> events = eventsAsync.ToList();            
             if (!events.Any(x => x.Name == nameEvent))
@@ -167,7 +167,7 @@ namespace BoTools.Service
         {
             log.Info("CreateEventEnSerie IN");
 
-            SocketGuild _serv = Helper.GetZderLand(_client);            
+            SocketGuild _serv = Helper.GetZLand(_client);            
             List<DayOfWeek> lstDay = BuildOrderedEventDays(siLundi, siMardi, siMercredi, siJeudi, siVendredi, siSamedi, siDimanche);
 
             DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);

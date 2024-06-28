@@ -79,7 +79,7 @@ namespace BoTools.Service
 
             var footer = new EmbedFooterBuilder
             {
-                IconUrl = Helper._zderLandIconUrl,
+                IconUrl = Helper._zLandIconUrl,
                 Text = $"Provided by Anto"
             };
 
@@ -222,7 +222,7 @@ namespace BoTools.Service
 
             var footer = new EmbedFooterBuilder
             {
-                IconUrl = Helper._zderLandIconUrl,
+                IconUrl = Helper._zLandIconUrl,
                 Text = $"Provided by OpenWeatherMap & Vince"
             };
             
@@ -469,7 +469,7 @@ namespace BoTools.Service
 
             var footer = new EmbedFooterBuilder
             {
-                IconUrl = Helper._zderLandIconUrl,
+                IconUrl = Helper._zLandIconUrl,
                 Text = $"Provided by OpenAI & Vince"
             };
 

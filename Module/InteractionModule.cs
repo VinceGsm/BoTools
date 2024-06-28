@@ -45,7 +45,7 @@ namespace BoTools.Module
                 var user = Context.User;
                 log.Info($"HandlePing IN by {user.Username}");
 
-                string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zderland !```";
+                string message = $"{Helper.GetGreeting()}```Je suis à {_eventService._client.Latency}ms de Zland !```";
 
                 await RespondAsync(message, ephemeral: true);
                 log.Info("HandlePing OUT");
@@ -85,10 +85,10 @@ namespace BoTools.Module
                 $"En cas de problème contacter <@312317884389130241>";
 
             var embedBuiler = new EmbedBuilder()
-                .WithTitle("Liste des commands de ZderLand :")
+                .WithTitle("Liste des commandes de ZLand :")
                 .WithDescription(description)
                 .WithColor(Color.Green)
-                .WithThumbnailUrl(Helper._zderLandIconUrl)
+                .WithThumbnailUrl(Helper._zLandIconUrl)
                 .WithImageUrl(Helper._urlListGif);
 
             await RespondAsync(embed: embedBuiler.Build(), ephemeral: true);
@@ -115,7 +115,7 @@ namespace BoTools.Module
             log.Info("HandleInviteCommand IN");
 
             var embedBuiler = new EmbedBuilder()
-                .WithTitle("Invitation éternelle de ZderLand :")
+                .WithTitle("Invitation éternelle de ZLand :")
                 .WithDescription("https://discord.gg/g43kWat")
                 .WithColor(Color.Green);
 
@@ -251,8 +251,8 @@ namespace BoTools.Module
             var roleList = string.Join("\n", roles);
 
             var embedBuiler = new EmbedBuilder()                
-                .WithTitle("Rôles principaux de Zderland :")
-                .WithThumbnailUrl(Helper._zderLandIconUrl)
+                .WithTitle("Rôles principaux de Zland :")
+                .WithThumbnailUrl(Helper._zLandIconUrl)
                 .WithDescription(roleList)
                 .WithColor(Color.Green);                
 

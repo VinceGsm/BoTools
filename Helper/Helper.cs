@@ -12,7 +12,7 @@ namespace BoTools
 {
     public static class Helper
     {        
-        public static readonly string _zderLandIconUrl = "https://cdn.discordapp.com/attachments/494958624922271745/1056847373436977162/brookByVince.gif";        
+        public static readonly string _zLandIconUrl = "https://cdn.discordapp.com/attachments/494958624922271745/1056847373436977162/brookByVince.gif";        
         public static readonly string _urlListGif = "https://cdn.discordapp.com/attachments/617462663374438411/1122165956983132250/list.gif";
         public static readonly ulong _vinceId = 312317884389130241;
         public static readonly ulong _antoId = 312967790619525142;
@@ -63,7 +63,7 @@ namespace BoTools
         private static Dictionary<string, DateTime> _birthsDay = new Dictionary<string, DateTime>();
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static readonly string _zderLandId = Environment.GetEnvironmentVariable("ZderLandId");
+        public static readonly string _zLandId = Environment.GetEnvironmentVariable("ZderLandId");
 
 
         internal static ISocketMessageChannel GetSocketMessageChannel(DiscordSocketClient client, ulong channelId)
@@ -95,14 +95,14 @@ namespace BoTools
             List<IRole> res = new List<IRole>();
 
             foreach (ulong id in rolesId)            
-                res.Add(GetZderLand(client).GetRole(id));            
+                res.Add(GetZLand(client).GetRole(id));            
 
             return res;
         }
 
         internal static IRole GetRoleById(DiscordSocketClient client, ulong id)
         {            
-            return GetZderLand(client).Roles.First(x => x.Id == id);            
+            return GetZLand(client).Roles.First(x => x.Id == id);            
         }
 
         internal static string ConvertToSimpleDate(DateTimeOffset dateTimeOffset)
@@ -112,18 +112,18 @@ namespace BoTools
         }
 
         /// <summary>
-        /// Return SocketGuild as ZderLand
+        /// Return SocketGuild as ZLand
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        internal static SocketGuild GetZderLand(DiscordSocketClient client)
+        internal static SocketGuild GetZLand(DiscordSocketClient client)
         {
-            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zderland            
+            return client.Guilds.FirstOrDefault(); // in prod the bot is strictly connected to Zand            
         }
 
         internal static IEnumerable<SocketGuildChannel> GetAllChannels(DiscordSocketClient client)
         {
-            SocketGuild guild = GetZderLand(client);
+            SocketGuild guild = GetZLand(client);
             var channels = guild.Channels.ToList();            
 
             return channels;
