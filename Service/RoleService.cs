@@ -243,11 +243,13 @@ namespace BoTools.Service
 
         #region Update Live
         //REMOVED
-        internal void RulesReactionRemoved(ulong userId)
+        internal async Task RulesReactionRemoved(ulong userId)
         {
             var user = _allUsers.First(x => x.Id == userId);
-            foreach (IRole role in user.Roles) 
-                user.RemoveRoleAsync(role);
+            foreach (IRole role in user.Roles)
+            {
+                if(!role.Name.EndsWith("everyone")) await user.RemoveRoleAsync(role);
+            }                
         }
 
         //ADDED
