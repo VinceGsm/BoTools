@@ -88,9 +88,12 @@ namespace BoTools.Service
         }*/
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
-        {                     
+        {
+            //var lastMsg = opChannel.GetMessagesAsync(1) as ;
+            //lastMsg.
+            //opChannel.DeleteMessageAsync(lastMsg);
             opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
-            log.Info($"Thread OP {nextNumOnePiece} created");
+            log.Info($"Thread OP {nextNumOnePiece} created");            
             return Task.CompletedTask;
         }
 
@@ -119,48 +122,47 @@ namespace BoTools.Service
             catch(Exception ex) 
             { log.Error(ex.Message); return 0; }
         }
+        
+        public async void CreateEventHebdoSerie(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
+        {
+            log.Info("CreateEventHebdoSerie IN");
 
-        //  IMPLEMENTED BY DISCORD
-        //public async void CreateEventHebdoSerie(string name, int numFirstEpisode, int nbEp, DayOfWeek dayOfWeek, Double hour)
-        //{
-        //    log.Info("CreateEventHebdoSerie IN");
+            SocketGuild _serv = Helper.GetZLand(_client);
 
-        //    SocketGuild _serv = Helper.GetZderLand(_client);
+            DateTime now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
+            DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
+            DateTime firstTargetDay = Helper.GetNextWeekday(today, dayOfWeek);
 
-        //    DateTime now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);            
-        //    DateTime today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Unspecified);
-        //    DateTime firstTargetDay = Helper.GetNextWeekday(today, dayOfWeek);
-            
-        //    for (int i=0; i<nbEp; i++)
-        //    {
-        //        var nameEvent = $"{name} #{numFirstEpisode}";
-        //        log.Info($"CreateEventHebdoSerie : {nameEvent}");
+            for (int i = 0; i < nbEp; i++)
+            {
+                var nameEvent = $"{name} #{numFirstEpisode}";
+                log.Info($"CreateEventHebdoSerie : {nameEvent}");
 
-        //        try
-        //        {
-        //            if (i == 0)
-        //                now = firstTargetDay;
-        //            else
-        //                now = Helper.GetNextWeekday(now, dayOfWeek);
+                try
+                {
+                    if (i == 0)
+                        now = firstTargetDay;
+                    else
+                        now = Helper.GetNextWeekday(now, dayOfWeek);
 
-        //            DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
-        //            GuildScheduledEventType type = GuildScheduledEventType.Voice;
-        //            string description = "Event créer grâce à la commande **/event-serie-hebdo**";
-        //            ulong? channelId = Helper._idSaloonVoice;
-        //            Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventSerie.png"));
+                    DateTimeOffset startTime = new DateTimeOffset(now.AddHours(hour), TimeSpan.FromHours(2));
+                    GuildScheduledEventType type = GuildScheduledEventType.Voice;
+                    string description = "Event créer grâce à la commande **/event-serie-hebdo**";
+                    ulong? channelId = Helper._idSaloonVoice;
+                    Image? coverImage = new Image(Path.Combine(Environment.CurrentDirectory, @"PNG\", "eventSerie.png"));
 
-        //            _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
-        //        }
-        //        catch(Exception ex)
-        //        {
-        //            log.Error(ex.InnerException.Message);
-        //        }
+                    _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex.InnerException.Message);
+                }
 
-        //        numFirstEpisode++;                
-        //    }
+                numFirstEpisode++;
+            }
 
-        //    log.Info("CreateEventHebdoSerie OUT");            
-        //}
+            log.Info("CreateEventHebdoSerie OUT");
+        }
 
         public async void CreateEventEnSerie(string name, double hour, int nbSession, bool isIrlEvent,
             DayOfWeek? siLundi, DayOfWeek? siMardi, DayOfWeek? siMercredi, DayOfWeek? siJeudi, DayOfWeek? siVendredi, DayOfWeek? siSamedi, DayOfWeek? siDimanche)
@@ -196,7 +198,7 @@ namespace BoTools.Service
                     {
                         GuildScheduledEventType type = GuildScheduledEventType.Voice;
                         ulong? channelId = Helper._idSaloonVoice;
-                        string description = "Faites de la place dans le Saloon, on va tout péter !!!!";
+                        string description = "Faites de la place dans le Saloon, we watching !";
                         
                         _serv.CreateEventAsync(nameEvent, startTime: startTime, type: type, description: description, channelId: channelId, coverImage: coverImage);
                     }
@@ -209,7 +211,7 @@ namespace BoTools.Service
                 {
                     log.Error(ex.InnerException.Message);                    
                 }
-            }
+            } 
             log.Info("CreateEventEnSerie OUT");
         }
 

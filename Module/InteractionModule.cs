@@ -67,11 +67,11 @@ namespace BoTools.Module
             string description = $"{Helper._verifiedEmote} **Utility commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </invite:1070387372824465539> : Affiche l'invitation du server\n" +
                 $"{Helper._coinEmote} </pin:1176116484246872064> : Pin un message par ID\n" +
-                $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping du server AWS\n" +
+                $"{Helper._coinEmote} </ping:1009959955081728103> : Affiche le ping de BoTools\n" +
                 $"{Helper._coinEmote} </roles:1069907898999767072> : Liste les rôles principaux\n" +                                
                 $"{Helper._coinEmote} </help:1092834240363778161> : Liste les commandes du server\n\n" +
                 $"{Helper._verifiedEmote} **Member commands** {Helper._verifiedEmote}\n" +                
-                $"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto.gif aléatoire\n" +                                
+                //$"{Helper._coinEmote} </anto:1122624185005518960> : Invoque un Anto.gif aléatoire\n" +                                
                 $"{Helper._coinEmote} </vocal:1172818585907904543> : Créé un vocal temporaire\n\n" +                
                 $"{Helper._verifiedEmote} **OpenAI commands** {Helper._verifiedEmote}\n" +
                 $"{Helper._coinEmote} </dall-e-2:1172818585907904545> Génération d'image avec la v2\n" +

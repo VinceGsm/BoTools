@@ -149,7 +149,7 @@ namespace BoTools.Service
         private async Task UserLeft(SocketGuild arg1, SocketUser guildUser)
         {
             log.Warn($"{guildUser.Username} left");                                                     
-            string message = $"<@{guildUser.Id}> ({guildUser.Username}) left Zderland !";
+            string message = $"<@{guildUser.Id}> ({guildUser.Username}) left or was kick from this server !";
             
             var modoChannel = Helper.GetSocketMessageChannelModo(_client);
 

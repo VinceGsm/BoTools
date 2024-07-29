@@ -16,12 +16,14 @@ namespace BoTools.Service
     public class RoleService
     {        
         private static ulong _readTheRulesId = 847048535799234560;
+        private static ulong _visitorId = 344912149728067584;
         private static ulong _birthdayId = 1052530092082995201;
         private static ulong _gamingDealId = 1092072288226115685;
 
         private bool _connexion = true;        
         private IRole _IRoleBirthday = null;
         private IRole _IRoleRules = null;             
+        private IRole _IRoleVisitor = null;
         Dictionary<string, DateTime> _birthDays = null;        
         DateTime? _lastDateTime = null;             
         List<SocketGuildUser> _allUsers = new List<SocketGuildUser>();
@@ -97,16 +99,25 @@ namespace BoTools.Service
                         $"{Helper._coeurEmote} sur toi";
                     
                     var userTarget = Helper.GetZLand(_client).Users.First(x => x.Id == Convert.ToUInt64(idTagTarget.Remove(0, 1)));
-                    userTarget.AddRoleAsync(_IRoleBirthday);
 
-                    var res = (IMessage)channel.SendMessageAsync(message).Result;
+                    if (userTarget.Roles.Count() <= 2) // Minimum usuge of server                    
+                    {
+                        userTarget.AddRoleAsync(_IRoleBirthday);
 
-                    var bravo = Emote.Parse(Helper._bravoEmote);
-                    Emoji cake = new Emoji("\uD83C\uDF82");
-                    Emoji face = new Emoji("\uD83E\uDD73");
-                    await res.AddReactionAsync(cake);
-                    await res.AddReactionAsync(face);
-                    await res.AddReactionAsync(bravo);
+                        var res = (IMessage)channel.SendMessageAsync(message).Result;
+
+                        var bravo = Emote.Parse(Helper._bravoEmote);
+                        Emoji cake = new Emoji("\uD83C\uDF82");
+                        Emoji face = new Emoji("\uD83E\uDD73");
+                        await res.AddReactionAsync(cake);
+                        await res.AddReactionAsync(face);
+                        await res.AddReactionAsync(bravo);
+                    }
+                    else
+                    {
+                        var leader = _client.GetUser(Helper._vinceId);
+                        await leader.SendMessageAsync($"It's <@{userTarget.Id}> Birthday !");
+                    }
                 }
             }
             else
@@ -210,6 +221,7 @@ namespace BoTools.Service
         {
             log.Info($"CheckRoles IN");
             if (_IRoleRules == null) _IRoleRules = Helper.GetRoleById(_client, _readTheRulesId);
+            if (_IRoleVisitor == null) _IRoleVisitor = Helper.GetRoleById(_client, _visitorId);
 
             if (_allUsers.Count == 0)
             {
@@ -233,18 +245,20 @@ namespace BoTools.Service
         //REMOVED
         internal void RulesReactionRemoved(ulong userId)
         {
-            var subject = _allUsers.First(x => x.Id == userId);
-            subject.RemoveRoleAsync(_IRoleRules);
+            var user = _allUsers.First(x => x.Id == userId);
+            foreach (IRole role in user.Roles) 
+                user.RemoveRoleAsync(role);
         }
 
         //ADDED
         internal async Task RulesReactionAddedAsync(ulong userId)
         {
-            var subject = _allUsers.First(x => x.Id == userId);
-            await subject.AddRoleAsync(_IRoleRules);
+            var user = _allUsers.First(x => x.Id == userId);
+            await user.AddRoleAsync(_IRoleRules);
+            await user.AddRoleAsync(_IRoleVisitor);
 
-            var leader = _client.GetUser(Helper._vinceId);
-            await leader.SendMessageAsync($"<@{userId}> read the ZderLand's Rules !");
+            var userV = _client.GetUser(Helper._vinceId);
+            await userV.SendMessageAsync($"<@{userId}> read the Rules !");
         }
         #endregion
     }
