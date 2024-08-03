@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.15.3" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.62" />
     <PackageReference Include="log4net" Version="2.0.17" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="OpenAiNg" Version="2.3.3" />

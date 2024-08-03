@@ -40,8 +40,7 @@ namespace BoTools.Service
             }
 
             //Thread
-            var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;
-            var activeThreadlst = Helper.GetAllActiveThread(opChannel);
+            var opChannel = Helper.GetSocketMessageChannel(_client, Helper._idOnePieceChannel) as ITextChannel;            
             await Helper.ClosedAllActiveThread(opChannel);
             CreateThreadOnePiece(nextNumOnePiece, opChannel);
         }
@@ -88,10 +87,11 @@ namespace BoTools.Service
         }*/
 
         private Task CreateThreadOnePiece(int nextNumOnePiece, ITextChannel opChannel)
-        {
-            //var lastMsg = opChannel.GetMessagesAsync(1) as ;
-            //lastMsg.
-            //opChannel.DeleteMessageAsync(lastMsg);
+        {            
+            var lastMsg = (IMessage) opChannel.GetMessagesAsync(1).ToListAsync().Result.First().First();
+            if (lastMsg.Author.IsBot) 
+                opChannel.DeleteMessageAsync(lastMsg);            
+
             opChannel.CreateThreadAsync(nextNumOnePiece.ToString(), autoArchiveDuration:ThreadArchiveDuration.ThreeDays);
             log.Info($"Thread OP {nextNumOnePiece} created");            
             return Task.CompletedTask;
